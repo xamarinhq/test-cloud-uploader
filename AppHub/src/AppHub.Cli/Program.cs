@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using DocoptNet;
 using Microsoft.AppHub.Common;
 using Microsoft.AppHub.Cli.Commands;
 using Microsoft.AppHub.TestCloud;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.Cli
 {
@@ -17,19 +17,32 @@ namespace Microsoft.AppHub.Cli
 
         public static void Main(string[] args)
         {
-            var commandsRegistry = CreateCommandsRegistry();
             var services = new ServiceCollection();
+
+	        var commandsRegistry = CreateCommandsRegistry();
+            var loggerService = new LoggerService();
             
             services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton(commandsRegistry);
+            services.AddSingleton<ILoggerService>(loggerService);
             
-            var commandDescription = FindCommandDescription(commandsRegistry, args);
+            var commandDescription = GetCommandDescription(commandsRegistry, args);
 
             var options = ParseCommandOptions(args, commandDescription);           
 	        var serviceProvider = services.BuildServiceProvider();
             var command = commandDescription.CreateCommand(options, serviceProvider);
             
-            Task.Run(() => command.ExecuteAsync()).Wait();
+            try
+            {
+                Task.Run(() => command.ExecuteAsync()).Wait();
+            }
+            catch (Exception ex)
+            {
+                var logger = loggerService.CreateLogger<Program>();
+                logger.LogError(ex.ToString());
+
+                Console.Error.WriteLine(ex.Message);
+            }
         }
 
         private static IDictionary<string, ValueObject> ParseCommandOptions(string[] args, ICommandDescription commandDescription)
@@ -37,7 +50,7 @@ namespace Microsoft.AppHub.Cli
             return new Docopt().Apply(commandDescription.Syntax, args);
         }
 
-        private static ICommandDescription FindCommandDescription(CommandsRegistry registry, string[] args)
+        private static ICommandDescription GetCommandDescription(CommandsRegistry registry, string[] args)
         {
             if (args.Length == 0)
                 return registry.CommandDescriptions[HelpCommandName];

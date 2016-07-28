@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DocoptNet;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AppHub.Common;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.Cli.Commands
 {
@@ -26,9 +27,8 @@ namespace Microsoft.AppHub.Cli.Commands
                 return $@"Command '{this.Name}': {this.Summary}.
                 
 Usage: 
-  {ProgramUtilities.CurrentExecutableName} {this.Name}
+  {ProgramUtilities.CurrentExecutableName} [{this.Name}]
   {ProgramUtilities.CurrentExecutableName} {this.Name} <command>
-
 ";
             }
         }
@@ -37,6 +37,7 @@ Usage:
         {
             var commandName = options["<command>"];
             var commandsRegistry = (CommandsRegistry)serviceProvider.GetService(typeof(CommandsRegistry));
+            
             if (commandName?.IsNullOrEmpty ?? true)
             {
                 return new ListCommandsCommand(commandsRegistry);
@@ -57,10 +58,10 @@ Usage:
             if (commandsRegistry == null)
                 throw new ArgumentNullException(nameof(commandsRegistry));
 
-            _commandsRegistry = commandsRegistry; 
+            _commandsRegistry = commandsRegistry;
         }
 
-        public async Task ExecuteAsync()
+        public Task ExecuteAsync()
         {
             var allCommandDescriptions = _commandsRegistry.CommandDescriptions.Values.OrderBy(d => d.Name);
 
@@ -73,6 +74,8 @@ Usage:
             {
                 Console.WriteLine($"  {commandDescription.Name.PadRight(longestLength + 3)} {commandDescription.Summary}");
             }
+
+            return Tasks.Done;
         }
     }
 
@@ -91,9 +94,11 @@ Usage:
                 throw new ArgumentException($"Unknown command {commandName}", nameof(commandName));
         }
 
-        public async Task ExecuteAsync()
+        public Task ExecuteAsync()
         {
             Console.WriteLine(_commandDescription.Syntax);
+
+            return Tasks.Done;
         }
     }
 }

@@ -5,11 +5,23 @@ namespace Microsoft.AppHub.Common
 {
     public class LoggerService: ILoggerService
     {
-        private readonly ILoggerFactory _loggerFactory = new LoggerFactory().AddDebug();
-        private int _nextEventId = 999;
+        private readonly ILoggerFactory _loggerFactory;        
+        private int _nextEventId = 0;
+
+        public LoggerService()
+            : this(false, LogLevel.Error)
+	    { } 
+
+        public LoggerService(bool logToConsole, LogLevel minimumLogLevel)
+        {
+            _loggerFactory = new LoggerFactory();
+            _loggerFactory.AddDebug(minimumLogLevel);
+            if (logToConsole)
+                _loggerFactory.AddConsole();
+        }
 
         public ILogger CreateLogger<T>()
-        {
+        {            
             return _loggerFactory.CreateLogger<T>();
         }
 
