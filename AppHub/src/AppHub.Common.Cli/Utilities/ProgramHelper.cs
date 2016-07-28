@@ -1,10 +1,9 @@
 using System;
-using System.IO;
 using System.Diagnostics;
 
 namespace Microsoft.AppHub.Cli
 {
-    public static class ProgramHelper
+    public static class ProgramUtilities
     {
         private static readonly Lazy<string> _currentExecutableName = new Lazy<string>(
             () => Process.GetCurrentProcess().ProcessName);

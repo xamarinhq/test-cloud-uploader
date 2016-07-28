@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using DocoptNet;
 using Microsoft.AppHub.Cli;
 using Microsoft.AppHub.Common;
@@ -27,7 +28,7 @@ namespace Microsoft.AppHub.TestCloud
                 return $@"Command '{this.Name}': {this.Summary}.
 
 Usage:
-  {ProgramHelper.CurrentExecutableName} [{this.Name}] <command> [<arguments> ...]
+  {ProgramUtilities.CurrentExecutableName} [{this.Name}] <command> [<arguments> ...]
 
 ";
             }
@@ -66,7 +67,7 @@ Usage:
             _arguments = arguments ?? string.Empty;
         }
 
-        public void Execute()
+        public async Task ExecuteAsync()
         {
             var result = _processService.Run(_commandName, _arguments);
             

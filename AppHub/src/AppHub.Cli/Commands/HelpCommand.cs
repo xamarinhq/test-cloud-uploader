@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DocoptNet;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,8 +26,8 @@ namespace Microsoft.AppHub.Cli.Commands
                 return $@"Command '{this.Name}': {this.Summary}.
                 
 Usage: 
-  {ProgramHelper.CurrentExecutableName} {this.Name}
-  {ProgramHelper.CurrentExecutableName} {this.Name} <command>
+  {ProgramUtilities.CurrentExecutableName} {this.Name}
+  {ProgramUtilities.CurrentExecutableName} {this.Name} <command>
 
 ";
             }
@@ -59,11 +60,11 @@ Usage:
             _commandsRegistry = commandsRegistry; 
         }
 
-        public void Execute()
+        public async Task ExecuteAsync()
         {
             var allCommandDescriptions = _commandsRegistry.CommandDescriptions.Values.OrderBy(d => d.Name);
 
-            Console.WriteLine($@"Usage: {Program.ExecutableName} <command> [options])");
+            Console.WriteLine($@"Usage: {ProgramUtilities.CurrentExecutableName} <command> [options])");
             Console.WriteLine("Available commands:");
 
             var longestLength = allCommandDescriptions.Max(c => c.Name.Length);
@@ -90,7 +91,7 @@ Usage:
                 throw new ArgumentException($"Unknown command {commandName}", nameof(commandName));
         }
 
-        public void Execute()
+        public async Task ExecuteAsync()
         {
             Console.WriteLine(_commandDescription.Syntax);
         }

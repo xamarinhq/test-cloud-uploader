@@ -2217,17 +2217,6 @@
           "lib/netstandard1.3/_._": {}
         }
       },
-      "AppHub.Cli.Common/1.0.0": {
-        "type": "project",
-        "framework": ".NETStandard,Version=v1.6",
-        "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "Microsoft.Extensions.Logging.Console": "1.0.0",
-          "Microsoft.Extensions.Logging.Debug": "1.0.0",
-          "NETStandard.Library": "1.6.0",
-          "docopt.net": "0.6.1.8"
-        }
-      },
       "AppHub.Common/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
@@ -2238,14 +2227,16 @@
           "System.Diagnostics.Process": "4.1.0"
         }
       },
-      "AppHub.TestCloud/1.0.0": {
+      "AppHub.Common.Cli/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
-          "AppHub.Cli.Common": "1.0.0",
-          "AppHub.Common": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+          "Microsoft.Extensions.Logging.Console": "1.0.0",
+          "Microsoft.Extensions.Logging.Debug": "1.0.0",
           "NETStandard.Library": "1.6.0",
-          "System.Collections.NonGeneric": "4.0.1"
+          "System.Diagnostics.Process": "4.1.0",
+          "docopt.net": "0.6.1.8"
         }
       }
     }
@@ -7015,24 +7006,19 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "AppHub.Cli.Common/1.0.0": {
-      "type": "project",
-      "path": "../AppHub.Cli.Common/project.json"
-    },
     "AppHub.Common/1.0.0": {
       "type": "project",
       "path": "../AppHub.Common/project.json"
     },
-    "AppHub.TestCloud/1.0.0": {
+    "AppHub.Common.Cli/1.0.0": {
       "type": "project",
-      "path": "../AppHub.TestCloud/project.json"
+      "path": "../AppHub.Common.Cli/project.json"
     }
   },
   "projectFileDependencyGroups": {
     "": [
-      "AppHub.Cli.Common >= 1.0.0",
       "AppHub.Common >= 1.0.0",
-      "AppHub.TestCloud >= 1.0.0",
+      "AppHub.Common.Cli >= 1.0.0",
       "Autofac >= 4.0.0-rc3-316",
       "Autofac.Extensions.DependencyInjection >= 4.0.0-rc3-309",
       "Microsoft.Extensions.DependencyInjection >= 1.0.0",

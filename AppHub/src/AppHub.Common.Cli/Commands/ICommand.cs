@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Microsoft.AppHub.Cli
 {
     /// <summary> 
@@ -5,6 +7,6 @@ namespace Microsoft.AppHub.Cli
     /// </summary>
     public interface ICommand
     {
-        void Execute();        
+        Task ExecuteAsync();        
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using System.Threading.Tasks;
 using DocoptNet;
 using Microsoft.AppHub.Common;
 using Microsoft.AppHub.Cli.Commands;
@@ -14,14 +14,6 @@ namespace Microsoft.AppHub.Cli
     {
         public const string HelpCommandName = "help";
         public const string RunExtensionCommandName = "run";
-
-        private static readonly Lazy<string> _executableName = new Lazy<string>(
-            () => Path.GetFileName(typeof(Program).GetTypeInfo().Assembly.Location));
-        
-        public static string ExecutableName
-        {
-            get { return _executableName.Value; }
-        }
 
         public static void Main(string[] args)
         {
@@ -36,7 +28,8 @@ namespace Microsoft.AppHub.Cli
             var options = ParseCommandOptions(args, commandDescription);           
 	        var serviceProvider = services.BuildServiceProvider();
             var command = commandDescription.CreateCommand(options, serviceProvider);
-            command.Execute();
+            
+            Task.Run(() => command.ExecuteAsync()).Wait();
         }
 
         private static IDictionary<string, ValueObject> ParseCommandOptions(string[] args, ICommandDescription commandDescription)
