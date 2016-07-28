@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.Common
 {
+    /// <summary>
+    /// Default implementation of ILoggerService. 
+    /// </summary>
     public class LoggerService: ILoggerService
     {
         private readonly ILoggerFactory _loggerFactory;        

@@ -3,6 +3,9 @@ using System.Diagnostics;
 
 namespace Microsoft.AppHub.Common
 {
+    /// <summary>
+    /// Default implementation of IProcessService. 
+    /// </summary>
     public class ProcessService: IProcessService
     {
         public ProcessResult Run(string command, string arguments = null)
