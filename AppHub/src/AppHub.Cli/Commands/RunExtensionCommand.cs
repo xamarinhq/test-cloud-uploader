@@ -27,7 +27,7 @@ namespace Microsoft.AppHub.TestCloud
                 return $@"Command '{this.Name}': {this.Summary}.
 
 Usage:
-  {ProgramHelper.CurrentExecutableName} {this.Name} <command> [<arguments> ...]
+  {ProgramHelper.CurrentExecutableName} [{this.Name}] <command> [<arguments> ...]
 
 ";
             }
