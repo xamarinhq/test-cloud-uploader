@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": true
+  },
+  "dependencies": {
+    "AppHub.Cli.Common": "1.0.0",
+    "AppHub.Common": "1.0.0",
+    "AppHub.TestCloud": "1.0.0",    
+    "Autofac": "4.0.0-rc3-316",
+    "Autofac.Extensions.DependencyInjection": "4.0.0-rc3-309",
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "System.Collections.NonGeneric": "4.0.1"
+  },
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        }
+      },
+      "imports": "dnxcore50"
+    }
+  }
+}
