@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
   "buildOptions": {
     "debugType": "portable",
-    "copyToOutput": ["Services/app-test-process.sh"]
+    "copyToOutput": ["Services/app-test-process.sh", "Services/app-test-process.ps1"]
   },
   "dependencies": {
     "System.Runtime.Serialization.Primitives": "4.1.1",

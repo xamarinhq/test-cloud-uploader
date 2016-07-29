@@ -44,8 +44,7 @@ namespace Microsoft.AppHub.Common.Tests
 
             if (platformService.CurrentPlatform == OSPlatform.Windows)
             {
-                // return processService.RunAsync("cmd", "/Q /C Services/app-test-process.cmd " + arguments, standardOutputCallback, standardErrorCallback);
-                throw new NotImplementedException();
+                return processService.RunAsync("powershell.exe", "-f Services/app-test-process.ps1 " + arguments, standardOutputCallback, standardErrorCallback);
             }
             else
             {
