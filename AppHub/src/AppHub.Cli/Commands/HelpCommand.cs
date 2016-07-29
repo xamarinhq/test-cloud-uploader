@@ -66,7 +66,7 @@ Usage:
         {
             var allCommandDescriptions = _commandsRegistry.CommandDescriptions.Values.OrderBy(d => d.Name);
 
-            Console.WriteLine($@"Usage: {ProgramUtilities.CurrentExecutableName} <command> [options])");
+            Console.WriteLine($@"Usage: {ProgramUtilities.CurrentExecutableName} <command> [options]");
             Console.WriteLine("Available commands:");
 
             var longestLength = allCommandDescriptions.Max(c => c.Name.Length);
