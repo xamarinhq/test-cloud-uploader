@@ -20,7 +20,7 @@ namespace Microsoft.AppHub.Cli
             var services = new ServiceCollection();
 
 	        var commandsRegistry = CreateCommandsRegistry();
-            var loggerService = new LoggerService();
+            var loggerService = new LoggerService(true, LogLevel.Debug);
             
             services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton(commandsRegistry);

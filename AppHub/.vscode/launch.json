@@ -6,8 +6,8 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/src/AppHub.Cli/bin/Debug/netcoreapp1.0/AppHub.Cli.dll",
-            "args": ["run", "foo"],
+            "program": "${workspaceRoot}/src/AppHub.Cli/bin/Debug/netcoreapp1.0/app.dll",
+            "args": ["foo"],
             "cwd": "${workspaceRoot}/src/AppHub.Cli",
             "externalConsole": false,
             "stopAtEntry": false

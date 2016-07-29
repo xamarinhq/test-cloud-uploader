@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DocoptNet;
 using Microsoft.AppHub.Common;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.Cli.Commands
 {
@@ -75,7 +74,7 @@ Usage:
                 Console.WriteLine($"  {commandDescription.Name.PadRight(longestLength + 3)} {commandDescription.Summary}");
             }
 
-            return Tasks.Done;
+            return Tasks.Completed;
         }
     }
 
@@ -98,7 +97,7 @@ Usage:
         {
             Console.WriteLine(_commandDescription.Syntax);
 
-            return Tasks.Done;
+            return Tasks.Completed;
         }
     }
 }

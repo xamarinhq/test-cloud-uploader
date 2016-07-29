@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+
 namespace Microsoft.AppHub.Common
 {
     /// <summary>
@@ -8,6 +11,6 @@ namespace Microsoft.AppHub.Common
         /// <summary>
         /// Runs a command. 
         /// </summary>
-        ProcessResult Run(string command, string arguments = null);
+        Task<ProcessResult> RunAsync(string command, string arguments = null, Action<string> standardOutputCallback = null, Action<string> standardErrorCallback = null);
     }
 }

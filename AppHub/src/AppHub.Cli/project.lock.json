@@ -3,33 +3,6 @@
   "version": 2,
   "targets": {
     ".NETCoreApp,Version=v1.0": {
-      "Autofac/4.0.0-rc3-316": {
-        "type": "package",
-        "dependencies": {
-          "NETStandard.Library": "1.6.0",
-          "System.ComponentModel": "4.0.1"
-        },
-        "compile": {
-          "lib/netstandard1.1/Autofac.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.1/Autofac.dll": {}
-        }
-      },
-      "Autofac.Extensions.DependencyInjection/4.0.0-rc3-309": {
-        "type": "package",
-        "dependencies": {
-          "Autofac": "4.0.0-rc3-309",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "NETStandard.Library": "1.6.0"
-        },
-        "compile": {
-          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
-        }
-      },
       "docopt.net/0.6.1.8": {
         "type": "package",
         "compile": {
@@ -2290,6 +2263,7 @@
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Logging": "1.0.0",
+          "Microsoft.Extensions.Logging.Console": "1.0.0",
           "Microsoft.Extensions.Logging.Debug": "1.0.0",
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0"
@@ -2309,33 +2283,6 @@
       }
     },
     ".NETCoreApp,Version=v1.0/osx.10.11-x64": {
-      "Autofac/4.0.0-rc3-316": {
-        "type": "package",
-        "dependencies": {
-          "NETStandard.Library": "1.6.0",
-          "System.ComponentModel": "4.0.1"
-        },
-        "compile": {
-          "lib/netstandard1.1/Autofac.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.1/Autofac.dll": {}
-        }
-      },
-      "Autofac.Extensions.DependencyInjection/4.0.0-rc3-309": {
-        "type": "package",
-        "dependencies": {
-          "Autofac": "4.0.0-rc3-309",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "NETStandard.Library": "1.6.0"
-        },
-        "compile": {
-          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
-        }
-      },
       "docopt.net/0.6.1.8": {
         "type": "package",
         "compile": {
@@ -4852,6 +4799,7 @@
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Logging": "1.0.0",
+          "Microsoft.Extensions.Logging.Console": "1.0.0",
           "Microsoft.Extensions.Logging.Debug": "1.0.0",
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0"
@@ -4871,33 +4819,6 @@
       }
     },
     ".NETCoreApp,Version=v1.0/ubuntu.14.04-x64": {
-      "Autofac/4.0.0-rc3-316": {
-        "type": "package",
-        "dependencies": {
-          "NETStandard.Library": "1.6.0",
-          "System.ComponentModel": "4.0.1"
-        },
-        "compile": {
-          "lib/netstandard1.1/Autofac.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.1/Autofac.dll": {}
-        }
-      },
-      "Autofac.Extensions.DependencyInjection/4.0.0-rc3-309": {
-        "type": "package",
-        "dependencies": {
-          "Autofac": "4.0.0-rc3-309",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "NETStandard.Library": "1.6.0"
-        },
-        "compile": {
-          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
-        }
-      },
       "docopt.net/0.6.1.8": {
         "type": "package",
         "compile": {
@@ -7416,6 +7337,7 @@
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Logging": "1.0.0",
+          "Microsoft.Extensions.Logging.Console": "1.0.0",
           "Microsoft.Extensions.Logging.Debug": "1.0.0",
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0"
@@ -7435,33 +7357,6 @@
       }
     },
     ".NETCoreApp,Version=v1.0/win10-x64": {
-      "Autofac/4.0.0-rc3-316": {
-        "type": "package",
-        "dependencies": {
-          "NETStandard.Library": "1.6.0",
-          "System.ComponentModel": "4.0.1"
-        },
-        "compile": {
-          "lib/netstandard1.1/Autofac.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.1/Autofac.dll": {}
-        }
-      },
-      "Autofac.Extensions.DependencyInjection/4.0.0-rc3-309": {
-        "type": "package",
-        "dependencies": {
-          "Autofac": "4.0.0-rc3-309",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-          "NETStandard.Library": "1.6.0"
-        },
-        "compile": {
-          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll": {}
-        }
-      },
       "docopt.net/0.6.1.8": {
         "type": "package",
         "compile": {
@@ -9936,6 +9831,7 @@
         "framework": ".NETStandard,Version=v1.6",
         "dependencies": {
           "Microsoft.Extensions.Logging": "1.0.0",
+          "Microsoft.Extensions.Logging.Console": "1.0.0",
           "Microsoft.Extensions.Logging.Debug": "1.0.0",
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0"
@@ -9956,32 +9852,6 @@
     }
   },
   "libraries": {
-    "Autofac/4.0.0-rc3-316": {
-      "sha512": "Fx4lqVHUVHLU/F+JiZSFarRz1+9KuS452JkKWwWSPBGxtxlitqxFmxuXPFlOyj/SfLO2lDNhPVyOCyyCwNdfnA==",
-      "type": "package",
-      "path": "Autofac/4.0.0-rc3-316",
-      "files": [
-        "Autofac.4.0.0-rc3-316.nupkg.sha512",
-        "Autofac.nuspec",
-        "lib/net451/Autofac.dll",
-        "lib/net451/Autofac.xml",
-        "lib/netstandard1.1/Autofac.dll",
-        "lib/netstandard1.1/Autofac.xml",
-        "lib/uap10.0/Autofac.dll",
-        "lib/uap10.0/Autofac.xml"
-      ]
-    },
-    "Autofac.Extensions.DependencyInjection/4.0.0-rc3-309": {
-      "sha512": "pvVWo438PnaXU6ezQ0HHUnCPLUlvKWJZlXrnf6lfnKLI3hsOx87puiZP4gmstDKKwFyxAGZHbAOv/dBgDO4Q5w==",
-      "type": "package",
-      "path": "Autofac.Extensions.DependencyInjection/4.0.0-rc3-309",
-      "files": [
-        "Autofac.Extensions.DependencyInjection.4.0.0-rc3-309.nupkg.sha512",
-        "Autofac.Extensions.DependencyInjection.nuspec",
-        "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.dll",
-        "lib/netstandard1.1/Autofac.Extensions.DependencyInjection.xml"
-      ]
-    },
     "docopt.net/0.6.1.8": {
       "sha512": "YCNxvEfqFj/Aq6QSbxQ0L99lFOjCZ5NYHVa3SOYKIf8F3gwFaLsiixdeRwugjZ0zJvfW28TiJGnbw8j1mbxw2g==",
       "type": "package",
@@ -15754,8 +15624,6 @@
     "": [
       "AppHub.Common >= 1.0.0",
       "AppHub.Common.Cli >= 1.0.0",
-      "Autofac >= 4.0.0-rc3-316",
-      "Autofac.Extensions.DependencyInjection >= 4.0.0-rc3-309",
       "Microsoft.Extensions.DependencyInjection >= 1.0.0",
       "Microsoft.NetCore.App >= 1.0.0",
       "System.Collections.NonGeneric >= 4.0.1"

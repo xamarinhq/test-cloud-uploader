@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Microsoft.AppHub.Common
 {
@@ -8,7 +10,7 @@ namespace Microsoft.AppHub.Common
     /// </summary>
     public class ProcessService: IProcessService
     {
-        public ProcessResult Run(string command, string arguments = null)
+        public Task<ProcessResult> RunAsync(string command, string arguments = null, Action<string> standardOutputCallback = null, Action<string> standardErrorCallback = null)
         {
             if (string.IsNullOrWhiteSpace(command))
                 throw new ArgumentNullException(nameof(command));
@@ -18,19 +20,51 @@ namespace Microsoft.AppHub.Common
                 FileName = command,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
-                RedirectStandardInput = true,
+                RedirectStandardError = true,
                 CreateNoWindow = true,
                 Arguments = arguments ?? string.Empty
             };
 
             var process = new Process() { StartInfo = startInfo };
             process.Start();
-            process.WaitForExit();
 
-            var standardOutput = process.StandardOutput.ReadToEnd();
-            var standardError = process.StandardOutput.ReadToEnd();
-            
-            return new ProcessResult(process.ExitCode, standardOutput, standardError);
+            return Task.Run(async () => 
+            {
+                var standardOutputAndError = await Task.WhenAll(ReadStandardOutput(process, standardOutputCallback), ReadStandardError(process, standardErrorCallback));
+                process.WaitForExit();
+
+                return new ProcessResult(process.ExitCode, standardOutputAndError[0], standardOutputAndError[1]);
+            });
+        }
+
+        private async Task<string> ReadStandardOutput(Process process, Action<string> standardOutputCallback)
+        {
+            var result = new StringBuilder();
+            string line;
+            while ((line = await process.StandardOutput.ReadLineAsync()) != null)
+            {
+                if (standardOutputCallback != null)
+                    standardOutputCallback(line);
+                
+                result.AppendLine(line);
+            }
+
+            return result.ToString();
+        }
+
+        private async Task<string> ReadStandardError(Process process, Action<string> standardErrorCallback)
+        {
+            var result = new StringBuilder();
+            string line;
+            while ((line = await process.StandardError.ReadLineAsync()) != null)
+            {
+                if (standardErrorCallback != null)
+                    standardErrorCallback(line);
+                
+                result.AppendLine(line);
+            }
+
+            return result.ToString();
         }
     }
 }

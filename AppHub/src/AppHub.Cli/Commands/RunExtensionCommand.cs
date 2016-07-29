@@ -53,6 +53,8 @@ Usage:
 
     public class RunExtensionCommand: ICommand
     {
+        private readonly object _consoleLock = new object();
+
         private readonly ILogger _logger;
         private readonly ILoggerService _loggerService;
         private readonly IProcessService _processService;
@@ -75,17 +77,14 @@ Usage:
             _arguments = arguments ?? string.Empty;
         }
 
-        public Task ExecuteAsync()
+        public async Task ExecuteAsync()
         {
             var eventId = _loggerService.CreateEventId();
             _logger.LogDebug(eventId, $"Executing extension '{_commandName}' with arguments '{_arguments}'");
 
             try
             {
-                var result = _processService.Run(_commandName, _arguments);
-                Console.WriteLine(result.StandardOutput);
-                Console.Error.WriteLine(result.StandardError);
-
+                var result = await _processService.RunAsync(_commandName, _arguments, WriteStandardOutput, WriteStandardError);
                 _logger.LogDebug(eventId, $"Executing extension '{_commandName}' completed. Exit code: {result.ExitCode}");
             }
             catch (Exception ex)
@@ -93,8 +92,31 @@ Usage:
                 _logger.LogError(eventId, $"Error while executing extension: '{_commandName}': {ex}");
                 throw new CommandException("run", $"Cannot exeucte process '{_commandName}'", ex);
             }
+        }
 
-            return Tasks.Done;
+        private void WriteStandardOutput(string line)
+        {
+            lock (_consoleLock)
+            {
+                Console.WriteLine(line);
+            }
+        }
+
+        private void WriteStandardError(string line)
+        {
+            lock (_consoleLock)
+            {
+                var originalColor = Console.ForegroundColor;
+                try
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Error.WriteLine(line);
+                }
+                finally
+                {
+                    Console.ForegroundColor = originalColor;
+                }
+            }
         }
     }
 }
