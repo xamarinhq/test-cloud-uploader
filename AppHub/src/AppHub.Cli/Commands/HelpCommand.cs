@@ -9,9 +9,11 @@ namespace Microsoft.AppHub.Cli.Commands
 {
     public class HelpCommandDescription: ICommandDescription
     {
+        public const string HelpCommandName = "help";
+
         public string Name
         {
-            get { return "help"; }
+            get { return HelpCommandName; }
         }
 
         public string Summary

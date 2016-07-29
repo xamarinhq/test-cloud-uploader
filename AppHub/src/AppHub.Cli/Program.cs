@@ -12,15 +12,12 @@ namespace Microsoft.AppHub.Cli
 {
     public class Program
     {
-        public const string HelpCommandName = "help";
-        public const string RunExtensionCommandName = "run";
-
         public static void Main(string[] args)
         {
             var services = new ServiceCollection();
 
 	        var commandsRegistry = CreateCommandsRegistry();
-            var loggerService = new LoggerService(true, LogLevel.Debug);
+            var loggerService = new LoggerService();
             
             services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton(commandsRegistry);
@@ -53,12 +50,12 @@ namespace Microsoft.AppHub.Cli
         private static ICommandDescription GetCommandDescription(CommandsRegistry registry, string[] args)
         {
             if (args.Length == 0)
-                return registry.CommandDescriptions[HelpCommandName];
+                return registry.CommandDescriptions[HelpCommandDescription.HelpCommandName];
             
             var commandName = args[0];
             ICommandDescription result;
             if (!registry.CommandDescriptions.TryGetValue(commandName, out result))
-                result = registry.CommandDescriptions[RunExtensionCommandName];
+                result = registry.CommandDescriptions[RunExtensionCommandDescription.RunExtensionCommandName];
 
             return result;
         }
@@ -67,7 +64,7 @@ namespace Microsoft.AppHub.Cli
         {
             var registry = new CommandsRegistry();
             registry.AddCommandDescription(new HelpCommandDescription());
-            registry.AddCommandDescription(new RunCommandDescription());
+            registry.AddCommandDescription(new RunExtensionCommandDescription());
 
             return registry;
         }

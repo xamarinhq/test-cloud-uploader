@@ -10,11 +10,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.TestCloud
 {
-    public class RunCommandDescription: ICommandDescription
+    public class RunExtensionCommandDescription: ICommandDescription
     {
+        public const string RunExtensionCommandName = "run";
+
         public string Name
         {
-            get { return "run"; }
+            get { return RunExtensionCommandName; }
         }
 
         public string Summary
