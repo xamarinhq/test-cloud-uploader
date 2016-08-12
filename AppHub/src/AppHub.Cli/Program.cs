@@ -42,7 +42,8 @@ namespace Microsoft.AppHub.Cli
             }
         }
 
-        private static IDictionary<string, ValueObject> ParseCommandOptions(string[] args, ICommandDescription commandDescription)
+        private static IDictionary<string, ValueObject> ParseCommandOptions(
+            string[] args, ICommandDescription commandDescription)
         {
             return new Docopt().Apply(commandDescription.Syntax, args);
         }

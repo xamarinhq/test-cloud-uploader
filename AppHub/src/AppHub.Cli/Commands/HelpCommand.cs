@@ -73,7 +73,8 @@ Usage:
 
             foreach (var commandDescription in allCommandDescriptions)
             {
-                Console.WriteLine($"  {commandDescription.Name.PadRight(longestLength + 3)} {commandDescription.Summary}");
+                Console.WriteLine(
+                    $"  {commandDescription.Name.PadRight(longestLength + 3)} {commandDescription.Summary}");
             }
 
             return Tasks.Completed;

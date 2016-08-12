@@ -63,7 +63,8 @@ Usage:
         private readonly string _commandName;
         private readonly string _arguments;
 
-        public RunExtensionCommand(ILoggerService loggerService, IProcessService processService, string commandName, string arguments)
+        public RunExtensionCommand(
+            ILoggerService loggerService, IProcessService processService, string commandName, string arguments)
         {
             if (loggerService == null)
                 throw new ArgumentNullException(nameof(loggerService));
@@ -86,8 +87,10 @@ Usage:
 
             try
             {
-                var result = await _processService.RunAsync(_commandName, _arguments, WriteStandardOutput, WriteStandardError);
-                _logger.LogDebug(eventId, $"Executing extension '{_commandName}' completed. Exit code: {result.ExitCode}");
+                var result = await _processService.RunAsync(
+                    _commandName, _arguments, WriteStandardOutput, WriteStandardError);
+                _logger.LogDebug(
+                    eventId, $"Executing extension '{_commandName}' completed. Exit code: {result.ExitCode}");
             }
             catch (Exception ex)
             {
