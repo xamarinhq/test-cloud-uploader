@@ -31,7 +31,7 @@ namespace Microsoft.AppHub.Cli
             
             try
             {
-                Task.Run(() => command.ExecuteAsync()).Wait();
+                command.ExecuteAsync().Wait();
             }
             catch (Exception ex)
             {
