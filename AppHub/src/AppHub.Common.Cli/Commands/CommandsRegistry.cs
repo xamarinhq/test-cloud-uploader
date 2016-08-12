@@ -8,31 +8,31 @@ namespace Microsoft.AppHub.Cli
     /// </summary>
     public class CommandsRegistry
     {
-        private readonly Dictionary<string, ICommandDescription> _commandDescriptions;
+        private readonly Dictionary<string, ICommand> _commands;
 
         public CommandsRegistry()
         {
-            _commandDescriptions = new Dictionary<string, ICommandDescription>();
+            _commands = new Dictionary<string, ICommand>();
         }
 
         /// <summary>
         /// Adds new command description.
         /// </summary>
-        public void AddCommandDescription(ICommandDescription commandDescription)
+        public void AddCommand(ICommand command)
         {
-            if (commandDescription == null)
-                throw new ArgumentNullException(nameof(commandDescription));
+            if (command == null)
+                throw new ArgumentNullException(nameof(command));
 
-            _commandDescriptions.Add(commandDescription.Name, commandDescription);        
+            _commands.Add(command.Name, command);        
         }
 
         /// <summary>
         /// A read-only dictionary with all registered commands. Keys in the dictionary are command names, 
         /// values are command descriptions (implementations of ICommandDescription).
         /// </summary>
-        public IReadOnlyDictionary<string, ICommandDescription> CommandDescriptions
+        public IReadOnlyDictionary<string, ICommand> Commands
         {
-            get { return _commandDescriptions; }
+            get { return _commands; }
         }
     }
 }

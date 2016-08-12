@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using DocoptNet;
 using Microsoft.AppHub.Common;
 using Microsoft.AppHub.Cli.Commands;
@@ -23,15 +22,14 @@ namespace Microsoft.AppHub.Cli
             services.AddSingleton(commandsRegistry);
             services.AddSingleton<ILoggerService>(loggerService);
             
-            var commandDescription = GetCommandDescription(commandsRegistry, args);
+            var command = GetCommand(commandsRegistry, args);
 
-            var options = ParseCommandOptions(args, commandDescription);           
+            var options = ParseCommandOptions(args, command);           
 	        var serviceProvider = services.BuildServiceProvider();
-            var command = commandDescription.CreateCommand(options, serviceProvider);
             
             try
             {
-                command.ExecuteAsync().Wait();
+                command.ExecuteAsync(options, serviceProvider).Wait();
             }
             catch (Exception ex)
             {
@@ -42,21 +40,20 @@ namespace Microsoft.AppHub.Cli
             }
         }
 
-        private static IDictionary<string, ValueObject> ParseCommandOptions(
-            string[] args, ICommandDescription commandDescription)
+        private static IDictionary<string, ValueObject> ParseCommandOptions(string[] args, ICommand command)
         {
-            return new Docopt().Apply(commandDescription.Syntax, args);
+            return new Docopt().Apply(command.Syntax, args);
         }
 
-        private static ICommandDescription GetCommandDescription(CommandsRegistry registry, string[] args)
+        private static ICommand GetCommand(CommandsRegistry registry, string[] args)
         {
             if (args.Length == 0)
-                return registry.CommandDescriptions[HelpCommandDescription.HelpCommandName];
+                return registry.Commands[HelpCommandDescription.HelpCommandName];
             
             var commandName = args[0];
-            ICommandDescription result;
-            if (!registry.CommandDescriptions.TryGetValue(commandName, out result))
-                result = registry.CommandDescriptions[RunExtensionCommandDescription.RunExtensionCommandName];
+            ICommand result;
+            if (!registry.Commands.TryGetValue(commandName, out result))
+                result = registry.Commands[RunExtensionCommandDescription.RunExtensionCommandName];
 
             return result;
         }
@@ -64,8 +61,8 @@ namespace Microsoft.AppHub.Cli
         private static CommandsRegistry CreateCommandsRegistry()
         {
             var registry = new CommandsRegistry();
-            registry.AddCommandDescription(new HelpCommandDescription());
-            registry.AddCommandDescription(new RunExtensionCommandDescription());
+            registry.AddCommand(new HelpCommandDescription());
+            registry.AddCommand(new RunExtensionCommandDescription());
 
             return registry;
         }

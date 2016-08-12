@@ -4,12 +4,12 @@ using DocoptNet;
 
 namespace Microsoft.AppHub.Cli.Tests
 {
-    public class TestCommandDescription : ICommandDescription
+    public class TestCommand : ICommand
     {
-        public TestCommandDescription()
+        public TestCommand()
         { }
 
-        public TestCommandDescription(string name)
+        public TestCommand(string name)
         {
             this.Name = name;
         }
@@ -20,7 +20,7 @@ namespace Microsoft.AppHub.Cli.Tests
 
         public string Syntax { get; set; }
         
-        public ICommand CreateCommand(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
+        public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {
             throw new NotImplementedException();
         }

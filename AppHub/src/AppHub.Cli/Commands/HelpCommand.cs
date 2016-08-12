@@ -7,7 +7,7 @@ using Microsoft.AppHub.Common;
 
 namespace Microsoft.AppHub.Cli.Commands
 {
-    public class HelpCommandDescription: ICommandDescription
+    public class HelpCommandDescription: ICommand
     {
         public const string HelpCommandName = "help";
 
@@ -34,27 +34,27 @@ Usage:
             }
         }
 
-        public ICommand CreateCommand(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
+        public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {
             var commandName = options["<command>"];
             var commandsRegistry = (CommandsRegistry)serviceProvider.GetService(typeof(CommandsRegistry));
             
             if (commandName?.IsNullOrEmpty ?? true)
             {
-                return new ListCommandsCommand(commandsRegistry);
+                return new ListCommandsCommandExecutor(commandsRegistry);
             }
             else
             {
-                return new PrintCommandSyntaxCommand(commandsRegistry, commandName.ToString());
+                return new PrintCommandSyntaxCommandExecutor(commandsRegistry, commandName.ToString());
             }
         }
     }
 
-    public class ListCommandsCommand: ICommand
+    public class ListCommandsCommandExecutor: ICommandExecutor
     {
         private readonly CommandsRegistry _commandsRegistry;
 
-        public ListCommandsCommand(CommandsRegistry commandsRegistry)
+        public ListCommandsCommandExecutor(CommandsRegistry commandsRegistry)
         {
             if (commandsRegistry == null)
                 throw new ArgumentNullException(nameof(commandsRegistry));
@@ -64,14 +64,14 @@ Usage:
 
         public Task ExecuteAsync()
         {
-            var allCommandDescriptions = _commandsRegistry.CommandDescriptions.Values.OrderBy(d => d.Name);
+            var allCommands = _commandsRegistry.Commands.Values.OrderBy(d => d.Name);
 
             Console.WriteLine($@"Usage: {ProgramUtilities.CurrentExecutableName} <command> [options]");
             Console.WriteLine("Available commands:");
 
-            var longestLength = allCommandDescriptions.Max(c => c.Name.Length);
+            var longestLength = allCommands.Max(c => c.Name.Length);
 
-            foreach (var commandDescription in allCommandDescriptions)
+            foreach (var commandDescription in allCommands)
             {
                 Console.WriteLine(
                     $"  {commandDescription.Name.PadRight(longestLength + 3)} {commandDescription.Summary}");
@@ -81,24 +81,24 @@ Usage:
         }
     }
 
-    public class PrintCommandSyntaxCommand: ICommand
+    public class PrintCommandSyntaxCommandExecutor: ICommandExecutor
     {
-        private readonly ICommandDescription _commandDescription;
+        private readonly ICommand _command;
 
-        public PrintCommandSyntaxCommand(CommandsRegistry commandsRegistry, string commandName)
+        public PrintCommandSyntaxCommandExecutor(CommandsRegistry commandsRegistry, string commandName)
         {
             if (commandsRegistry == null)
                 throw new ArgumentNullException(nameof(commandsRegistry));
             if (commandName == null)
                 throw new ArgumentNullException(nameof(commandName));            
             
-            if (!commandsRegistry.CommandDescriptions.TryGetValue(commandName, out _commandDescription))
+            if (!commandsRegistry.Commands.TryGetValue(commandName, out _command))
                 throw new ArgumentException($"Unknown command {commandName}", nameof(commandName));
         }
 
         public Task ExecuteAsync()
         {
-            Console.WriteLine(_commandDescription.Syntax);
+            Console.WriteLine(_command.Syntax);
 
             return Tasks.Completed;
         }

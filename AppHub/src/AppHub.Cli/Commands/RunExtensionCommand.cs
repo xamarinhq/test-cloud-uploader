@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.TestCloud
 {
-    public class RunExtensionCommandDescription: ICommandDescription
+    public class RunExtensionCommandDescription: ICommand
     {
         public const string RunExtensionCommandName = "run";
 
@@ -37,7 +37,7 @@ Usage:
             }
         }
 
-        public ICommand CreateCommand(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
+        public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {
             var commandName = $"app-{options["<command>"].ToString()}";
             var arguments = options["<arguments>"]?
@@ -49,11 +49,11 @@ Usage:
             var processService = (IProcessService)serviceProvider.GetService(typeof(IProcessService));
             var loggerService = (ILoggerService)serviceProvider.GetService(typeof(ILoggerService));
 
-            return new RunExtensionCommand(loggerService, processService, commandName, arguments);
+            return new RunExtensionCommandExecutor(loggerService, processService, commandName, arguments);
         }
     }
 
-    public class RunExtensionCommand: ICommand
+    public class RunExtensionCommandExecutor: ICommandExecutor
     {
         private readonly object _consoleLock = new object();
 
@@ -63,7 +63,7 @@ Usage:
         private readonly string _commandName;
         private readonly string _arguments;
 
-        public RunExtensionCommand(
+        public RunExtensionCommandExecutor(
             ILoggerService loggerService, IProcessService processService, string commandName, string arguments)
         {
             if (loggerService == null)
@@ -74,7 +74,7 @@ Usage:
                 throw new ArgumentNullException(nameof(commandName));
 
             _loggerService = loggerService;
-            _logger = loggerService.CreateLogger<RunExtensionCommand>();
+            _logger = loggerService.CreateLogger<RunExtensionCommandExecutor>();
             _processService = processService;
             _commandName = commandName;
             _arguments = arguments ?? string.Empty;
