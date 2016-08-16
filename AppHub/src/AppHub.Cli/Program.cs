@@ -15,7 +15,7 @@ namespace Microsoft.AppHub.Cli
         {
             var services = new ServiceCollection();
 
-	        var commandsRegistry = CreateCommandsRegistry();
+            var commandsRegistry = CreateCommandsRegistry();
             var loggerService = new LoggerService();
             
             services.AddSingleton<IProcessService, ProcessService>();
@@ -24,8 +24,8 @@ namespace Microsoft.AppHub.Cli
             
             var command = GetCommand(commandsRegistry, args);
 
-            var options = ParseCommandOptions(args, command);           
-	        var serviceProvider = services.BuildServiceProvider();
+            var options = ParseCommandOptions(args, command);
+            var serviceProvider = services.BuildServiceProvider();
             
             try
             {
