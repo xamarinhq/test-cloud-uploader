@@ -9,15 +9,17 @@
     "AppHub.Common.Cli": "1.0.0",
     "AppHub.Common": "1.0.0",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
-    "System.Collections.NonGeneric": "4.0.1",
-    "Microsoft.NetCore.App": "1.0.0"
+    "System.Collections.NonGeneric": "4.0.1"
   },
   "frameworks": {
-    "netcoreapp1.0": {}
-  },
-  "runtimes": {
-    "win10-x64": {},
-    "osx.10.11-x64": {},
-    "ubuntu.14.04-x64": {}
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        }
+      },
+      "imports": "dnxcore50"
+    }
   }
 }
