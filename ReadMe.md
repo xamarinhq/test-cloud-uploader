@@ -47,31 +47,6 @@ Option #1 should be used for most of AppHub internal commands. Option #2 allows 
 to create their own extensions, or to create commands that cannot be easily implemented
 using .NET Core.
 
-## Implementation details
-Most of the project contains classes ported from the XDB project, with a few small modifications:
-1. The original `ICommand` interface was splitted into two separate interfaces:   
-   - `ICommand` is now only reponsible for command execution.
-   - `ICommandDescriptions` contains metadata about the command - name, summary and syntax. It also
-     works as a factory for actual `ICommand` implementations.
-
-   That separation reduces number of dependncies and types that the `app` driver has
-   to instantiate at each time it starts. At that time, it creates only descriptions for all
-   known commands. These objects will be small, simple and won't
-   have many external dependencies. When it detect what command should be executed, it 
-   instantiates the actual `ICommand` implementation, which will usually be more complex
-   and require more dependencies.  
-
-2. The `void ICommand.Execute()` method was changed to `Task ICommand.ExecuteAsync()`.
-
-   I expect that most commands will do work that involve IO operations, which should be
-   implemented using asynchronous model (the new .NET APIs sometimes don't even have
-   synchronous version). That is simpler to implement if the interface and driver expect asynchronous
-   code.
-
-3. The `IProcessService` takes callbacks that allow the caller to be notifed about each new
-   line wrote to stdout / stderr. This improves user experiences - he can see messages
-   from the launched process in real time, instead of waiting until it exists.
-
 ## Build status
 | Windows | Mac      |
 |:-------:|:--------:|
