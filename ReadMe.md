@@ -71,3 +71,8 @@ Most of the project contains classes ported from the XDB project, with a few sma
 3. The `IProcessService` takes callbacks that allow the caller to be notifed about each new
    line wrote to stdout / stderr. This improves user experiences - he can see messages
    from the launched process in real time, instead of waiting until it exists.
+
+## Build status
+| Windows | Mac      |
+|:-------:|:--------:|
+|[![](https://mseng.visualstudio.com/_apis/public/build/definitions/96a62c4a-58c2-4dbb-94b6-5979ebc7f2af/3996/badge)](https://mseng.visualstudio.com/AppInsights/Devices%20-%20HockeyApp%20SDK/_build/index?path=%5C&definitionId=3996&_a=completed)| (no build for now) |
