@@ -37,18 +37,24 @@ namespace Microsoft.AppHub.Common.Tests
             Assert.Equal(expected, result.StandardError);
         }
 
-        private Task<ProcessResult> LaunchProcess(string arguments, Action<string> standardOutputCallback = null, Action<string> standardErrorCallback = null) 
+        private Task<ProcessResult> LaunchProcess(
+            string arguments, Action<string> standardOutputCallback = null, Action<string> standardErrorCallback = null) 
         {
             var platformService = new PlatformService();
             var processService = new ProcessService();
 
             if (platformService.CurrentPlatform == OSPlatform.Windows)
             {
-                return processService.RunAsync("powershell.exe", "-f Services/app-test-process.ps1 " + arguments, standardOutputCallback, standardErrorCallback);
+                return processService.RunAsync(
+                    "powershell.exe", "-f Services/app-test-process.ps1 " + arguments, 
+                    standardOutputCallback, 
+                    standardErrorCallback);
             }
             else
             {
-                return processService.RunAsync("bash", "Services/app-test-process.sh " + arguments, standardOutputCallback, standardErrorCallback);
+                return processService.RunAsync("bash", "Services/app-test-process.sh " + arguments, 
+                    standardOutputCallback, 
+                    standardErrorCallback);
             }            
         }
     }

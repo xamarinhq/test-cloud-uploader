@@ -9,19 +9,19 @@ namespace Microsoft.AppHub.Cli.Tests
         public void CommandDescriptionsContainAllAddedItems()
         {
             var registry = new CommandsRegistry();
-            var description = new TestCommandDescription("foo");
-            registry.AddCommandDescription(description);
+            var description = new TestCommand("foo");
+            registry.AddCommand(description);
 
-            Assert.Same(description, registry.CommandDescriptions["foo"]);
+            Assert.Same(description, registry.Commands["foo"]);
         }
 
         [Fact]
         public void CannotAddCommandsWithDuplicateName() 
         {
             var registry = new CommandsRegistry();
-            registry.AddCommandDescription(new TestCommandDescription("foo"));
+            registry.AddCommand(new TestCommand("foo"));
 
-            Assert.Throws<ArgumentException>(() => registry.AddCommandDescription(new TestCommandDescription("foo")));
+            Assert.Throws<ArgumentException>(() => registry.AddCommand(new TestCommand("foo")));
         }
     }
 }

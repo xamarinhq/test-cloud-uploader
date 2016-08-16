@@ -16,9 +16,15 @@ namespace Microsoft.AppHub.Common
         /// </summary>
         /// <param name="command">Command to execute.</param>
         /// <param name="arguments">(Optional) Command arguments.</param>
-        /// <param name="standardOutputCallback">(Optional) An action that will be called with each standard output line wrote by the executed command.</param>
-        /// <param name="standardErrorCallback">(Optional) An action that will be called with each standard error line wrote by the executed command.</param>
-        public Task<ProcessResult> RunAsync(string command, string arguments = null, Action<string> standardOutputCallback = null, Action<string> standardErrorCallback = null)
+        /// <param name="standardOutputCallback">(Optional) An action that will be called with each standard output line 
+        /// wrote by the executed command.</param>
+        /// <param name="standardErrorCallback">(Optional) An action that will be called with each standard error line 
+        /// wrote by the executed command.</param>
+        public Task<ProcessResult> RunAsync(
+            string command, 
+            string arguments = null, 
+            Action<string> standardOutputCallback = null, 
+            Action<string> standardErrorCallback = null)
         {
             if (string.IsNullOrWhiteSpace(command))
                 throw new ArgumentNullException(nameof(command));
