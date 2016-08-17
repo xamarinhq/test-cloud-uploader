@@ -15,7 +15,7 @@ namespace Microsoft.AppHub.Common
         /// Creates new instance of the logger service, which doesn't write to console and logs only errors.
         /// </summary>
         public LoggerService()
-            : this(false, LogLevel.Error)
+            : this(true, LogLevel.Information)
 	    { } 
 
         /// <summary>

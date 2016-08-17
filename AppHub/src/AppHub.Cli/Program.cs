@@ -63,6 +63,7 @@ namespace Microsoft.AppHub.Cli
             var registry = new CommandsRegistry();
             registry.AddCommand(new HelpCommandDescription());
             registry.AddCommand(new RunExtensionCommandDescription());
+            registry.AddCommand(new TestCloudCommand());
 
             return registry;
         }

@@ -7,7 +7,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceRoot}/src/AppHub.Cli/bin/Debug/netcoreapp1.0/app.dll",
-            "args": ["foo"],
+            "args": ["test-cloud", "c:\\Temp\\app.txt", "c:\\Temp\\Foo.txt"],
             "cwd": "${workspaceRoot}/src/AppHub.Cli",
             "externalConsole": false,
             "stopAtEntry": false

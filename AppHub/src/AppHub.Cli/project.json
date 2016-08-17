@@ -8,6 +8,7 @@
   "dependencies": {
     "AppHub.Common.Cli": "1.0.0",
     "AppHub.Common": "1.0.0",
+    "AppHub.TestCloud": "1.0.0",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "System.Collections.NonGeneric": "4.0.1"
   },

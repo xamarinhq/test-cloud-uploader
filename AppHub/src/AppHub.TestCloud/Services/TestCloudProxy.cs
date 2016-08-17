@@ -40,7 +40,7 @@ namespace Microsoft.AppHub.TestCloud
             var parameters = new Dictionary<string, object>()
             {
                 ["hashes"] = fileHashes,
-                ["app_hash"] = appHash
+                ["app_hash"] = appHash.ToLowerInvariant()
             };
 
             if (dsymHash != null)
@@ -48,13 +48,29 @@ namespace Microsoft.AppHub.TestCloud
                 parameters[dsymHash] = dsymHash;
             }
 
-            var httpContent = new StringContent(
-                JsonConvert.SerializeObject(parameters),
-                Encoding.UTF8,
-                "application/json");
+            var boundary = String.Format("--{0}--", DateTimeOffset.UtcNow.Ticks.ToString("x"));
+            var httpContent = new MultipartContent("mixed", boundary);
+            foreach (var keyValue in parameters)
+            {
+                if (keyValue.Value is IEnumerable<string>)
+                {
+                    var name = $"{keyValue.Key}[]";
+
+                    foreach (var arrayValue in (IEnumerable<string>)keyValue.Value)
+                    {
+                        var data = $"Content-Disposition: form-data; name=\"{name}\"\r\n\r\n{arrayValue}";
+                        httpContent.Add(new ByteArrayContent(Encoding.UTF8.GetBytes(data)));
+                    }
+                }
+                else
+                {
+                    var data = $"Content-Disposition: form-data; name=\"{keyValue.Key}\"\r\n\r\n{keyValue.Value}";
+                    httpContent.Add(new ByteArrayContent(Encoding.UTF8.GetBytes(data)));
+                }
+            }
 
             var httpResponse = await RetryWebRequest(async () => {
-                var response = await _httpClient.PostAsync("check_hash", httpContent);
+                var response = await _httpClient.PostAsync("ci/check_hash", httpContent);
                 response.EnsureSuccessStatusCode();
 
                 return response;
