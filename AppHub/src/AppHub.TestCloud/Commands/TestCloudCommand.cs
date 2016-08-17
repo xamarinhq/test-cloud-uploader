@@ -68,7 +68,7 @@ Usage:
             {
                 var appFileHash = sha256.GetHash(appFileInfo);
                 var hashToFileName = allFileInfos.ToDictionary(
-                    fi => sha256.GetHash(fi),
+                    fi => sha256.GetHash(fi).ToLowerInvariant(),
                     fi => fi.FullName,
                     StringComparer.OrdinalIgnoreCase);
                 
