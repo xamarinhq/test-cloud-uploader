@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AppHub.Common;
 using Microsoft.Extensions.Logging;
@@ -37,37 +36,22 @@ namespace Microsoft.AppHub.TestCloud
         public async Task<IDictionary<string, bool>> CheckFileHashesAsync(
             string appHash, IList<string> fileHashes, string dsymHash = null)
         {
-            var parameters = new Dictionary<string, object>()
-            {
-                ["hashes"] = fileHashes,
-                ["app_hash"] = appHash.ToLowerInvariant()
-            };
+            var contentBuilder = new DictionaryContentBuilderPart();
+            contentBuilder.AddChild("hashes", 
+                new ListContentBuilderPart(
+                    fileHashes.Select(hash => new StringContentBuilderPart(hash))));
+            contentBuilder.AddChild("app_hash", 
+                new StringContentBuilderPart(appHash.ToLowerInvariant()));
 
             if (dsymHash != null)
             {
-                parameters[dsymHash] = dsymHash;
+                contentBuilder.AddChild("dsym_hash", new
+                     StringContentBuilderPart(dsymHash.ToLowerInvariant()));
             }
 
-            var boundary = String.Format("--{0}--", DateTimeOffset.UtcNow.Ticks.ToString("x"));
+            var boundary = GetMutiPartContentBoundary();
             var httpContent = new MultipartContent("mixed", boundary);
-            foreach (var keyValue in parameters)
-            {
-                if (keyValue.Value is IEnumerable<string>)
-                {
-                    var name = $"{keyValue.Key}[]";
-
-                    foreach (var arrayValue in (IEnumerable<string>)keyValue.Value)
-                    {
-                        var data = $"Content-Disposition: form-data; name=\"{name}\"\r\n\r\n{arrayValue}";
-                        httpContent.Add(new ByteArrayContent(Encoding.UTF8.GetBytes(data)));
-                    }
-                }
-                else
-                {
-                    var data = $"Content-Disposition: form-data; name=\"{keyValue.Key}\"\r\n\r\n{keyValue.Value}";
-                    httpContent.Add(new ByteArrayContent(Encoding.UTF8.GetBytes(data)));
-                }
-            }
+            contentBuilder.BuildMultipartContent(string.Empty, httpContent);
 
             var httpResponse = await RetryWebRequest(async () => {
                 var response = await _httpClient.PostAsync("ci/check_hash", httpContent);
@@ -79,6 +63,11 @@ namespace Microsoft.AppHub.TestCloud
             var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<IDictionary<string, bool>>(httpResponseString);
+        }
+
+        private string GetMutiPartContentBoundary()
+        {
+            return $"--{DateTimeOffset.UtcNow.Ticks.ToString("x")}--";
         }
 
         private async Task<T> RetryWebRequest<T>(Func<Task<T>> request)
