@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Microsoft.AppHub.TestCloud
 {
+    /// <summary>
+    /// A multi-part tree leaf that represents a string value.
+    /// </summary>
     public class StringContentBuilderPart: IContentBuilderPart
     {
         private readonly string _value;
@@ -16,6 +19,11 @@ namespace Microsoft.AppHub.TestCloud
             _value = value;
         }
 
+        /// <summary>
+        /// Serializes the node and writes its representation to MultipartContent (form System.Net.Http). 
+        /// </summary>
+        /// <param name="parentName">Name of the parent node.</param>
+        /// <param name="result">The System.Net.Http.MultipartContent that will store the result.</param>
         public void BuildMultipartContent(string parentName, MultipartContent result)
         {
             if (parentName == null)

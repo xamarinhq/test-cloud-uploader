@@ -4,6 +4,9 @@ using System.Net.Http;
 
 namespace Microsoft.AppHub.TestCloud
 {
+    /// <summary>
+    /// A multi-part tree node that represents a list.
+    /// </summary>
     public class ListContentBuilderPart: IContentBuilderPart
     {
         private readonly IList<IContentBuilderPart> _items;
@@ -21,6 +24,10 @@ namespace Microsoft.AppHub.TestCloud
             _items = new List<IContentBuilderPart>(items);
         }
 
+        /// <summary>
+        /// Adds child element to the node.
+        /// </summary>
+        /// <param name="childPart">Child element</param>
         public void AddChild(IContentBuilderPart childPart)
         {
             if (childPart == null)
@@ -29,6 +36,11 @@ namespace Microsoft.AppHub.TestCloud
             _items.Add(childPart);
         }
 
+        /// <summary>
+        /// Serializes the node and writes its representation to MultipartContent (form System.Net.Http). 
+        /// </summary>
+        /// <param name="parentName">Name of the parent node.</param>
+        /// <param name="result">The System.Net.Http.MultipartContent that will store the result.</param>
         public void BuildMultipartContent(string parentName, MultipartContent result)
         {
             if (parentName == null)

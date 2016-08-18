@@ -4,6 +4,9 @@ using System.Net.Http;
 
 namespace Microsoft.AppHub.TestCloud
 {
+    /// <summary>
+    /// A multi-part tree node that represents a dictionary.
+    /// </summary>
     public class DictionaryContentBuilderPart: IContentBuilderPart
     {
         private readonly IDictionary<string, IContentBuilderPart> _items;
@@ -23,6 +26,11 @@ namespace Microsoft.AppHub.TestCloud
             }
         }
 
+        /// <summary>
+        /// Adds child element to the node.
+        /// </summary>
+        /// <param name="name">Name (key) of the child element.</param>
+        /// <param name="childPart">Child element.</param>
         public void AddChild(string name, IContentBuilderPart childPart)
         {
             if (name == null)
@@ -33,6 +41,11 @@ namespace Microsoft.AppHub.TestCloud
             _items.Add(name, childPart);
         }
 
+        /// <summary>
+        /// /// Serializes the node and writes its representation to MultipartContent (form System.Net.Http). 
+        /// </summary>
+        /// <param name="parentName">Name of the parent node.</param>
+        /// <param name="result">The System.Net.Http.MultipartContent that will store the result.</param>
         public void BuildMultipartContent(string parentName, MultipartContent result)
         {
             if (parentName == null)
