@@ -27,6 +27,7 @@ namespace Microsoft.AppHub.Common
         {
             _loggerFactory = new LoggerFactory();
             _loggerFactory.AddDebug(minimumLogLevel);
+            
             if (logToConsole)
                 _loggerFactory.AddConsole();
         }

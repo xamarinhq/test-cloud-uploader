@@ -15,6 +15,6 @@ namespace Microsoft.AppHub.Common
         /// <summary>
         /// Creates unique event ID. 
         /// </summary>
-        EventId CreateEventId();     
+        EventId CreateEventId();
     }
 }
