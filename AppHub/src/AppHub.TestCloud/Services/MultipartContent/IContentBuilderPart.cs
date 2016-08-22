@@ -19,7 +19,7 @@ namespace Microsoft.AppHub.TestCloud
     public interface IContentBuilderPart
     {
         /// <summary>
-        /// Serializes the node and writes its representation to MultipartContent (form System.Net.Http). 
+        /// Serializes the node and writes its representation to MultipartContent (from System.Net.Http). 
         /// </summary>
         /// <param name="parentName">Name of the parent node.</param>
         /// <param name="result">The System.Net.Http.MultipartContent that will store the result.</param>

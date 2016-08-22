@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using Xunit;
 
@@ -21,8 +23,10 @@ namespace Microsoft.AppHub.TestCloud.Tests
 
             var expectedContent = $@"{BoundaryString}
 Content-Disposition: form-data; name=""foo""
+
 bar
 {BoundaryString}
+
 ";
             
             RunTest(builder, expectedContent);
@@ -39,13 +43,36 @@ bar
 
             var expectedContent = $@"{BoundaryString}
 Content-Disposition: form-data; name=""foo[]""
+
 bar1
 {BoundaryString}
 Content-Disposition: form-data; name=""foo[]""
+
 bar2
 {BoundaryString}
+
 ";
 
+            RunTest(builder, expectedContent);
+        }
+
+        [Fact]
+        public void FilesAreCorrectlySerialized()
+        {
+            var assemblyFolder = Path.GetDirectoryName(this.GetType().GetTypeInfo().Assembly.Location);
+            var testFilePath = Path.Combine(assemblyFolder, "Services/MultipartContent/TestFile.txt");
+
+            var builder = new DictionaryContentBuilderPart(
+                new KeyValuePair<string, IContentBuilderPart>("foo", new FileContentBuilderPart(testFilePath)));
+
+            var expectedContent = $@"{BoundaryString}
+Content-Disposition: form-data; name=""foo""; filename=""TestFile.txt""
+Content-Type: application/octet-stream
+
+This file is used to test FileContentBuilderPart.
+{BoundaryString}
+
+";
             RunTest(builder, expectedContent);
         }
 
@@ -60,11 +87,14 @@ bar2
 
             var expectedContent = $@"{BoundaryString}
 Content-Disposition: form-data; name=""foo[key1]""
+
 value1
 {BoundaryString}
 Content-Disposition: form-data; name=""foo[key2]""
+
 value2
 {BoundaryString}
+
 ";
 
             RunTest(builder, expectedContent);
@@ -88,16 +118,20 @@ value2
                 ))
             );
 
-            var expectedContent = $@"--BOUNDARY--
+            var expectedContent = $@"{BoundaryString}
 Content-Disposition: form-data; name=""root[key1][]""
+
 value1
---BOUNDARY--
+{BoundaryString}
 Content-Disposition: form-data; name=""root[key2][key2.1][key2.1.1][]""
+
 value2.1.1.1
---BOUNDARY--
+{BoundaryString}
 Content-Disposition: form-data; name=""root[key2][key2.1][key2.1.1][]""
+
 value2.1.1.2
---BOUNDARY--
+{BoundaryString}
+
 ";
 
             RunTest(builder, expectedContent);
@@ -116,7 +150,7 @@ value2.1.1.2
         private string CleanupActualContent(string content)
         {
             var result = new StringBuilder();
-            var lines = content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = content.Split(new[] { "\r\n" }, StringSplitOptions.None);
 
             foreach (var line in lines)
             {

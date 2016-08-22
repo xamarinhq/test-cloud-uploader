@@ -1,22 +1,23 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 
 namespace Microsoft.AppHub.TestCloud
 {
     /// <summary>
-    /// A multi-part tree leaf that represents a string value.
+    /// A multi-part tree leaf that represents a file that should be uploaded.
     /// </summary>
-    public class StringContentBuilderPart: IContentBuilderPart
+    public class FileContentBuilderPart: IContentBuilderPart
     {
-        private readonly string _value;
+        private readonly string _filePath;
 
-        public StringContentBuilderPart(string value)
+        public FileContentBuilderPart(string filePath)
         {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentNullException(nameof(value));
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentNullException(nameof(filePath));
 
-            _value = value;
+            _filePath = filePath;
         }
 
         /// <summary>
@@ -31,8 +32,11 @@ namespace Microsoft.AppHub.TestCloud
             if (result == null)
                 throw new ArgumentNullException(nameof(result));
 
-            var content = new ByteArrayContent(Encoding.UTF8.GetBytes(_value));
-            content.Headers.Add("Content-Disposition", $"form-data; name=\"{parentName}\"");
+            var fileName = Path.GetFileName(_filePath);
+
+            var content = new StreamContent(File.OpenRead(_filePath));
+            content.Headers.Add("Content-Disposition", $"form-data; name=\"{parentName}\"; filename=\"{fileName}\"");
+            content.Headers.Add("Content-Type", "application/octet-stream"); 
 
             result.Add(content);
         }
