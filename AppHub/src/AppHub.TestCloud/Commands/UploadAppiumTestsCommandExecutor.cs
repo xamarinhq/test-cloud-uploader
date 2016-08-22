@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.AppHub.Cli;
 using Microsoft.AppHub.Common;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Microsoft.AppHub.TestCloud
 {
@@ -36,12 +35,15 @@ namespace Microsoft.AppHub.TestCloud
 
         public async Task ExecuteAsync()
         {
-            await ValidateOptions();
+            ValidateOptions();
 
             var allFilesToUpload = GetAllFilesToUpload();
-            var checkFileHashesResult = await CheckIfFilesWereAlreadyUploadedAsync(_options.AppFile, "TODO", allFilesToUpload);
-            var uploadResult = await UploadTestsToTestCloud();
             
+            var checkFileHashesResult = await CheckIfFilesWereAlreadyUploadedAsync(
+                _options.AppFile, "TODO", allFilesToUpload);
+            LogCheckHashesResponse(checkFileHashesResult);
+            
+            //var uploadResult = await UploadTestsToTestCloud();            
             //LogUploadTestsResponse(uploadResult);
 
             // if (!(_options.Async || _options.AsyncJson))
@@ -50,7 +52,7 @@ namespace Microsoft.AppHub.TestCloud
             // }
         }
 
-        private async Task ValidateOptions()
+        private void ValidateOptions()
         {
             _options.Validate();
 
@@ -69,7 +71,8 @@ namespace Microsoft.AppHub.TestCloud
             return result;
         }
 
-        private async Task<IList<CheckHashResult>> CheckIfFilesWereAlreadyUploadedAsync(string appFilePath, string dSymFilePath, IList<string> files)
+        private async Task<IList<CheckHashResult>> CheckIfFilesWereAlreadyUploadedAsync(
+            string appFilePath, string dSymFilePath, IList<string> files)
         {
             var appFileInfo = new FileInfo(appFilePath);
             var allFileInfos = files.Select(f => new FileInfo(f)).Concat(new[] { appFileInfo });
@@ -77,15 +80,21 @@ namespace Microsoft.AppHub.TestCloud
             using (var sha256 = SHA256.Create())
             {
                 var appFileHash = sha256.GetHash(appFileInfo);
-                var hashToFileName = allFileInfos.ToDictionary(
-                    fi => sha256.GetHash(fi).ToLowerInvariant(),
-                    fi => fi.FullName,
-                    StringComparer.OrdinalIgnoreCase);
+                var hashToFileName = allFileInfos
+                    .Select(fi => new { Name = fi.FullName, Hash = sha256.GetHash(fi).ToLowerInvariant() })
+                    .GroupBy(nameHash => nameHash.Hash)
+                    .ToDictionary(
+                        hashGroup => hashGroup.Key,
+                        hashGroup => hashGroup.Select(nameHash => nameHash.Name).ToList(),
+                        StringComparer.OrdinalIgnoreCase);
                 
-                var checkFileHashesResult = await _testCloudProxy.CheckFileHashesAsync(appFileHash, hashToFileName.Keys.ToList());
+                var checkFileHashesResult = await _testCloudProxy.CheckFileHashesAsync(
+                    appFileHash, hashToFileName.Keys.ToList());
 
                 return checkFileHashesResult
-                    .Select(hashExists => new CheckHashResult(hashToFileName[hashExists.Key], hashExists.Key, hashExists.Value))
+                    .SelectMany(hashExists => 
+                        hashToFileName[hashExists.Key].Select(
+                            name => new CheckHashResult(name, hashExists.Key, hashExists.Value))) 
                     .ToList();
             }
         }
@@ -124,6 +133,16 @@ namespace Microsoft.AppHub.TestCloud
             
         }
 
+        private void LogCheckHashesResponse(IList<CheckHashResult> response)
+        {
+            var eventId = _loggerService.CreateEventId();
+
+            foreach (var result in response)
+            {
+                _logger.LogInformation($"File {result.FilePath} was " + (result.AlreadyUploaded ? "already uploaded." : "not uploaded."));
+            }
+        }
+
         private void LogUploadTestsResponse(UploadTestsResult response)
         {
             var eventId = _loggerService.CreateEventId();
@@ -141,7 +160,8 @@ namespace Microsoft.AppHub.TestCloud
                     $"{Environment.NewLine}{GetDevicesListLog(response.RejectedDevices)}");
             }
 
-            _logger.LogInformation(eventId, $"Running on devices: {Environment.NewLine}{GetDevicesListLog(response.Devices)}");
+            _logger.LogInformation(
+                eventId, $"Running on devices: {Environment.NewLine}{GetDevicesListLog(response.Devices)}");
         }
 
         private string GetDevicesListLog(IEnumerable<string> devices)
