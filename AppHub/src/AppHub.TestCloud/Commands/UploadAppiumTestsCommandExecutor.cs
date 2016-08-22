@@ -4,65 +4,35 @@ using System.Linq;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using DocoptNet;
 using Microsoft.AppHub.Cli;
 using Microsoft.AppHub.Common;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.TestCloud
 {
-    public class TestCloudCommand: ICommand
-    {
-        public string Name => "test-cloud";
-
-        public string Summary => "Temporary command for Test Cloud connections";
-
-        public string Syntax => $@"Command '{this.Name}': {this.Summary}. 
-
-Usage:
-    {ProgramUtilities.CurrentExecutableName} {this.Name} <appFile> <files>...
-"; 
-
-        public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
-        {
-            var appFile = options["<appFile>"].ToString();
-            var regularFiles = options["<files>"]
-                .AsList
-                .Cast<ValueObject>()
-                .Select(vo => vo.ToString())
-                .ToList();
-            
-            return new TestCloudCommandExecutor(appFile, regularFiles, (ILoggerService)serviceProvider.GetService(typeof(ILoggerService)));
-        }
-    }
-
-    public class TestCloudCommandExecutor: ICommandExecutor
+    public class UploadAppiumTestsCommandExecutor: ICommandExecutor
     {
         private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/ci");
 
-        private readonly string _appFile;
-        private readonly IList<string> _files; 
+        private readonly UploadTestsCommandOptions _options;
         private readonly TestCloudProxy _testCloudProxy;
 
-        public TestCloudCommandExecutor(string appFile, IList<string> files, ILoggerService loggerService)
+        public UploadAppiumTestsCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService)
         {
-            if (string.IsNullOrEmpty(appFile)) 
-                throw new ArgumentNullException(nameof(appFile));
-            if (files == null)
-                throw new ArgumentNullException(nameof(files));
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
             if (loggerService == null)
                 throw new ArgumentNullException(nameof(loggerService));
 
-            _appFile = appFile;
-            _files = files;
+            _options = options;
             _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
         }
 
         public async Task ExecuteAsync()
         {
-            var appFileInfo = new FileInfo(_appFile);
+            var appFileInfo = new FileInfo(_options.AppFile);
             
-            var allFileInfos = _files.Concat(new[] { _appFile }).Select(file => new FileInfo(file)).ToArray();
+            var allFileInfos = (new[] { _options.AppFile }).Select(file => new FileInfo(file)).ToArray();
 
             using (var sha256 = SHA256.Create())
             {

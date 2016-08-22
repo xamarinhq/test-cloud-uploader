@@ -22,21 +22,20 @@ namespace Microsoft.AppHub.Cli
             services.AddSingleton(commandsRegistry);
             services.AddSingleton<ILoggerService>(loggerService);
             
-            var command = GetCommand(commandsRegistry, args);
-
-            var options = ParseCommandOptions(args, command);
+            var command = GetCommand(commandsRegistry, args);            
             var serviceProvider = services.BuildServiceProvider();
             
             try
             {
+                var options = ParseCommandOptions(args, command);
                 command.ExecuteAsync(options, serviceProvider).Wait();
             }
             catch (Exception ex)
             {
                 var logger = loggerService.CreateLogger<Program>();
-                logger.LogError(ex.ToString());
-
-                Console.Error.WriteLine(ex.Message);
+                
+                logger.LogError(ex.Message);
+                logger.LogDebug(ex.ToString());
             }
         }
 
@@ -63,7 +62,7 @@ namespace Microsoft.AppHub.Cli
             var registry = new CommandsRegistry();
             registry.AddCommand(new HelpCommandDescription());
             registry.AddCommand(new RunExtensionCommandDescription());
-            registry.AddCommand(new TestCloudCommand());
+            registry.AddCommand(new UploadTestsCommand());
 
             return registry;
         }
