@@ -615,7 +615,7 @@
           "ref/netstandard1.5/System.IO.dll": {}
         }
       },
-      "System.IO.Compression/4.1.0": {
+      "System.IO.Compression/4.1.1": {
         "type": "package",
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.0.1",
@@ -2635,11 +2635,12 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "System.IO.Compression/4.1.0": {
-      "sha512": "TjnBS6eztThSzeSib+WyVbLzEdLKUcEHN69VtS3u8aAsSc18FU6xCZlNWWsEd8SKcXAE+y1sOu7VbU8sUeM0sg==",
+    "System.IO.Compression/4.1.1": {
+      "sha512": "ac/GG9DNsUr/grHGstCtWDoglgWr1OhL/yAZjXfpXtx52RmVVCpO52pShIDilQrD9dDZxw8zluiXEfezhPaYzg==",
       "type": "package",
+      "path": "System.IO.Compression/4.1.1",
       "files": [
-        "System.IO.Compression.4.1.0.nupkg.sha512",
+        "System.IO.Compression.4.1.1.nupkg.sha512",
         "System.IO.Compression.nuspec",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
@@ -4897,6 +4898,8 @@
       "Microsoft.Extensions.Logging.Debug >= 1.0.0",
       "Newtonsoft.Json >= 9.0.1",
       "System.Collections.NonGeneric >= 4.0.1",
+      "System.IO.Compression >= 4.1.1",
+      "System.IO.Compression.ZipFile >= 4.0.1",
       "docopt.net >= 0.6.1.8"
     ],
     ".NETStandard,Version=v1.6": [

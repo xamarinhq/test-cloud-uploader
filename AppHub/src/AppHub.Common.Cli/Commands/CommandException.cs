@@ -7,26 +7,34 @@ namespace Microsoft.AppHub.Cli
     /// </summary>
     public class CommandException : Exception
     {
-        public CommandException(string commandName): base() 
+        public CommandException(string commandName, int? exitCode = null): base() 
         { 
             this.CommandName = commandName;
+            this.ExitCode = exitCode;
         }
         
-        public CommandException(string commandName, string message) 
+        public CommandException(string commandName, string message, int? exitCode = null) 
             : base(message) 
         {
             this.CommandName = commandName;
+            this.ExitCode = exitCode;
         }
         
-        public CommandException(string commandName, string message, Exception inner) 
+        public CommandException(string commandName, string message, Exception inner, int? exitCode = null) 
             : base(message, inner) 
 	    { 
             this.CommandName = commandName;
+            this.ExitCode = exitCode;
         }
 
         /// <summary>
         /// Name of the command.
         /// </summary>
         public string CommandName { get; }
+
+        /// <summary>
+        /// Exit code that represents this exception.
+        /// </summary>
+        public int? ExitCode { get; }
     }
 }
