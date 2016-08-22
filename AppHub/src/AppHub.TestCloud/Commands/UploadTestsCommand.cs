@@ -8,7 +8,9 @@ namespace Microsoft.AppHub.TestCloud
 {
     public class UploadTestsCommand: ICommand
     {
-        public string Name => "upload-tests";
+        public const string CommandName = "upload-tests";
+
+        public string Name => CommandName;
 
         public string Summary => "Temporary command for Test Cloud connections";
 

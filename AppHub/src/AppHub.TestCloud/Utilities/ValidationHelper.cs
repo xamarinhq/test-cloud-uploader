@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 
@@ -23,6 +24,26 @@ namespace Microsoft.AppHub.TestCloud
             var hasEnterpriseBundle = archive.Entries.Any(x => x.Name.EndsWith("libmonodroid_bundle_app.so"));
                 
             return monodroid && !hasRuntime && !hasEnterpriseBundle;
+        }
+
+        /// <summary>
+        /// Checkes whether given path represents an Android app.
+        /// </summary>
+        /// <param name="appPath">Path to the app file.</param>
+        /// <returns>True if the path points to an Android app; otherwise, returns false.</returns>
+        public static bool IsAndroidApp(string appPath)
+        {
+            return "apk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Checkes whether given path represents an iOS app.
+        /// </summary>
+        /// <param name="appPath">Path to the app file.</param>
+        /// <returns>True if the path points to an iOS app; otherwise, returns false.</returns>
+        public static bool IsIosApp(string appPath)
+        {
+            return "ipk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
         }
     }
 }

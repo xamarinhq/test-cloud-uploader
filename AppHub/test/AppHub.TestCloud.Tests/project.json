@@ -9,7 +9,8 @@
     "dotnet-test-xunit": "1.0.0-rc2-192208-24",
     "AppHub.Common": "1.0.0",
     "AppHub.Common.Cli": "1.0.0",
-    "AppHub.TestCloud": "1.0.0"
+    "AppHub.TestCloud": "1.0.0",
+    "docopt.net": "0.6.1.8"
   },
   "testRunner": "xunit",
   "frameworks": {

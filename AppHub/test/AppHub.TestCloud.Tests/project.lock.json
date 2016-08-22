@@ -1181,7 +1181,7 @@
           "lib/portable-net45+win8+wp8+wpa81/_._": {}
         }
       },
-      "System.IO.Compression/4.1.0": {
+      "System.IO.Compression/4.1.1": {
         "type": "package",
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.0.1",
@@ -2749,6 +2749,8 @@
           "NETStandard.Library": "1.6.0",
           "Newtonsoft.Json": "9.0.1",
           "System.Collections.NonGeneric": "4.0.1",
+          "System.IO.Compression": "4.1.1",
+          "System.IO.Compression.ZipFile": "4.0.1",
           "docopt.net": "0.6.1.8"
         }
       }
@@ -4554,12 +4556,12 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
-    "System.IO.Compression/4.1.0": {
-      "sha512": "lXdzISD3lUMLBJIY0q/xbeWAVANE49GyRgaOfpVNypCfDfu9jK760n8IH32z8N4uiH330PYcVtm+9CWUYC8yyg==",
+    "System.IO.Compression/4.1.1": {
+      "sha512": "ac/GG9DNsUr/grHGstCtWDoglgWr1OhL/yAZjXfpXtx52RmVVCpO52pShIDilQrD9dDZxw8zluiXEfezhPaYzg==",
       "type": "package",
-      "path": "System.IO.Compression/4.1.0",
+      "path": "System.IO.Compression/4.1.1",
       "files": [
-        "System.IO.Compression.4.1.0.nupkg.sha512",
+        "System.IO.Compression.4.1.1.nupkg.sha512",
         "System.IO.Compression.nuspec",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
@@ -7925,6 +7927,7 @@
       "AppHub.Common.Cli >= 1.0.0",
       "AppHub.TestCloud >= 1.0.0",
       "System.Runtime.Serialization.Primitives >= 4.1.1",
+      "docopt.net >= 0.6.1.8",
       "dotnet-test-xunit >= 1.0.0-rc2-192208-24",
       "xunit >= 2.1.0"
     ],

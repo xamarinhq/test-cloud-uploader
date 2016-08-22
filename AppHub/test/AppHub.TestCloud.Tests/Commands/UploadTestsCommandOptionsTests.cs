@@ -1,0 +1,223 @@
+using System.Reflection;
+using Microsoft.AppHub.Cli;
+using DocoptNet;
+using Xunit;
+
+namespace Microsoft.AppHub.TestCloud.Tests
+{
+    public class UploadTestsCommandOptionsTests
+    {
+        [Fact]
+        public void AllOptionsShouldBeCorrectlyParsed()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                "testApp.apk", 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--workspace", "c:\\TestWorkspace",
+                "--app-name", "testApp",
+                "--devices", "testDevices",
+                "--async",
+                "--async-json",
+                "--locale", "pl-PL",
+                "--series", "testSeries",
+                "--dsym-directory", "c:\\TestDSymDirectory",
+                "--test-parameters", "testKey:testValue",
+                "--debug"
+            };
+            
+            var uploadOptions = ParseOptions(args);
+
+            Assert.Equal("testApp.apk", uploadOptions.AppFile);
+            Assert.Equal("testApiKey", uploadOptions.ApiKey);
+            Assert.Equal("testUser@xamarin.com", uploadOptions.User);
+            Assert.Equal("c:\\TestWorkspace", uploadOptions.Workspace);
+            Assert.Equal("testApp", uploadOptions.AppName);
+            Assert.Equal("testDevices", uploadOptions.Devices);
+            Assert.True(uploadOptions.Async);
+            Assert.True(uploadOptions.AsyncJson);
+            Assert.Equal("pl-PL", uploadOptions.Locale);
+            Assert.Equal("testSeries", uploadOptions.Series);
+            Assert.Equal("c:\\TestDSymDirectory", uploadOptions.DSymDirectory);
+            Assert.Equal("testKey:testValue", uploadOptions.TestParameters);
+            Assert.True(uploadOptions.Debug);
+        }
+
+        [Fact]
+        public void DefaultValuesShouldBeCorrect()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                "c:\\Temp\\testApp.apk", 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--app-name", "testApp",
+                "--devices", "testDevices"
+            };
+
+            var uploadOptions = ParseOptions(args);
+
+            Assert.Equal("c:\\Temp", uploadOptions.Workspace);
+            Assert.Equal("en-US", uploadOptions.Locale);
+            Assert.False(uploadOptions.Async);
+            Assert.False(uploadOptions.AsyncJson);
+            Assert.False(uploadOptions.Debug);            
+            Assert.Null(uploadOptions.Series);
+            Assert.Null(uploadOptions.DSymDirectory);
+        }
+
+        [Fact]
+        public void ValidationShouldFailWhenAppFileDoesntExist()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                "z:\\not_existing_app.apk", 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--devices", "testDevices",
+                "--app-name", "testApp",
+            };
+
+            var uploadOptions = ParseOptions(args);
+
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+        }
+
+        [Fact]
+        public void ValidationShouldFailWhenWorkspaceDoesntExist()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                Assembly.GetEntryAssembly().Location, 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--devices", "testDevices",
+                "--app-name", "testApp",
+                "--workspace", "z:\\not_existing_workspace_directory"
+            };
+
+            var uploadOptions = ParseOptions(args);
+
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+        }
+
+        [Fact]
+        public void ValidationShouldFailWhenDSymDirectoryDoesntExist()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                Assembly.GetEntryAssembly().Location, 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--devices", "testDevices",
+                "--app-name", "testApp",
+                "--dsym-directory", "z:\\not_existing_dSym_directory"
+            };
+
+            var uploadOptions = ParseOptions(args);
+
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+        }
+
+        [Fact]
+        public void ValidationShouldFailWhenUserIsMissing()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                Assembly.GetEntryAssembly().Location, 
+                "testApiKey",
+                "--devices", "testDevices",
+                "--app-name", "testApp"
+            };
+
+            var uploadOptions = ParseOptions(args);
+
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+        }
+
+        [Fact]
+        public void ValidationShouldFailWhenAppNameIsMissing()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                Assembly.GetEntryAssembly().Location, 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--devices", "testDevices"
+            };
+
+            var uploadOptions = ParseOptions(args);
+            
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+        }
+
+        [Fact]
+        public void ValidationShouldFailWhenDeviceSelectionIsMissing()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                Assembly.GetEntryAssembly().Location, 
+                "testApiKey",
+                "--user", "testUser@xamarin.com@xamarin.com",
+                "--app-name", "testApp"
+            };
+
+            var uploadOptions = ParseOptions(args);
+
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+        }
+
+        [Fact]
+        public void ValidationShouldPassWhenAllRequiredOptionsAreCorrect()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                Assembly.GetEntryAssembly().Location, 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--devices", "testDevices",
+                "--app-name", "testApp",
+            };
+
+            var uploadOptions = ParseOptions(args);
+            uploadOptions.Validate();
+        }
+
+        [Fact]
+        public void ValidationShouldFailWhenThereAreUnrecognizedOptions()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                "c:\\Temp\\testApp.apk", 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--app-name", "testApp",
+                "--devices", "testDevices",
+                "--unrecognized-option"
+            };
+
+            var command = new UploadTestsCommand();
+
+            Assert.Throws<DocoptInputErrorException>(() => new Docopt().Apply(command.Syntax, args));
+        }
+
+        private UploadTestsCommandOptions ParseOptions(string[] args)
+        {
+            var command = new UploadTestsCommand();
+            var docoptOptions = new Docopt().Apply(command.Syntax, args);
+            
+            return new UploadTestsCommandOptions(docoptOptions);
+        }
+    }
+}

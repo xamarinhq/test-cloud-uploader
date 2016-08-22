@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AppHub.Cli;
 using Microsoft.AppHub.Common;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Microsoft.AppHub.TestCloud
 {
@@ -16,6 +18,8 @@ namespace Microsoft.AppHub.TestCloud
 
         private readonly UploadTestsCommandOptions _options;
         private readonly TestCloudProxy _testCloudProxy;
+        private readonly ILoggerService _loggerService;
+        private readonly ILogger _logger;
 
         public UploadAppiumTestsCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService)
         {
@@ -26,13 +30,49 @@ namespace Microsoft.AppHub.TestCloud
 
             _options = options;
             _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
+            _loggerService = loggerService;
+            _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
         }
 
         public async Task ExecuteAsync()
         {
-            var appFileInfo = new FileInfo(_options.AppFile);
+            await ValidateOptions();
+
+            var allFilesToUpload = GetAllFilesToUpload();
+            var checkFileHashesResult = await CheckIfFilesWereAlreadyUploadedAsync(_options.AppFile, "TODO", allFilesToUpload);
+            var uploadResult = await UploadTestsToTestCloud();
             
-            var allFileInfos = (new[] { _options.AppFile }).Select(file => new FileInfo(file)).ToArray();
+            //LogUploadTestsResponse(uploadResult);
+
+            // if (!(_options.Async || _options.AsyncJson))
+            // {
+            //     await WaitForJob(uploadResult.JobId);
+            // }
+        }
+
+        private async Task ValidateOptions()
+        {
+            _options.Validate();
+
+            if (ValidationHelper.IsAndroidApp(_options.AppFile))
+            {
+                // Shared runtime and internet permissions
+                throw new NotImplementedException();
+            }
+        }
+
+        private IList<string> GetAllFilesToUpload()
+        {
+            var result = Directory.GetFiles(_options.Workspace, "*", SearchOption.AllDirectories).ToList();
+            result.Add(_options.AppFile);
+
+            return result;
+        }
+
+        private async Task<IList<CheckHashResult>> CheckIfFilesWereAlreadyUploadedAsync(string appFilePath, string dSymFilePath, IList<string> files)
+        {
+            var appFileInfo = new FileInfo(appFilePath);
+            var allFileInfos = files.Select(f => new FileInfo(f)).Concat(new[] { appFileInfo });
 
             using (var sha256 = SHA256.Create())
             {
@@ -42,20 +82,75 @@ namespace Microsoft.AppHub.TestCloud
                     fi => fi.FullName,
                     StringComparer.OrdinalIgnoreCase);
                 
-                var result = await _testCloudProxy.CheckFileHashesAsync(appFileHash, hashToFileName.Keys.ToList());
+                var checkFileHashesResult = await _testCloudProxy.CheckFileHashesAsync(appFileHash, hashToFileName.Keys.ToList());
 
-                foreach (var hashExists in result)
-                {
-                    var fileName = hashToFileName[hashExists.Key];
-                    var exists = hashExists.Value;
-
-                    Console.Write($"File: {fileName}: ");
-                    if (exists)
-                        Console.WriteLine("uploaded");
-                    else
-                        Console.WriteLine("not uploaded");
-                }
+                return checkFileHashesResult
+                    .Select(hashExists => new CheckHashResult(hashToFileName[hashExists.Key], hashExists.Key, hashExists.Value))
+                    .ToList();
             }
+        }
+
+        private async Task<UploadTestsResult> UploadTestsToTestCloud()
+        {
+            return new UploadTestsResult();
+        }
+
+        private DictionaryContentBuilderPart CreateUploadContent()
+        {
+            var result = new DictionaryContentBuilderPart();
+            // files
+            // paths
+            result.AddChild("user", new StringContentBuilderPart(_options.User));
+            // client_version
+            // app_file
+            result.AddChild("device_selection", new StringContentBuilderPart(_options.Devices));
+            // app (app name)
+            // test_parameters
+            result.AddChild("locale", new StringContentBuilderPart(_options.Locale));
+            result.AddChild("appium", new StringContentBuilderPart("true"));
+            result.AddChild("series", new StringContentBuilderPart("series"));
+            result.AddChild("api_key", new StringContentBuilderPart(_options.ApiKey));
+            // dsym_file (zip)
+            // dsym_filename
+            // app_filename
+            // profile
+            //result.AddChild()
+
+            return result;
+        }
+
+        private async Task WaitForJob(string jobId)
+        {
+            
+        }
+
+        private void LogUploadTestsResponse(UploadTestsResult response)
+        {
+            var eventId = _loggerService.CreateEventId();
+            _logger.LogInformation(eventId, "Tests enqueued");
+            _logger.LogInformation(eventId, $"User: {response.UserEmail}");
+            
+            if (response.Team != null)
+                _logger.LogInformation(eventId, $"Team: {response.Team}");
+            
+            if (response.RejectedDevices != null && response.RejectedDevices.Count > 0)
+            {
+                _logger.LogInformation(
+                    eventId, 
+                    $"Skipping devices (you can update your selections via https://testcloud.xamarin.com):" + 
+                    $"{Environment.NewLine}{GetDevicesListLog(response.RejectedDevices)}");
+            }
+
+            _logger.LogInformation(eventId, $"Running on devices: {Environment.NewLine}{GetDevicesListLog(response.Devices)}");
+        }
+
+        private string GetDevicesListLog(IEnumerable<string> devices)
+        {
+            return devices.Aggregate(
+                    new StringBuilder(),
+                    (sb, d) => sb.Append($"    {d}"),
+                    sb => sb.ToString()
+                );
         }
     }
 }
