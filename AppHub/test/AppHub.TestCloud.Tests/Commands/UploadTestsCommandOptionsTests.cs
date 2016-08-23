@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AppHub.Cli;
 using DocoptNet;
@@ -24,7 +26,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
                 "--locale", "pl-PL",
                 "--series", "testSeries",
                 "--dsym-directory", "c:\\TestDSymDirectory",
-                "--test-parameters", "testKey:testValue",
+                "--test-parameters", "testKey1:testValue1,testKey2:testValue2",
                 "--debug"
             };
             
@@ -40,9 +42,15 @@ namespace Microsoft.AppHub.TestCloud.Tests
             Assert.True(uploadOptions.AsyncJson);
             Assert.Equal("pl-PL", uploadOptions.Locale);
             Assert.Equal("testSeries", uploadOptions.Series);
-            Assert.Equal("c:\\TestDSymDirectory", uploadOptions.DSymDirectory);
-            Assert.Equal("testKey:testValue", uploadOptions.TestParameters);
+            Assert.Equal("c:\\TestDSymDirectory", uploadOptions.DSymDirectory);            
             Assert.True(uploadOptions.Debug);
+            Assert.Equal(
+                new[] 
+                { 
+                    new KeyValuePair<string, string>("testKey1", "testValue1"),
+                    new KeyValuePair<string, string>("testKey2", "testValue2") 
+                }, 
+                uploadOptions.TestParameters.ToArray());
         }
 
         [Fact]
@@ -177,6 +185,25 @@ namespace Microsoft.AppHub.TestCloud.Tests
         }
 
         [Fact]
+        public void ValidationShouldFailWhenTestParametersAreIncorrect()
+        {
+            var args = new[] 
+            {
+                "upload-tests",
+                Assembly.GetEntryAssembly().Location, 
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--devices", "testDevices",
+                "--app-name", "testApp",
+                "--test-parameters", "testKey testValue"
+            };
+
+            var uploadOptions = ParseOptions(args);
+
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+        }
+
+        [Fact]
         public void ValidationShouldPassWhenAllRequiredOptionsAreCorrect()
         {
             var args = new[] 
@@ -187,6 +214,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
                 "--app-name", "testApp",
+                "--test-parameters", "testKey:testValue"
             };
 
             var uploadOptions = ParseOptions(args);

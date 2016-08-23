@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AppHub.Cli;
 using DocoptNet;
 
@@ -52,11 +52,12 @@ namespace Microsoft.AppHub.TestCloud
     --locale <locale>                    - System language.
     --series <series>                    - Test series.
     --dsym-directory <dsym-directory>    - Optional dSYM directory for iOS crash symbolication.
-    --test-parameters <test-parameters>  - Test parameters (e.g. user:nat@xamarin.com password:xamarin)
+    --test-parameters <cspairs>          - Test parameters (e.g. user:nat@xamarin.com password:xamarin)
     --debug                              - Prints out more debug information.
 ";
 
         private readonly IDictionary<string, ValueObject> _options;
+        private IList<KeyValuePair<string, string>> _parsedTestParameters;
 
         public UploadTestsCommandOptions(IDictionary<string, ValueObject> options)
         {
@@ -64,6 +65,7 @@ namespace Microsoft.AppHub.TestCloud
                 throw new ArgumentNullException(nameof(options));
 
             _options = options;
+            _parsedTestParameters = null;
         }
 
         public void Validate()
@@ -90,6 +92,9 @@ namespace Microsoft.AppHub.TestCloud
 
             if (string.IsNullOrEmpty(this.User))
                 throw new CommandException(UploadTestsCommand.CommandName, $"Missing required option '{UserOption}'");
+
+            if (_parsedTestParameters == null)
+                _parsedTestParameters = ParseTestParameters(_options[TestParametersOption]?.ToString()).ToList();
         }
 
         public string AppFile
@@ -122,9 +127,15 @@ namespace Microsoft.AppHub.TestCloud
             get { return _options[DevicesOption]?.ToString(); }
         }
 
-        public string TestParameters
+        public IList<KeyValuePair<string, string>> TestParameters
         {
-            get { return _options[TestParametersOption]?.ToString(); }
+            get 
+            {
+                if (_parsedTestParameters == null)
+                    _parsedTestParameters = ParseTestParameters(_options[TestParametersOption]?.ToString()).ToList();
+                 
+                return _parsedTestParameters;
+            }
         }
 
         public bool Async
@@ -155,6 +166,29 @@ namespace Microsoft.AppHub.TestCloud
         public bool Debug
         {
             get { return _options[DebugOption].IsTrue; }
+        }
+
+        private IEnumerable<KeyValuePair<string, string>> ParseTestParameters(string testParametersString)
+        {
+            if (string.IsNullOrWhiteSpace(testParametersString))
+                return Enumerable.Empty<KeyValuePair<string, string>>();
+
+            var regex = new Regex("((?<key>.+):(?<value>.+))");
+            var pairs = Regex.Split(testParametersString, "\\s*,\\s*");
+            
+            if (pairs.Any(p => !regex.IsMatch(p)))
+            {
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    $"Argument {TestParametersOption} is not formatted correctly", 
+                    (int)UploadCommandExitCodes.InvalidOptions);
+            }
+                
+            return pairs
+                .Select(pair => {
+                    var match = regex.Match(pair);
+                    return new KeyValuePair<string, string>(match.Groups["key"].Value, match.Groups["value"].Value);
+                });
         }
     }
 }
