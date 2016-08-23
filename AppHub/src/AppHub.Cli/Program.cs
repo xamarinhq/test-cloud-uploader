@@ -35,7 +35,7 @@ namespace Microsoft.AppHub.Cli
                 var logger = loggerService.CreateLogger<Program>();
                 
                 logger.LogError(ex.Message);
-                logger.LogDebug(ex.ToString());
+                logger.LogError(ex.ToString());
             }
         }
 

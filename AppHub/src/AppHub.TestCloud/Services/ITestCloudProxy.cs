@@ -8,7 +8,16 @@ namespace Microsoft.AppHub.TestCloud
     /// </summary>
     public interface ITestCloudProxy
     {
-        Task<IDictionary<string, bool>> CheckFileHashesAsync(
-            string appHash, IList<string> fileHashes, string dsymHash = null);
+        Task<IDictionary<string, CheckHashResult>> CheckFileHashesAsync(CheckFileHashesRequest request);
+
+        Task<UploadTestsResult> UploadTestsAsync(UploadTestsRequest request);
+        // Task<UploadTestsResult> UploadTestAsync(
+        //     string appFile,
+        //     string dSymFile,
+        //     IList<string> otherFiles,
+        //     IDictionary<string, CheckHashResult> checkHashResults,
+        //     IDictionary<string, string> testCloudOptions,
+        //     IDictionary<string, string> testParameters
+        // );
     }
 }

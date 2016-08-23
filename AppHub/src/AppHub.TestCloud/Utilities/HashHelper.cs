@@ -95,7 +95,7 @@ namespace Microsoft.AppHub.TestCloud
 
         private static string ByteHashToString(byte[] byteHash)
         {
-            return BitConverter.ToString(byteHash).Replace("-", string.Empty);
+            return BitConverter.ToString(byteHash).Replace("-", string.Empty).ToLowerInvariant();
         }
     } 
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AppHub.Cli;
@@ -13,6 +12,8 @@ namespace Microsoft.AppHub.TestCloud
 {
     public class UploadAppiumTestsCommandExecutor: ICommandExecutor
     {
+        public const string UploaderClientVersion = "1.2.0";
+
         private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/ci");
 
         private readonly UploadTestsCommandOptions _options;
@@ -38,13 +39,13 @@ namespace Microsoft.AppHub.TestCloud
             ValidateOptions();
 
             var allFilesToUpload = GetAllFilesToUpload();
+                        
+            var checkHashesResult = await CheckFileHashesAsync(_options.AppFile, null, allFilesToUpload);
+            LogCheckHashesResponse(checkHashesResult);
             
-            var checkFileHashesResult = await CheckIfFilesWereAlreadyUploadedAsync(
-                _options.AppFile, "TODO", allFilesToUpload);
-            LogCheckHashesResponse(checkFileHashesResult);
-            
-            //var uploadResult = await UploadTestsToTestCloud();            
-            //LogUploadTestsResponse(uploadResult);
+            var uploadResult = await UploadTestsToTestCloud(
+                _options.AppFile, null, _options.Workspace, allFilesToUpload, checkHashesResult);
+            LogUploadTestsResponse(uploadResult);
 
             // if (!(_options.Async || _options.AsyncJson))
             // {
@@ -56,90 +57,70 @@ namespace Microsoft.AppHub.TestCloud
         {
             _options.Validate();
 
-            if (ValidationHelper.IsAndroidApp(_options.AppFile))
-            {
-                // Shared runtime and internet permissions
-                throw new NotImplementedException();
-            }
+            // if (ValidationHelper.IsAndroidApp(_options.AppFile))
+            // {
+            //     // Shared runtime and internet permissions
+            //     throw new NotImplementedException();
+            // }
         }
 
         private IList<string> GetAllFilesToUpload()
         {
-            var result = Directory.GetFiles(_options.Workspace, "*", SearchOption.AllDirectories).ToList();
-            result.Add(_options.AppFile);
-
-            return result;
+            return Directory.GetFiles(_options.Workspace, "*", SearchOption.AllDirectories).ToList();
         }
 
-        private async Task<IList<CheckHashResult>> CheckIfFilesWereAlreadyUploadedAsync(
-            string appFilePath, string dSymFilePath, IList<string> files)
+        private Task<IDictionary<string, CheckHashResult>> CheckFileHashesAsync(
+            string appFile, 
+            string dSymFile,
+            IList<string> allFilesToUpload)
         {
-            var appFileInfo = new FileInfo(appFilePath);
-            var allFileInfos = files.Select(f => new FileInfo(f)).Concat(new[] { appFileInfo });
+            var request = new CheckFileHashesRequest(appFile, dSymFile, allFilesToUpload);
+            return _testCloudProxy.CheckFileHashesAsync(request);
+        }
 
-            using (var sha256 = SHA256.Create())
+        private async Task<UploadTestsResult> UploadTestsToTestCloud(
+            string appFile, 
+            string dSymFile,
+            string workspaceDirectory,
+            IList<string> otherFiles,
+            IDictionary<string, CheckHashResult> checkHashResults)
+        {
+            var request = new UploadTestsRequest(appFile, dSymFile, workspaceDirectory, otherFiles);
+            
+            request.TestCloudOptions["user"] = _options.User;
+            request.TestCloudOptions["device_selection"] = _options.Devices;
+            request.TestCloudOptions["app"] = _options.AppName;
+            request.TestCloudOptions["locale"] = _options.Locale;
+            request.TestCloudOptions["appium"] = "true";
+            request.TestCloudOptions["series"] = _options.Series;
+            request.TestCloudOptions["api_key"] = _options.ApiKey;
+
+            foreach (var testParameter in _options.TestParameters)
             {
-                var appFileHash = sha256.GetHash(appFileInfo);
-                var hashToFileName = allFileInfos
-                    .Select(fi => new { Name = fi.FullName, Hash = sha256.GetHash(fi).ToLowerInvariant() })
-                    .GroupBy(nameHash => nameHash.Hash)
-                    .ToDictionary(
-                        hashGroup => hashGroup.Key,
-                        hashGroup => hashGroup.Select(nameHash => nameHash.Name).ToList(),
-                        StringComparer.OrdinalIgnoreCase);
-                
-                var checkFileHashesResult = await _testCloudProxy.CheckFileHashesAsync(
-                    appFileHash, hashToFileName.Keys.ToList());
-
-                return checkFileHashesResult
-                    .SelectMany(hashExists => 
-                        hashToFileName[hashExists.Key].Select(
-                            name => new CheckHashResult(name, hashExists.Key, hashExists.Value))) 
-                    .ToList();
+                request.TestParameters[testParameter.Key] = testParameter.Value;
             }
-        }
 
-        private async Task<UploadTestsResult> UploadTestsToTestCloud()
-        {
-            return new UploadTestsResult();
-        }
+            foreach (var checkHashResult in checkHashResults)
+            {
+                request.CheckHashResults[checkHashResult.Key] = checkHashResult.Value;
+            }
 
-        private DictionaryContentBuilderPart CreateUploadContent()
-        {
-            var result = new DictionaryContentBuilderPart();
-            // files
-            // paths
-            result.AddChild("user", new StringContentBuilderPart(_options.User));
-            // client_version
-            // app_file
-            result.AddChild("device_selection", new StringContentBuilderPart(_options.Devices));
-            // app (app name)
-            // test_parameters
-            result.AddChild("locale", new StringContentBuilderPart(_options.Locale));
-            result.AddChild("appium", new StringContentBuilderPart("true"));
-            result.AddChild("series", new StringContentBuilderPart("series"));
-            result.AddChild("api_key", new StringContentBuilderPart(_options.ApiKey));
-            // dsym_file (zip)
-            // dsym_filename
-            // app_filename
-            // profile
-            //result.AddChild()
-
-            return result;
+            return await _testCloudProxy.UploadTestsAsync(request);
         }
 
         private async Task WaitForJob(string jobId)
-        {
-            
+        {            
         }
 
-        private void LogCheckHashesResponse(IList<CheckHashResult> response)
+        private void LogCheckHashesResponse(IDictionary<string, CheckHashResult> response)
         {
             var eventId = _loggerService.CreateEventId();
 
-            foreach (var result in response)
+            foreach (var result in response.Values.OrderBy(v => v.FilePath))
             {
-                _logger.LogInformation($"File {result.FilePath} was " + (result.AlreadyUploaded ? "already uploaded." : "not uploaded."));
+                _logger.LogInformation(
+                    $"File {result.FilePath} was " + 
+                    (result.AlreadyUploaded ? "already uploaded." : "not uploaded."));
             }
         }
 

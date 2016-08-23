@@ -13,10 +13,7 @@ namespace Microsoft.AppHub.TestCloud
 
         public StringContentBuilderPart(string value)
         {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentNullException(nameof(value));
-
-            _value = value;
+            _value = value ?? string.Empty;
         }
 
         /// <summary>
