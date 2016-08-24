@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using DocoptNet;
 using Microsoft.AppHub.Common;
 using Microsoft.AppHub.Cli.Commands;
@@ -16,7 +17,9 @@ namespace Microsoft.AppHub.Cli
             var services = new ServiceCollection();
 
             var commandsRegistry = CreateCommandsRegistry();
-            var loggerService = new LoggerService(true, LogLevel.Debug);
+
+            var logLevel = args.Any(a => a == "--debug") ? LogLevel.Debug : LogLevel.Information;
+            var loggerService = new LoggerService(true, logLevel);
             
             services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton(commandsRegistry);

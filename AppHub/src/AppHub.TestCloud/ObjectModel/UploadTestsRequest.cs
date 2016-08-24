@@ -21,23 +21,44 @@ namespace Microsoft.AppHub.TestCloud
             this.DSymFile = dSymFile;
             this.WorkspaceDirectory = workspaceDirectory;
             this.OtherFiles = new List<string>(otherFiles);
-            this.CheckHashResults = new Dictionary<string, CheckHashResult>();
+            this.CheckHashesResult = new CheckHashesResult();
             this.TestCloudOptions = new Dictionary<string, string>();
             this.TestParameters = new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// Path to the app file.
+        /// </summary>
         public string AppFile { get; }
 
+        /// <summary>
+        /// Path to the DSym file
+        /// </summary>
         public string DSymFile { get; }
 
+        /// <summary>
+        /// Path to the workspace directory, i.e. directory with tests.
+        /// </summary>
         public string WorkspaceDirectory { get; }
 
+        /// <summary>
+        /// List of other file paths (i.e. files other than app and dSym).
+        /// </summary>
         public IList<string> OtherFiles { get; }
 
-        public IDictionary<string, CheckHashResult> CheckHashResults { get; }
+        /// <summary>
+        /// Result of calling CheckHashResult REST API. 
+        /// </summary>
+        public CheckHashesResult CheckHashesResult { get; }
 
+        /// <summary>
+        /// Options passed internally by the Test Cloud uploader. 
+        /// </summary>
         public IDictionary<string, string> TestCloudOptions { get; }
 
+        /// <summary>
+        /// Additional test parameters provided by the user.
+        /// </summary>
         public IDictionary<string, string> TestParameters { get; }
     }
 }

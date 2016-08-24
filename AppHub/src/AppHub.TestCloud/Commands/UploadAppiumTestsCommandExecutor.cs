@@ -84,10 +84,8 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             }
         }
 
-        private async Task<IDictionary<string, CheckHashResult>> CheckFileHashesAsync(
-            string appFile, 
-            string dSymFile,
-            IList<string> allFilesToUpload)
+        private async Task<CheckHashesResult> CheckFileHashesAsync(
+            string appFile, string dSymFile, IList<string> allFilesToUpload)
         {
             using (var scope = _logger.BeginScope("Negotiating upload"))
             {
@@ -104,7 +102,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             string dSymFile,
             string workspaceDirectory,
             IList<string> otherFiles,
-            IDictionary<string, CheckHashResult> checkHashResults)
+            CheckHashesResult CheckHashesResult)
         {
             using (var scope = _logger.BeginScope("Uploading negotiated files"))
             {
@@ -122,10 +120,11 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 {
                     request.TestParameters[testParameter.Key] = testParameter.Value;
                 }
+                request.TestParameters["pipeline"] = "appium";
 
-                foreach (var checkHashResult in checkHashResults)
+                foreach (var checkHashResult in CheckHashesResult.Files)
                 {
-                    request.CheckHashResults[checkHashResult.Key] = checkHashResult.Value;
+                    request.CheckHashesResult.Files[checkHashResult.Key] = checkHashResult.Value;
                 }
 
                 var result = await _testCloudProxy.UploadTestsAsync(request);
@@ -170,16 +169,16 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             }
         }
 
-        private void LogCheckHashesResponse(IDictionary<string, CheckHashResult> response)
+        private void LogCheckHashesResponse(CheckHashesResult response)
         {
             var eventId = _loggerService.CreateEventId();
 
-            foreach (var result in response.Values.OrderBy(v => v.FilePath))
+            foreach (var result in response.Files.Values.OrderBy(v => v.FilePath))
             {
                 var relativePath = FileHelper.GetRelativePath(result.FilePath, _options.Workspace);
                 _logger.LogDebug(
                     $"File {relativePath} was " + 
-                    (result.AlreadyUploaded ? "already uploaded." : "not uploaded."));
+                    (result.WasAlreadyUploaded ? "already uploaded." : "not uploaded."));
             }
         }
 
@@ -201,16 +200,12 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             }
 
             _logger.LogInformation(
-                eventId, $"Running on devices: {Environment.NewLine}{GetDevicesListLog(response.Devices)}");
+                eventId, $"Running on devices: {Environment.NewLine}{GetDevicesListLog(response.AcceptedDevices)}");
         }
 
         private string GetDevicesListLog(IEnumerable<string> devices)
         {
-            return devices.Aggregate(
-                    new StringBuilder(),
-                    (sb, d) => sb.Append($"    {d}"),
-                    sb => sb.ToString()
-                );
+            return devices.Aggregate(new StringBuilder(), (sb, d) => sb.Append($"    {d}"), sb => sb.ToString());
         }
     }
 }

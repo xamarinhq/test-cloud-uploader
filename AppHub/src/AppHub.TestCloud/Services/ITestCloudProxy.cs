@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.AppHub.TestCloud
@@ -8,10 +7,19 @@ namespace Microsoft.AppHub.TestCloud
     /// </summary>
     public interface ITestCloudProxy
     {
-        Task<IDictionary<string, CheckHashResult>> CheckFileHashesAsync(CheckFileHashesRequest request);
+        /// <summary>
+        /// Checks whether files were already uploaded to the Test Cloud. 
+        /// </summary>
+        Task<CheckHashesResult> CheckFileHashesAsync(CheckFileHashesRequest request);
 
+        /// <summary>
+        /// Uploads files to the Test Cloud.
+        /// </summary>
         Task<UploadTestsResult> UploadTestsAsync(UploadTestsRequest request);
 
+        /// <summary>
+        /// Checks status of previously scheduled Test Cloud job.
+        /// </summary>
         Task<CheckStatusResult> CheckStatusAsync(CheckStatusRequest request);
     }
 }

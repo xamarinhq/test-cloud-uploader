@@ -37,7 +37,10 @@ namespace Microsoft.AppHub.TestCloud
             _logger = loggerService.CreateLogger<TestCloudProxy>();
         }
 
-        public async Task<IDictionary<string, CheckHashResult>> CheckFileHashesAsync(CheckFileHashesRequest request)
+        /// <summary>
+        /// Checks whether files were already uploaded to the Test Cloud. 
+        /// </summary>
+        public async Task<CheckHashesResult> CheckFileHashesAsync(CheckFileHashesRequest request)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
@@ -66,26 +69,31 @@ namespace Microsoft.AppHub.TestCloud
                 var checkFileHashesResult = await SendMultipartPostRequest<IDictionary<string, bool>>(
                     "ci/check_hash", contentBuilder);
                 
-                return fileNameToHash.Keys.ToDictionary(
-                    path => path,
-                    path => 
-                    {
-                        var hash = fileNameToHash[path];
-                        var alreadyUploaded = checkFileHashesResult[hash];
-                        return new CheckHashResult(path, hash, alreadyUploaded);
-                    });
+                return new CheckHashesResult(
+                    fileNameToHash.Keys.Select(
+                        path => 
+                        {
+                            var hash = fileNameToHash[path];
+                            var alreadyUploaded = checkFileHashesResult[hash];
+                            var fileResult = new SingleFileCheckHashResult(path, hash, alreadyUploaded); 
+                            
+                            return new KeyValuePair<string, SingleFileCheckHashResult>(path, fileResult); 
+                        }));
             }
         }
 
+        /// <summary>
+        /// Uploads files to the Test Cloud.
+        /// </summary>
         public Task<UploadTestsResult> UploadTestsAsync(UploadTestsRequest request)
         {
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
             var contentBuilder = new DictionaryContentBuilderPart();
-            contentBuilder.AddChild("files", CreateFilesContent(request.OtherFiles, request.CheckHashResults));
+            contentBuilder.AddChild("files", CreateFilesContent(request.OtherFiles, request.CheckHashesResult));
             contentBuilder.AddChild("paths", CreatePathsContent(request.WorkspaceDirectory, request.OtherFiles));
-            contentBuilder.AddChild("app_file", CreateAppFileContent(request.AppFile, request.CheckHashResults));
+            contentBuilder.AddChild("app_file", CreateAppFileContent(request.AppFile, request.CheckHashesResult));
             contentBuilder.AddChild("app_filename", new StringContentBuilderPart(Path.GetFileName(request.AppFile)));
             contentBuilder.AddChild("test_parameters", CreateTestParametersContent(request.TestParameters));
             AddTestCloudOptionsContent(contentBuilder, request.TestCloudOptions);
@@ -93,6 +101,9 @@ namespace Microsoft.AppHub.TestCloud
             return SendMultipartPostRequest<UploadTestsResult>("ci/upload", contentBuilder);
         }
 
+        /// <summary>
+        /// Checks status of previously scheduled Test Cloud job.
+        /// </summary>
         public async Task<CheckStatusResult> CheckStatusAsync(CheckStatusRequest request)
         {
             if (request == null)
@@ -152,24 +163,22 @@ namespace Microsoft.AppHub.TestCloud
             return new DictionaryContentBuilderPart(keyValueItems);
         }
 
-        private IContentBuilderPart CreateAppFileContent(
-            string appFile, IDictionary<string, CheckHashResult> checkHashResults)
+        private IContentBuilderPart CreateAppFileContent(string appFile, CheckHashesResult CheckHashesResult)
         {
-            var checkAppHashResult = checkHashResults[appFile];
-            if (checkAppHashResult.AlreadyUploaded)
+            var checkAppHashResult = CheckHashesResult.Files[appFile];
+            if (checkAppHashResult.WasAlreadyUploaded)
                 return new StringContentBuilderPart(checkAppHashResult.FileHash);
             else
                 return new FileContentBuilderPart(appFile);
         }
 
-        private IContentBuilderPart CreateFilesContent(
-            IList<string> files, IDictionary<string, CheckHashResult> checkHashResults)
+        private IContentBuilderPart CreateFilesContent(IList<string> files, CheckHashesResult CheckHashesResult)
         {
             return new ListContentBuilderPart(
                 files.Select<string, IContentBuilderPart>(path => 
                 {
-                    var fileCheckHashResult = checkHashResults[path];
-                    if (checkHashResults[path].AlreadyUploaded)
+                    var fileCheckHashResult = CheckHashesResult.Files[path];
+                    if (fileCheckHashResult.WasAlreadyUploaded)
                         return new StringContentBuilderPart(fileCheckHashResult.FileHash);
                     else
                         return new FileContentBuilderPart(path);
