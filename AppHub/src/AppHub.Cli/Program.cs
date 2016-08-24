@@ -22,7 +22,7 @@ namespace Microsoft.AppHub.Cli
             services.AddSingleton(commandsRegistry);
             services.AddSingleton<ILoggerService>(loggerService);
             
-            var command = GetCommand(commandsRegistry, args);            
+            var command = GetCommand(commandsRegistry, args);
             var serviceProvider = services.BuildServiceProvider();
             
             try

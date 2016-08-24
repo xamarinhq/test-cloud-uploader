@@ -38,13 +38,9 @@ namespace Microsoft.AppHub.TestCloud
             ValidateOptions();
 
             var allFilesToUpload = GetAllFilesToUpload();
-                        
             var checkHashesResult = await CheckFileHashesAsync(_options.AppFile, null, allFilesToUpload);
-            LogCheckHashesResponse(checkHashesResult);
-            
             var uploadResult = await UploadTestsToTestCloud(
                 _options.AppFile, null, _options.Workspace, allFilesToUpload, checkHashesResult);
-            LogUploadTestsResponse(uploadResult);
 
             if (!(_options.Async || _options.AsyncJson))
             {
@@ -74,16 +70,33 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
         private IList<string> GetAllFilesToUpload()
         {
-            return Directory.GetFiles(_options.Workspace, "*", SearchOption.AllDirectories).ToList();
+            using (var scope = _logger.BeginScope("Packaging"))
+            {
+                var result = Directory.GetFiles(_options.Workspace, "*", SearchOption.AllDirectories).ToList();
+
+                foreach (var file in result)
+                {
+                    var relativePath = FileHelper.GetRelativePath(file, _options.Workspace);
+                    _logger.LogDebug($"Packaging file {relativePath}");
+                }
+
+                return result;
+            }
         }
 
-        private Task<IDictionary<string, CheckHashResult>> CheckFileHashesAsync(
+        private async Task<IDictionary<string, CheckHashResult>> CheckFileHashesAsync(
             string appFile, 
             string dSymFile,
             IList<string> allFilesToUpload)
         {
-            var request = new CheckFileHashesRequest(appFile, dSymFile, allFilesToUpload);
-            return _testCloudProxy.CheckFileHashesAsync(request);
+            using (var scope = _logger.BeginScope("Negotiating upload"))
+            {
+                var request = new CheckFileHashesRequest(appFile, dSymFile, allFilesToUpload);
+                var result = await _testCloudProxy.CheckFileHashesAsync(request);
+                LogCheckHashesResponse(result);
+
+                return result;
+            }
         }
 
         private async Task<UploadTestsResult> UploadTestsToTestCloud(
@@ -93,58 +106,66 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             IList<string> otherFiles,
             IDictionary<string, CheckHashResult> checkHashResults)
         {
-            var request = new UploadTestsRequest(appFile, dSymFile, workspaceDirectory, otherFiles);
-            
-            request.TestCloudOptions["user"] = _options.User;
-            request.TestCloudOptions["device_selection"] = _options.Devices;
-            request.TestCloudOptions["app"] = _options.AppName;
-            request.TestCloudOptions["locale"] = _options.Locale;
-            request.TestCloudOptions["appium"] = "true";
-            request.TestCloudOptions["series"] = _options.Series;
-            request.TestCloudOptions["api_key"] = _options.ApiKey;
-
-            foreach (var testParameter in _options.TestParameters)
+            using (var scope = _logger.BeginScope("Uploading negotiated files"))
             {
-                request.TestParameters[testParameter.Key] = testParameter.Value;
-            }
+                var request = new UploadTestsRequest(appFile, dSymFile, workspaceDirectory, otherFiles);
+                
+                request.TestCloudOptions["user"] = _options.User;
+                request.TestCloudOptions["device_selection"] = _options.Devices;
+                request.TestCloudOptions["app"] = _options.AppName;
+                request.TestCloudOptions["locale"] = _options.Locale;
+                request.TestCloudOptions["appium"] = "true";
+                request.TestCloudOptions["series"] = _options.Series;
+                request.TestCloudOptions["api_key"] = _options.ApiKey;
 
-            foreach (var checkHashResult in checkHashResults)
-            {
-                request.CheckHashResults[checkHashResult.Key] = checkHashResult.Value;
-            }
+                foreach (var testParameter in _options.TestParameters)
+                {
+                    request.TestParameters[testParameter.Key] = testParameter.Value;
+                }
 
-            return await _testCloudProxy.UploadTestsAsync(request);
+                foreach (var checkHashResult in checkHashResults)
+                {
+                    request.CheckHashResults[checkHashResult.Key] = checkHashResult.Value;
+                }
+
+                var result = await _testCloudProxy.UploadTestsAsync(request);
+                LogUploadTestsResponse(result);
+
+                return result;
+            }
         }
 
         private async Task<int> WaitForJob(UploadTestsResult uploadTestsResult)
         {
-            var checkStatusRequest = new CheckStatusRequest(uploadTestsResult.JobId)
+            using (var scope = _logger.BeginScope("Waiting for test results"))
             {
-                ApiKey = _options.ApiKey,
-                User = _options.User
-            };
-
-            while (true)
-            {
-                var checkStatusResult = await _testCloudProxy.CheckStatusAsync(checkStatusRequest);
-
-                var eventId = _loggerService.CreateEventId();
-                foreach (var message in checkStatusResult.Messages)
+                var checkStatusRequest = new CheckStatusRequest(uploadTestsResult.JobId)
                 {
-                    _logger.LogInformation(eventId, message);
-                }
+                    ApiKey = _options.ApiKey,
+                    User = _options.User
+                };
 
-                if (checkStatusResult.ExitCode != null)
+                while (true)
                 {
-                    // TODO: more graceful exit?
-                    return checkStatusResult.ExitCode.Value;
-                }
-                else
-                {
-                    var waitTime = checkStatusResult.WaitTime != null ? 
-                        TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) : DefaultWaitTime;
-                    
-                    await Task.Delay(waitTime);
+                    var checkStatusResult = await _testCloudProxy.CheckStatusAsync(checkStatusRequest);
+
+                    var eventId = _loggerService.CreateEventId();
+                    foreach (var message in checkStatusResult.Messages)
+                    {
+                        _logger.LogInformation(eventId, $"{DateTimeOffset.UtcNow.ToString("s")} {message}");
+                    }
+
+                    if (checkStatusResult.ExitCode != null)
+                    {
+                        return checkStatusResult.ExitCode.Value;
+                    }
+                    else
+                    {
+                        var waitTime = checkStatusResult.WaitTime != null ? 
+                            TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) : DefaultWaitTime;
+                        
+                        await Task.Delay(waitTime);
+                    }
                 }
             }
         }
@@ -156,7 +177,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             foreach (var result in response.Values.OrderBy(v => v.FilePath))
             {
                 var relativePath = FileHelper.GetRelativePath(result.FilePath, _options.Workspace);
-                _logger.LogInformation(
+                _logger.LogDebug(
                     $"File {relativePath} was " + 
                     (result.AlreadyUploaded ? "already uploaded." : "not uploaded."));
             }

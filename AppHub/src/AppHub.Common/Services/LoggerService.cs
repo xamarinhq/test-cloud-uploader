@@ -8,7 +8,7 @@ namespace Microsoft.AppHub.Common
     /// </summary>
     public class LoggerService: ILoggerService
     {
-        private readonly ILoggerFactory _loggerFactory;        
+        private readonly LoggerFactory _loggerFactory;        
         private int _nextEventId = 0;
 
         /// <summary>
@@ -28,8 +28,11 @@ namespace Microsoft.AppHub.Common
             _loggerFactory = new LoggerFactory();
             _loggerFactory.AddDebug(minimumLogLevel);
             
+            
             if (logToConsole)
-                _loggerFactory.AddConsole();
+            {
+                _loggerFactory.AddProvider(new SimpleConsoleLoggerProvider(minimumLogLevel));
+            }
         }
 
         /// <summary>
