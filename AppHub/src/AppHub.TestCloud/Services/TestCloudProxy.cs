@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AppHub.Common;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,7 @@ namespace Microsoft.AppHub.TestCloud
     /// </summary>
     public class TestCloudProxy: ITestCloudProxy
     {
+        public const string UploaderClientVersion = "1.2.0";
         private static readonly TimeSpan _retryTimeout = TimeSpan.FromMinutes(5);
         
         private readonly ILogger _logger;
@@ -77,6 +79,9 @@ namespace Microsoft.AppHub.TestCloud
 
         public Task<UploadTestsResult> UploadTestsAsync(UploadTestsRequest request)
         {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
             var contentBuilder = new DictionaryContentBuilderPart();
             contentBuilder.AddChild("files", CreateFilesContent(request.OtherFiles, request.CheckHashResults));
             contentBuilder.AddChild("paths", CreatePathsContent(request.WorkspaceDirectory, request.OtherFiles));
@@ -86,6 +91,28 @@ namespace Microsoft.AppHub.TestCloud
             AddTestCloudOptionsContent(contentBuilder, request.TestCloudOptions);
 
             return SendMultipartPostRequest<UploadTestsResult>("ci/upload", contentBuilder);
+        }
+
+        public async Task<CheckStatusResult> CheckStatusAsync(CheckStatusRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.UploaderVersion = UploaderClientVersion;            
+            var json = JsonConvert.SerializeObject(request);
+
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var httpResponse = await RetryWebRequest(async () => {
+                var response = await _httpClient.PostAsync("ci/status_v3", httpContent);
+                response.EnsureSuccessStatusCode();
+
+                return response;
+            });
+            
+            var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
+            
+            return JsonConvert.DeserializeObject<CheckStatusResult>(httpResponseString);
         }
 
         private async Task<TResult> SendMultipartPostRequest<TResult>(string path, IContentBuilderPart contentBuilder)
@@ -111,6 +138,8 @@ namespace Microsoft.AppHub.TestCloud
             {
                 contentBuilder.AddChild(option.Key, new StringContentBuilderPart(option.Value));
             }
+
+            contentBuilder.AddChild("client_version", new StringContentBuilderPart(UploaderClientVersion));
         }
 
         private IContentBuilderPart CreateTestParametersContent(IDictionary<string, string> testParameters)

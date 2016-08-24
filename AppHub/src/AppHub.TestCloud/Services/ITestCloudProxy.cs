@@ -11,13 +11,7 @@ namespace Microsoft.AppHub.TestCloud
         Task<IDictionary<string, CheckHashResult>> CheckFileHashesAsync(CheckFileHashesRequest request);
 
         Task<UploadTestsResult> UploadTestsAsync(UploadTestsRequest request);
-        // Task<UploadTestsResult> UploadTestAsync(
-        //     string appFile,
-        //     string dSymFile,
-        //     IList<string> otherFiles,
-        //     IDictionary<string, CheckHashResult> checkHashResults,
-        //     IDictionary<string, string> testCloudOptions,
-        //     IDictionary<string, string> testParameters
-        // );
+
+        Task<CheckStatusResult> CheckStatusAsync(CheckStatusRequest request);
     }
 }

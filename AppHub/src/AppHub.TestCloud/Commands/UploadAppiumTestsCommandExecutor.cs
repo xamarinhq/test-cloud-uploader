@@ -12,8 +12,7 @@ namespace Microsoft.AppHub.TestCloud
 {
     public class UploadAppiumTestsCommandExecutor: ICommandExecutor
     {
-        public const string UploaderClientVersion = "1.2.0";
-
+        private static readonly TimeSpan DefaultWaitTime = TimeSpan.FromSeconds(10); 
         private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/ci");
 
         private readonly UploadTestsCommandOptions _options;
@@ -47,21 +46,30 @@ namespace Microsoft.AppHub.TestCloud
                 _options.AppFile, null, _options.Workspace, allFilesToUpload, checkHashesResult);
             LogUploadTestsResponse(uploadResult);
 
-            // if (!(_options.Async || _options.AsyncJson))
-            // {
-            //     await WaitForJob(uploadResult.JobId);
-            // }
+            if (!(_options.Async || _options.AsyncJson))
+            {
+                var exitCode = await WaitForJob(uploadResult);
+                Environment.Exit(exitCode);
+            }
         }
 
         private void ValidateOptions()
         {
             _options.Validate();
 
-            // if (ValidationHelper.IsAndroidApp(_options.AppFile))
-            // {
-            //     // Shared runtime and internet permissions
-            //     throw new NotImplementedException();
-            // }
+            if (!ValidationHelper.IsAndroidApp(_options.AppFile))
+            {
+                if (ValidationHelper.UsesSharedRuntime(_options.AppFile))
+                {
+                    throw new CommandException(
+                        UploadTestsCommand.CommandName, 
+@"Xamarin Test Cloud doesn't yet support shared runtime apps.
+To test your app it needs to be compiled for release.
+You can learn how to compile you app for release here: 
+http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publishing_an_application/part_1_-_preparing_an_application_for_release",
+                        (int)UploadCommandExitCodes.InvalidOptions);
+                }
+            }
         }
 
         private IList<string> GetAllFilesToUpload()
@@ -108,8 +116,37 @@ namespace Microsoft.AppHub.TestCloud
             return await _testCloudProxy.UploadTestsAsync(request);
         }
 
-        private async Task WaitForJob(string jobId)
-        {            
+        private async Task<int> WaitForJob(UploadTestsResult uploadTestsResult)
+        {
+            var checkStatusRequest = new CheckStatusRequest(uploadTestsResult.JobId)
+            {
+                ApiKey = _options.ApiKey,
+                User = _options.User
+            };
+
+            while (true)
+            {
+                var checkStatusResult = await _testCloudProxy.CheckStatusAsync(checkStatusRequest);
+
+                var eventId = _loggerService.CreateEventId();
+                foreach (var message in checkStatusResult.Messages)
+                {
+                    _logger.LogInformation(eventId, message);
+                }
+
+                if (checkStatusResult.ExitCode != null)
+                {
+                    // TODO: more graceful exit?
+                    return checkStatusResult.ExitCode.Value;
+                }
+                else
+                {
+                    var waitTime = checkStatusResult.WaitTime != null ? 
+                        TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) : DefaultWaitTime;
+                    
+                    await Task.Delay(waitTime);
+                }
+            }
         }
 
         private void LogCheckHashesResponse(IDictionary<string, CheckHashResult> response)
@@ -118,8 +155,9 @@ namespace Microsoft.AppHub.TestCloud
 
             foreach (var result in response.Values.OrderBy(v => v.FilePath))
             {
+                var relativePath = FileHelper.GetRelativePath(result.FilePath, _options.Workspace);
                 _logger.LogInformation(
-                    $"File {result.FilePath} was " + 
+                    $"File {relativePath} was " + 
                     (result.AlreadyUploaded ? "already uploaded." : "not uploaded."));
             }
         }

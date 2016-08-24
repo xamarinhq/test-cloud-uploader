@@ -33,7 +33,7 @@ namespace Microsoft.AppHub.TestCloud
         /// <returns>True if the path points to an Android app; otherwise, returns false.</returns>
         public static bool IsAndroidApp(string appPath)
         {
-            return "apk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
+            return ".apk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Microsoft.AppHub.TestCloud
         /// <returns>True if the path points to an iOS app; otherwise, returns false.</returns>
         public static bool IsIosApp(string appPath)
         {
-            return "ipk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
+            return ".ipk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
         }
     }
 }
