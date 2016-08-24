@@ -36,6 +36,7 @@ namespace Microsoft.AppHub.TestCloud
         public async Task ExecuteAsync()
         {
             ValidateOptions();
+            await CheckVersionAsync();
 
             var allFilesToUpload = GetAllFilesToUpload();
             var checkHashesResult = await CheckFileHashesAsync(_options.AppFile, null, allFilesToUpload);
@@ -65,6 +66,18 @@ You can learn how to compile you app for release here:
 http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publishing_an_application/part_1_-_preparing_an_application_for_release",
                         (int)UploadCommandExitCodes.InvalidOptions);
                 }
+            }
+        }
+
+        private async Task CheckVersionAsync()
+        {
+            using (var scope = _logger.BeginScope("Checking version"))
+            {
+                var request = new CheckVersionRequest(_options.ToArgumentsArray());
+                var result = await _testCloudProxy.CheckVersionAsync(request);
+
+                if (result.ErrorMessage != null)
+                    throw new CommandException(UploadTestsCommand.CommandName, result.ErrorMessage);
             }
         }
 

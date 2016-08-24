@@ -38,6 +38,31 @@ namespace Microsoft.AppHub.TestCloud
         }
 
         /// <summary>
+        /// Checks whether the current version of the uploader is supported by the Test Cloud.
+        /// </summary>
+        public async Task<CheckVersionResult> CheckVersionAsync(CheckVersionRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            request.UploaderVersion = UploaderClientVersion;            
+            var json = JsonConvert.SerializeObject(request);
+
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var httpResponse = await RetryWebRequest(async () => {
+                var response = await _httpClient.PostAsync("ci/check_version", httpContent);
+                response.EnsureSuccessStatusCode();
+
+                return response;
+            });
+            
+            var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
+            
+            return JsonConvert.DeserializeObject<CheckVersionResult>(httpResponseString);
+        }
+
+        /// <summary>
         /// Checks whether files were already uploaded to the Test Cloud. 
         /// </summary>
         public async Task<CheckHashesResult> CheckFileHashesAsync(CheckFileHashesRequest request)

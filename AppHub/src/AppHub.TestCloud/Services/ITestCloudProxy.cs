@@ -8,6 +8,11 @@ namespace Microsoft.AppHub.TestCloud
     public interface ITestCloudProxy
     {
         /// <summary>
+        /// Checks whether the current version of the uploader is supported by the Test Cloud.
+        /// </summary>
+        Task<CheckVersionResult> CheckVersionAsync(CheckVersionRequest request);
+
+        /// <summary>
         /// Checks whether files were already uploaded to the Test Cloud. 
         /// </summary>
         Task<CheckHashesResult> CheckFileHashesAsync(CheckFileHashesRequest request);

@@ -190,5 +190,23 @@ namespace Microsoft.AppHub.TestCloud
                     return new KeyValuePair<string, string>(match.Groups["key"].Value, match.Groups["value"].Value);
                 });
         }
+
+        public IList<string> ToArgumentsArray()
+        {
+            var result = new List<string>();
+
+            foreach (var keyValue in _options)
+            {
+                if (keyValue.Value != null)
+                {
+                    result.Add(keyValue.Key);
+                    if (keyValue.Value.IsString)
+                        result.Add(keyValue.Value.ToString());
+                }
+            }
+
+            return result;
+        }
+
     }
 }
