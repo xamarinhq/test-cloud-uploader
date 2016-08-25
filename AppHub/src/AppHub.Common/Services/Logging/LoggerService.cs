@@ -43,6 +43,7 @@ namespace Microsoft.AppHub.Common
                 lock (_syncLock)
                 {
                     _minimumLogLevel = value;
+                    _loggerFactory?.Dispose();
                     _loggerFactory = null;
                 }
             }
@@ -60,6 +61,7 @@ namespace Microsoft.AppHub.Common
             lock (_syncLock)
             {
                 _loggerProvider = loggerProvider;
+                _loggerFactory?.Dispose();
                 _loggerFactory = null;
             }
         }

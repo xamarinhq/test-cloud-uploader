@@ -24,8 +24,18 @@ Options: {UploadTestsCommandOptions.OptionsSyntax}";
         public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {
             var uploadOptions = new UploadTestsCommandOptions(options);
+            
+            RecordedLogs recordedLogs = null;
+            var loggerService = (ILoggerService)serviceProvider.GetService(typeof(ILoggerService));
 
-            return new UploadAppiumTestsCommandExecutor(uploadOptions, (ILoggerService)serviceProvider.GetService(typeof(ILoggerService)));
+            if (uploadOptions.AsyncJson)
+            {
+                recordedLogs = new RecordedLogs();
+                loggerService.SetLoggerProvider(
+                    new RecordingLoggerProvider(loggerService.MinimumLogLevel, recordedLogs));
+            }
+
+            return new UploadAppiumTestsCommandExecutor(uploadOptions, loggerService, recordedLogs);
         }
     }
 }

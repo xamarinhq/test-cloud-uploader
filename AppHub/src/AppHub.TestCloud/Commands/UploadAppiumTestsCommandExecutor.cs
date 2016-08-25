@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.AppHub.TestCloud
 {
+    /// <summary>
+    /// Command executor that uploads Appium tests to the Test Cloud.
+    /// </summary>
     public class UploadAppiumTestsCommandExecutor: ICommandExecutor
     {
         public static readonly EventId PackagingFileEventId = 1;
@@ -26,9 +29,10 @@ namespace Microsoft.AppHub.TestCloud
         private readonly ILoggerService _loggerService;
         private readonly ILogger _logger;
 
-        private RecordedLogs _recordedLogs;
+        private readonly RecordedLogs _recordedLogs;
 
-        public UploadAppiumTestsCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService)
+        public UploadAppiumTestsCommandExecutor(
+            UploadTestsCommandOptions options, ILoggerService loggerService, RecordedLogs recordedLogs)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -36,16 +40,10 @@ namespace Microsoft.AppHub.TestCloud
                 throw new ArgumentNullException(nameof(loggerService));
 
             _options = options;
-            _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
             _loggerService = loggerService;
-
-            if (options.AsyncJson)
-            {
-                _recordedLogs = new RecordedLogs();
-                _loggerService.SetLoggerProvider(new RecordingLoggerProvider(_loggerService.MinimumLogLevel, _recordedLogs));
-            }
-
+            _recordedLogs = recordedLogs;
             _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
+            _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
         }
 
         public async Task ExecuteAsync()
@@ -65,7 +63,7 @@ namespace Microsoft.AppHub.TestCloud
             }
             else if (_options.AsyncJson)
             {
-                WriteAsyncResultToConsole(uploadResult.JobId);
+                WriteAsyncJsonResultToConsole(uploadResult.JobId);
             }
         }
 
@@ -235,7 +233,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 CheckStatusResultEventId, response.Messages.Select(m => $"{DateTimeOffset.UtcNow.ToString("s")} {m}"));
         }
 
-        private void WriteAsyncResultToConsole(string jobId)
+        private void WriteAsyncJsonResultToConsole(string jobId)
         {
             var asyncJsonResult = new AsyncJsonResult()
             {
@@ -249,7 +247,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 .ToList();
 
             asyncJsonResult.Errors = allLogs
-                .Where(log => log.LogLevel > LogLevel.Error)
+                .Where(log => log.LogLevel > LogLevel.Warning)
                 .Select(log => _options.Debug ? log.ToDiagnosticString() : log.ToString())
                 .ToList();
 

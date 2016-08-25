@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.Common
 {
+    /// <summary>
+    /// Recorded log information.
+    /// </summary>
     public class RecordedLog
     {
         public RecordedLog(DateTimeOffset timeStamp, string categoryName, LogLevel logLevel, EventId eventId, string message)

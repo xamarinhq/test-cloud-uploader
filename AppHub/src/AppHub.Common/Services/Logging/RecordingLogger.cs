@@ -50,6 +50,8 @@ namespace Microsoft.AppHub.Common
                 eventId,
                 formatter(state, exception)
             );
+
+            _logs.AddLog(log);
         }
 
         private class NoOpDisposable: IDisposable
