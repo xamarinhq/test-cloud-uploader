@@ -35,7 +35,7 @@ namespace Microsoft.AppHub.Common
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return (int)logLevel >= (int)_minimumLogLevel;
+            return logLevel >= _minimumLogLevel;
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)

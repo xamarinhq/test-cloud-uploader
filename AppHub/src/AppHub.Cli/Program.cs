@@ -19,7 +19,7 @@ namespace Microsoft.AppHub.Cli
             var commandsRegistry = CreateCommandsRegistry();
 
             var logLevel = args.Any(a => a == "--debug") ? LogLevel.Debug : LogLevel.Information;
-            var loggerService = new LoggerService(true, logLevel);
+            var loggerService = new LoggerService(logLevel);
             
             services.AddSingleton<IProcessService, ProcessService>();
             services.AddSingleton(commandsRegistry);

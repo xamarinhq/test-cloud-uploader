@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AppHub.Cli;
 using Microsoft.AppHub.Common;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Microsoft.AppHub.TestCloud
 {
@@ -25,6 +26,8 @@ namespace Microsoft.AppHub.TestCloud
         private readonly ILoggerService _loggerService;
         private readonly ILogger _logger;
 
+        private RecordedLogs _recordedLogs;
+
         public UploadAppiumTestsCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService)
         {
             if (options == null)
@@ -35,6 +38,13 @@ namespace Microsoft.AppHub.TestCloud
             _options = options;
             _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
             _loggerService = loggerService;
+
+            if (options.AsyncJson)
+            {
+                _recordedLogs = new RecordedLogs();
+                _loggerService.SetLoggerProvider(new RecordingLoggerProvider(_loggerService.MinimumLogLevel, _recordedLogs));
+            }
+
             _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
         }
 
@@ -52,6 +62,10 @@ namespace Microsoft.AppHub.TestCloud
             {
                 var exitCode = await WaitForJob(uploadResult);
                 Environment.Exit(exitCode);
+            }
+            else if (_options.AsyncJson)
+            {
+                WriteAsyncResultToConsole(uploadResult.JobId);
             }
         }
 
@@ -219,6 +233,27 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         {
             _logger.LogInformation(
                 CheckStatusResultEventId, response.Messages.Select(m => $"{DateTimeOffset.UtcNow.ToString("s")} {m}"));
+        }
+
+        private void WriteAsyncResultToConsole(string jobId)
+        {
+            var asyncJsonResult = new AsyncJsonResult()
+            {
+                TestRunId = jobId
+            };
+
+            var allLogs = _recordedLogs.GetAllLogs();
+            asyncJsonResult.Logs = allLogs
+                .Where(log => log.LogLevel <= LogLevel.Warning)
+                .Select(log => _options.Debug ? log.ToDiagnosticString() : log.ToString())
+                .ToList();
+
+            asyncJsonResult.Errors = allLogs
+                .Where(log => log.LogLevel > LogLevel.Error)
+                .Select(log => _options.Debug ? log.ToDiagnosticString() : log.ToString())
+                .ToList();
+
+            Console.WriteLine(JsonConvert.SerializeObject(asyncJsonResult));
         }
 
         private string GetDevicesListLog(IEnumerable<string> devices)

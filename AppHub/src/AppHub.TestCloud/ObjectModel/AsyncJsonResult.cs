@@ -18,7 +18,7 @@ namespace Microsoft.AppHub.TestCloud
         /// List of all error messages produced by the uploader tool.
         /// </summary>
         [JsonProperty("error_messages")]
-        public IList<string> ErrorMessages { get; set; }
+        public IList<string> Errors { get; set; }
 
         /// <summary>
         /// List of all log messages produces by the uploader tool.
