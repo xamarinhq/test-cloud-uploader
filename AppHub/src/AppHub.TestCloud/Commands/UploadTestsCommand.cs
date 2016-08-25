@@ -25,17 +25,17 @@ Options: {UploadTestsCommandOptions.OptionsSyntax}";
         {
             var uploadOptions = new UploadTestsCommandOptions(options);
             
-            RecordedLogs recordedLogs = null;
+            LogsRecorder logsRecorder = null;
             var loggerService = (ILoggerService)serviceProvider.GetService(typeof(ILoggerService));
 
             if (uploadOptions.AsyncJson)
             {
-                recordedLogs = new RecordedLogs();
+                logsRecorder = new LogsRecorder();
                 loggerService.SetLoggerProvider(
-                    new RecordingLoggerProvider(loggerService.MinimumLogLevel, recordedLogs));
+                    new RecordingLoggerProvider(loggerService.MinimumLogLevel, logsRecorder));
             }
 
-            return new UploadAppiumTestsCommandExecutor(uploadOptions, loggerService, recordedLogs);
+            return new UploadAppiumTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
         }
     }
 }

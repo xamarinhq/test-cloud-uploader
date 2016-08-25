@@ -3,27 +3,36 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AppHub.Common
 {
+    /// <summary>
+    /// ILogger implementation that records all received log entries.
+    /// </summary>
     public class RecordingLogger : ILogger
     {
         private readonly LogLevel _minimumLogLevel;
         private readonly string _categoryName;
-        private readonly RecordedLogs _logs;
+        private readonly LogsRecorder _logsRecorder;
 
-        public RecordingLogger(LogLevel minimumLogLevel, string categoryName, RecordedLogs logs)
+        /// <summary>
+        /// Constructor. Creates new instance of the logger.
+        /// </summary>
+        /// <param name="minimumLogLevel">Minimum log level to store.</param>
+        /// <param name="categoryName">Category name for the logger.</param>
+        /// <param name="logsRecorder">Logs recorder used to store recieved log entries.</param>
+        public RecordingLogger(LogLevel minimumLogLevel, string categoryName, LogsRecorder logsRecorder)
         {
-            if (logs == null)
-                throw new ArgumentNullException(nameof(logs));
+            if (logsRecorder == null)
+                throw new ArgumentNullException(nameof(logsRecorder));
             if (categoryName == null)
                 throw new ArgumentNullException(nameof(categoryName));
 
             _minimumLogLevel = minimumLogLevel;
             _categoryName = categoryName;
-            _logs = logs;
+            _logsRecorder = logsRecorder;
         }
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            var log = new RecordedLog(
+            var logEntry = new LogEntry(
                 DateTimeOffset.UtcNow,
                 _categoryName,
                 LogLevel.Information,
@@ -31,7 +40,7 @@ namespace Microsoft.AppHub.Common
                 $"### {state} ###"
             );
 
-            _logs.AddLog(log);
+            _logsRecorder.RecordLogEntry(logEntry);
 
             return new NoOpDisposable();
         }
@@ -43,7 +52,10 @@ namespace Microsoft.AppHub.Common
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            var log = new RecordedLog(
+            if (!IsEnabled(logLevel))
+                return;
+
+            var logEntry = new LogEntry(
                 DateTimeOffset.UtcNow,
                 _categoryName,
                 logLevel,
@@ -51,7 +63,7 @@ namespace Microsoft.AppHub.Common
                 formatter(state, exception)
             );
 
-            _logs.AddLog(log);
+            _logsRecorder.RecordLogEntry(logEntry);
         }
 
         private class NoOpDisposable: IDisposable

@@ -29,10 +29,10 @@ namespace Microsoft.AppHub.TestCloud
         private readonly ILoggerService _loggerService;
         private readonly ILogger _logger;
 
-        private readonly RecordedLogs _recordedLogs;
+        private readonly LogsRecorder _logsRecorder;
 
         public UploadAppiumTestsCommandExecutor(
-            UploadTestsCommandOptions options, ILoggerService loggerService, RecordedLogs recordedLogs)
+            UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -41,7 +41,7 @@ namespace Microsoft.AppHub.TestCloud
 
             _options = options;
             _loggerService = loggerService;
-            _recordedLogs = recordedLogs;
+            _logsRecorder = logsRecorder;
             _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
             _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
         }
@@ -240,7 +240,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 TestRunId = jobId
             };
 
-            var allLogs = _recordedLogs.GetAllLogs();
+            var allLogs = _logsRecorder.GetRecordedLogs();
             asyncJsonResult.Logs = allLogs
                 .Where(log => log.LogLevel <= LogLevel.Warning)
                 .Select(log => _options.Debug ? log.ToDiagnosticString() : log.ToString())
