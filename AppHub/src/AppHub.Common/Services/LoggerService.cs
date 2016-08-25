@@ -9,7 +9,6 @@ namespace Microsoft.AppHub.Common
     public class LoggerService: ILoggerService
     {
         private readonly LoggerFactory _loggerFactory;        
-        private int _nextEventId = 0;
 
         /// <summary>
         /// Creates new instance of the logger service, which doesn't write to console and logs only errors.
@@ -41,14 +40,6 @@ namespace Microsoft.AppHub.Common
         public ILogger CreateLogger<T>()
         {            
             return _loggerFactory.CreateLogger<T>();
-        }
-
-        /// <summary>
-        /// Creates unique event ID. 
-        /// </summary>
-        public EventId CreateEventId()
-        {
-            return Interlocked.Increment(ref _nextEventId);
         }
     }
 }

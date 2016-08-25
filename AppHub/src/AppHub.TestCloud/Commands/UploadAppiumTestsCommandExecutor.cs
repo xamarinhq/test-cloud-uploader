@@ -12,6 +12,11 @@ namespace Microsoft.AppHub.TestCloud
 {
     public class UploadAppiumTestsCommandExecutor: ICommandExecutor
     {
+        public static readonly EventId PackagingFileEventId = 1;
+        public static readonly EventId CheckHashResultEventId = 2;
+        public static readonly EventId UploadTestsResultEventId = 3;
+        public static readonly EventId CheckStatusResultEventId = 4;
+
         private static readonly TimeSpan DefaultWaitTime = TimeSpan.FromSeconds(10); 
         private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/ci");
 
@@ -90,7 +95,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 foreach (var file in result)
                 {
                     var relativePath = FileHelper.GetRelativePath(file, _options.Workspace);
-                    _logger.LogDebug($"Packaging file {relativePath}");
+                    _logger.LogDebug(PackagingFileEventId, $"Packaging file {relativePath}");
                 }
 
                 return result;
@@ -160,12 +165,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 while (true)
                 {
                     var checkStatusResult = await _testCloudProxy.CheckStatusAsync(checkStatusRequest);
-
-                    var eventId = _loggerService.CreateEventId();
-                    foreach (var message in checkStatusResult.Messages)
-                    {
-                        _logger.LogInformation(eventId, $"{DateTimeOffset.UtcNow.ToString("s")} {message}");
-                    }
+                    LogCheckStatusResponse(checkStatusResult);
 
                     if (checkStatusResult.ExitCode != null)
                     {
@@ -184,12 +184,11 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
         private void LogCheckHashesResponse(CheckHashesResult response)
         {
-            var eventId = _loggerService.CreateEventId();
-
             foreach (var result in response.Files.Values.OrderBy(v => v.FilePath))
             {
                 var relativePath = FileHelper.GetRelativePath(result.FilePath, _options.Workspace);
                 _logger.LogDebug(
+                    CheckHashResultEventId,
                     $"File {relativePath} was " + 
                     (result.WasAlreadyUploaded ? "already uploaded." : "not uploaded."));
             }
@@ -197,23 +196,29 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
         private void LogUploadTestsResponse(UploadTestsResult response)
         {
-            var eventId = _loggerService.CreateEventId();
-            _logger.LogInformation(eventId, "Tests enqueued");
-            _logger.LogInformation(eventId, $"User: {response.UserEmail}");
-            
+            var logLines = new List<string>();
+            logLines.Add("Tests enqueued");
+            logLines.Add($"User: {response.UserEmail}");
+
             if (response.Team != null)
-                _logger.LogInformation(eventId, $"Team: {response.Team}");
+                logLines.Add($"Team: {response.Team}");
             
             if (response.RejectedDevices != null && response.RejectedDevices.Count > 0)
             {
-                _logger.LogInformation(
-                    eventId, 
-                    $"Skipping devices (you can update your selections via https://testcloud.xamarin.com):" + 
-                    $"{Environment.NewLine}{GetDevicesListLog(response.RejectedDevices)}");
+                logLines.Add($"Skipping devices (you can update your selections via https://testcloud.xamarin.com):"); 
+                logLines.Add(GetDevicesListLog(response.RejectedDevices));
             }
 
+            logLines.Add($"Running on devices:");
+            logLines.Add(GetDevicesListLog(response.AcceptedDevices));
+
+            _logger.LogInformation(UploadTestsResultEventId, logLines);
+        }
+
+        private void LogCheckStatusResponse(CheckStatusResult response)
+        {
             _logger.LogInformation(
-                eventId, $"Running on devices: {Environment.NewLine}{GetDevicesListLog(response.AcceptedDevices)}");
+                CheckStatusResultEventId, response.Messages.Select(m => $"{DateTimeOffset.UtcNow.ToString("s")} {m}"));
         }
 
         private string GetDevicesListLog(IEnumerable<string> devices)

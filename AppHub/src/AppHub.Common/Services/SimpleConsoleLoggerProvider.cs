@@ -16,7 +16,7 @@ namespace Microsoft.AppHub.Common
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new SimpleConsoleLogger(_minimumLogLevel);
+            return new SimpleConsoleLogger(_minimumLogLevel, categoryName);
         }
 
         public void Dispose()

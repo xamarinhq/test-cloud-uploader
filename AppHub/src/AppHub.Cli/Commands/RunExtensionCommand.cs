@@ -55,6 +55,10 @@ Usage:
 
     public class RunExtensionCommandExecutor: ICommandExecutor
     {
+        public static readonly EventId ExecutingCommandEventId = 1;
+        public static readonly EventId ExecutionSucceededEventId = 2;
+        public static readonly EventId ExecutionFailedEventId = 3;
+
         private readonly object _consoleLock = new object();
 
         private readonly ILogger _logger;
@@ -82,19 +86,22 @@ Usage:
 
         public async Task ExecuteAsync()
         {
-            var eventId = _loggerService.CreateEventId();
-            _logger.LogDebug(eventId, $"Executing extension '{_commandName}' with arguments '{_arguments}'");
+            _logger.LogDebug(
+                ExecutingCommandEventId, $"Executing extension '{_commandName}' with arguments '{_arguments}'");
 
             try
             {
                 var result = await _processService.RunAsync(
                     _commandName, _arguments, WriteStandardOutput, WriteStandardError);
                 _logger.LogDebug(
-                    eventId, $"Executing extension '{_commandName}' completed. Exit code: {result.ExitCode}");
+                    ExecutionSucceededEventId, 
+                    $"Executing extension '{_commandName}' completed. Exit code: {result.ExitCode}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(eventId, $"Error while executing extension: '{_commandName}': {ex}");
+                _logger.LogError(
+                    ExecutionFailedEventId, 
+                    $"Error while executing extension: '{_commandName}': {ex}");
                 throw new CommandException("run", $"Cannot exeucte process '{_commandName}'", ex);
             }
         }

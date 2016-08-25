@@ -11,10 +11,5 @@ namespace Microsoft.AppHub.Common
         /// Creates logger for a given type. 
         /// </summary>
         ILogger CreateLogger<T>();
-
-        /// <summary>
-        /// Creates unique event ID. 
-        /// </summary>
-        EventId CreateEventId();
     }
 }

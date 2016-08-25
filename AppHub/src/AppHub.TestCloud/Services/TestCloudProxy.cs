@@ -17,7 +17,13 @@ namespace Microsoft.AppHub.TestCloud
     /// </summary>
     public class TestCloudProxy: ITestCloudProxy
     {
+        public static readonly EventId HttpRequestEventId = 1;
+        public static readonly EventId RetryingEventId = 2;
+        public static readonly EventId HttpExceptionEventId = 3;
+
         public const string UploaderClientVersion = "1.2.0";
+        
+        private static readonly TimeSpan _retryDelay = TimeSpan.FromSeconds(10);
         private static readonly TimeSpan _retryTimeout = TimeSpan.FromMinutes(5);
         
         private readonly ILogger _logger;
@@ -51,7 +57,10 @@ namespace Microsoft.AppHub.TestCloud
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             var httpResponse = await RetryWebRequest(async () => {
-                var response = await _httpClient.PostAsync("ci/check_version", httpContent);
+                var path = "ci/check_version";
+                _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
+                
+                var response = await _httpClient.PostAsync(path, httpContent);
                 response.EnsureSuccessStatusCode();
 
                 return response;
@@ -134,13 +143,16 @@ namespace Microsoft.AppHub.TestCloud
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            request.UploaderVersion = UploaderClientVersion;            
+            request.UploaderVersion = UploaderClientVersion;
             var json = JsonConvert.SerializeObject(request);
 
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             var httpResponse = await RetryWebRequest(async () => {
-                var response = await _httpClient.PostAsync("ci/status_v3", httpContent);
+                var path = "ci/status_v3";
+                _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
+
+                var response = await _httpClient.PostAsync(path, httpContent);
                 response.EnsureSuccessStatusCode();
 
                 return response;
@@ -156,6 +168,7 @@ namespace Microsoft.AppHub.TestCloud
             var httpContent = BuildMultipartContent(contentBuilder);
 
             var httpResponse = await RetryWebRequest(async () => {
+                _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
                 var response = await _httpClient.PostAsync(path, httpContent);
                 response.EnsureSuccessStatusCode();
 
@@ -234,7 +247,7 @@ namespace Microsoft.AppHub.TestCloud
 
         private async Task<T> RetryWebRequest<T>(Func<Task<T>> request)
         {
-            var maximumTime = DateTimeOffset.UtcNow + _retryTimeout;            
+            var maximumTime = DateTimeOffset.UtcNow + _retryTimeout;
 
             while (DateTimeOffset.UtcNow < maximumTime)
             {
@@ -244,10 +257,12 @@ namespace Microsoft.AppHub.TestCloud
                 }
                 catch (Exception ex) when (IsTransientException(ex))
                 {
-                    _logger.LogInformation($"Retrying in 10 seconds. Failed to reach server: {ex.Message}");
-                    _logger.LogDebug($"Exception: {ex.ToString()}");
+                    _logger.LogInformation(
+                        RetryingEventId, 
+                        $"Retrying in {_retryDelay.TotalSeconds} seconds. Failed to reach server: {ex.Message}");
+                    _logger.LogDebug(HttpExceptionEventId, $"Exception: {ex.ToString()}");
 
-                    await Task.Delay(TimeSpan.FromSeconds(10));
+                    await Task.Delay(_retryDelay);
                 }
             }
 
