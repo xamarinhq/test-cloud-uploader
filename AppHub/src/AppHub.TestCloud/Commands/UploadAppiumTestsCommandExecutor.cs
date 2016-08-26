@@ -22,11 +22,10 @@ namespace Microsoft.AppHub.TestCloud
         public static readonly EventId CheckStatusResultEventId = 4;
 
         private static readonly TimeSpan DefaultWaitTime = TimeSpan.FromSeconds(10); 
-        private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/ci");
+        private static readonly Uri TestCloudUri = new Uri("https://testcloud.xamarin.com/ci");
 
         private readonly UploadTestsCommandOptions _options;
         private readonly TestCloudProxy _testCloudProxy;
-        private readonly ILoggerService _loggerService;
         private readonly ILogger _logger;
 
         private readonly LogsRecorder _logsRecorder;
@@ -40,10 +39,9 @@ namespace Microsoft.AppHub.TestCloud
                 throw new ArgumentNullException(nameof(loggerService));
 
             _options = options;
-            _loggerService = loggerService;
             _logsRecorder = logsRecorder;
             _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
-            _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
+            _testCloudProxy = new TestCloudProxy(TestCloudUri, loggerService);
         }
 
         public async Task ExecuteAsync()
@@ -106,7 +104,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
                 foreach (var file in result)
                 {
-                    var relativePath = FileHelper.GetRelativePath(file, _options.Workspace);
+                    var relativePath = FileHelper.GetRelativePath(file, _options.Workspace, new PlatformService());
                     _logger.LogDebug(PackagingFileEventId, $"Packaging file {relativePath}");
                 }
 
@@ -198,7 +196,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         {
             foreach (var result in response.Files.Values.OrderBy(v => v.FilePath))
             {
-                var relativePath = FileHelper.GetRelativePath(result.FilePath, _options.Workspace);
+                var relativePath = FileHelper.GetRelativePath(result.FilePath, _options.Workspace, new PlatformService());
                 _logger.LogDebug(
                     CheckHashResultEventId,
                     $"File {relativePath} was " + 

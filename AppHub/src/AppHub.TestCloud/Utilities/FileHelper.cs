@@ -1,5 +1,9 @@
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using Microsoft.AppHub.Common;
 
 namespace Microsoft.AppHub.TestCloud
 {
@@ -10,27 +14,61 @@ namespace Microsoft.AppHub.TestCloud
         /// </summary>
         /// <param name="filePath">Full file path.</param>
         /// <param name="rootDirectoryPath">Full directory path.</param>
+        /// <param name="platformService">(Optional) A platform service that should be used to detect the current OS</param>
         /// <returns>A file path relative to given directory.</returns>
-        public static string GetRelativePath(string filePath, string rootDirectoryPath)
+        public static string GetRelativePath(string filePath, string rootDirectoryPath, IPlatformService platformService = null)
         {
             if (filePath == null)
                 throw new ArgumentNullException(nameof(filePath));
             if (rootDirectoryPath == null)
                 throw new ArgumentNullException(nameof(rootDirectoryPath));
 
-            var rootDirectoryUri = new Uri(AppendDirectorySeparatorChar(rootDirectoryPath));
-            var fileUri = new Uri(filePath);
-            var relativeUri = rootDirectoryUri.MakeRelativeUri(fileUri);
+            if (platformService == null)
+                platformService = PlatformService.Instance;
 
-            return Uri.UnescapeDataString(relativeUri.ToString());
+            var filePathSegments = GetPathSegments(filePath);
+            var rootDirectoryPathSegments = GetPathSegments(rootDirectoryPath);
+
+            var commonPrefixLength = FindLongestPathPrefix(filePathSegments, rootDirectoryPathSegments, platformService);
+
+            if (commonPrefixLength == 0)
+                return filePath.Replace("\\", "/");
+            else
+                return ConcatenatePathSegments(filePathSegments.Skip(commonPrefixLength));
         }
 
-        private static string AppendDirectorySeparatorChar(string path)
+        private static string[] GetPathSegments(string path)
         {
-            if (!Path.HasExtension(path) && !path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                return path + Path.DirectorySeparatorChar;
-            else
-                return path;
+            return path.Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        private static string ConcatenatePathSegments(IEnumerable<string> segments)
+        {
+            var result = new StringBuilder();
+
+            foreach (var segment in segments)
+            {
+                if (result.Length > 0)
+                    result.Append("/");
+
+                result.Append(segment);
+            }
+
+            return result.ToString();
+        }
+
+        private static int FindLongestPathPrefix(string[] pathSegmentsA, string[] pathSegmentsB, IPlatformService platformService)
+        {
+            var minLength = Math.Min(pathSegmentsA.Length, pathSegmentsB.Length);
+
+            for (var i = 0; i < minLength; i++)
+            {
+                var stringComparision = platformService.CurrentPlatform == OSPlatform.Windows ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                if (!string.Equals(pathSegmentsA[i], pathSegmentsB[i], stringComparision))
+                    return i;
+            }
+
+            return minLength;
         }
     }
 }

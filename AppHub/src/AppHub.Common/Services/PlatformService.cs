@@ -7,6 +7,12 @@ namespace Microsoft.AppHub.Common
     public class PlatformService: IPlatformService
     {
         private static readonly Lazy<OSPlatform> _platformId = new Lazy<OSPlatform>(DetectPlatform);
+        private static readonly Lazy<PlatformService> _instance = new Lazy<PlatformService>(() => new PlatformService());
+
+        public static PlatformService Instance
+        {
+            get { return _instance.Value; }
+        }
 
 #if NETSTANDARD1_5 || NETSTANDARD1_6
         private static OSPlatform DetectPlatform()

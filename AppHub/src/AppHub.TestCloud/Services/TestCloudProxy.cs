@@ -40,6 +40,7 @@ namespace Microsoft.AppHub.TestCloud
             {
                 BaseAddress = endpointUri
             };
+
             _logger = loggerService.CreateLogger<TestCloudProxy>();
         }
 
