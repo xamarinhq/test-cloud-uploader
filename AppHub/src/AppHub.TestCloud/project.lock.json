@@ -1415,6 +1415,12 @@
           "Microsoft.Extensions.Logging.Debug": "1.0.0",
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0"
+        },
+        "compile": {
+          "netstandard1.6/AppHub.Common.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/AppHub.Common.dll": {}
         }
       },
       "AppHub.Common.Cli/1.0.0": {
@@ -1427,6 +1433,12 @@
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0",
           "docopt.net": "0.6.1.8"
+        },
+        "compile": {
+          "netstandard1.6/AppHub.Common.Cli.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/AppHub.Common.Cli.dll": {}
         }
       }
     }
@@ -4950,11 +4962,13 @@
     },
     "AppHub.Common/1.0.0": {
       "type": "project",
-      "path": "../AppHub.Common/project.json"
+      "path": "../AppHub.Common/project.json",
+      "msbuildProject": "../AppHub.Common/AppHub.Common.xproj"
     },
     "AppHub.Common.Cli/1.0.0": {
       "type": "project",
-      "path": "../AppHub.Common.Cli/project.json"
+      "path": "../AppHub.Common.Cli/project.json",
+      "msbuildProject": "../AppHub.Common.Cli/AppHub.Common.Cli.xproj"
     }
   },
   "projectFileDependencyGroups": {

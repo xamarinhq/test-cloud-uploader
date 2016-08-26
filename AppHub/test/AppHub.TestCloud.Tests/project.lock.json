@@ -2724,6 +2724,12 @@
           "Microsoft.Extensions.Logging.Debug": "1.0.0",
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0"
+        },
+        "compile": {
+          "netstandard1.6/AppHub.Common.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/AppHub.Common.dll": {}
         }
       },
       "AppHub.Common.Cli/1.0.0": {
@@ -2736,6 +2742,12 @@
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0",
           "docopt.net": "0.6.1.8"
+        },
+        "compile": {
+          "netstandard1.6/AppHub.Common.Cli.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/AppHub.Common.Cli.dll": {}
         }
       },
       "AppHub.TestCloud/1.0.0": {
@@ -2752,6 +2764,12 @@
           "System.IO.Compression": "4.1.1",
           "System.IO.Compression.ZipFile": "4.0.1",
           "docopt.net": "0.6.1.8"
+        },
+        "compile": {
+          "netstandard1.6/AppHub.TestCloud.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/AppHub.TestCloud.dll": {}
         }
       }
     }
@@ -7910,15 +7928,18 @@
     },
     "AppHub.Common/1.0.0": {
       "type": "project",
-      "path": "../../src/AppHub.Common/project.json"
+      "path": "../../src/AppHub.Common/project.json",
+      "msbuildProject": "../../src/AppHub.Common/AppHub.Common.xproj"
     },
     "AppHub.Common.Cli/1.0.0": {
       "type": "project",
-      "path": "../../src/AppHub.Common.Cli/project.json"
+      "path": "../../src/AppHub.Common.Cli/project.json",
+      "msbuildProject": "../../src/AppHub.Common.Cli/AppHub.Common.Cli.xproj"
     },
     "AppHub.TestCloud/1.0.0": {
       "type": "project",
-      "path": "../../src/AppHub.TestCloud/project.json"
+      "path": "../../src/AppHub.TestCloud/project.json",
+      "msbuildProject": "../../src/AppHub.TestCloud/AppHub.TestCloud.xproj"
     }
   },
   "projectFileDependencyGroups": {

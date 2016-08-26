@@ -2670,6 +2670,12 @@
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0",
           "docopt.net": "0.6.1.8"
+        },
+        "compile": {
+          "netstandard1.6/AppHub.Common.Cli.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/AppHub.Common.Cli.dll": {}
         }
       }
     }
@@ -7778,7 +7784,8 @@
     },
     "AppHub.Common.Cli/1.0.0": {
       "type": "project",
-      "path": "../../src/AppHub.Common.Cli/project.json"
+      "path": "../../src/AppHub.Common.Cli/project.json",
+      "msbuildProject": "../../src/AppHub.Common.Cli/AppHub.Common.Cli.xproj"
     }
   },
   "projectFileDependencyGroups": {

@@ -2674,6 +2674,12 @@
           "Microsoft.Extensions.Logging.Debug": "1.0.0",
           "NETStandard.Library": "1.6.0",
           "System.Diagnostics.Process": "4.1.0"
+        },
+        "compile": {
+          "netstandard1.6/AppHub.Common.dll": {}
+        },
+        "runtime": {
+          "netstandard1.6/AppHub.Common.dll": {}
         }
       }
     }
@@ -7775,7 +7781,8 @@
     },
     "AppHub.Common/1.0.0": {
       "type": "project",
-      "path": "../../src/AppHub.Common/project.json"
+      "path": "../../src/AppHub.Common/project.json",
+      "msbuildProject": "../../src/AppHub.Common/AppHub.Common.xproj"
     }
   },
   "projectFileDependencyGroups": {
