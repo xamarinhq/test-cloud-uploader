@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AppHub.Cli;
+using Microsoft.AppHub.Common;
 using DocoptNet;
 using Xunit;
 
@@ -56,10 +58,25 @@ namespace Microsoft.AppHub.TestCloud.Tests
         [Fact]
         public void DefaultValuesShouldBeCorrect()
         {
+            var platformService = new PlatformService();
+            string apkPath;
+            string expectedWorkspace;
+
+            if (platformService.CurrentPlatform == OSPlatform.Windows)
+            {
+                apkPath = "c:\\Temp\\TestApp.apk";
+                expectedWorkspace = "c:\\Temp";
+            }
+            else
+            {
+                apkPath = "/tmp/app/TestApp.apk";
+                expectedWorkspace = "/tmp/app";
+            }
+
             var args = new[] 
             {
                 "upload-tests",
-                "c:\\Temp\\testApp.apk", 
+                apkPath, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
                 "--app-name", "testApp",
@@ -68,7 +85,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
 
             var uploadOptions = ParseOptions(args);
 
-            Assert.Equal("c:\\Temp", uploadOptions.Workspace);
+            Assert.Equal(expectedWorkspace, uploadOptions.Workspace);
             Assert.Equal("en-US", uploadOptions.Locale);
             Assert.False(uploadOptions.Async);
             Assert.False(uploadOptions.AsyncJson);
