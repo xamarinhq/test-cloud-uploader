@@ -23,8 +23,8 @@ namespace Microsoft.AppHub.TestCloud
 
         public const string UploaderClientVersion = "1.2.0";
         
-        private static readonly TimeSpan _retryDelay = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan _retryTimeout = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan RetryTimeout = TimeSpan.FromMinutes(5);
         
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
@@ -202,21 +202,21 @@ namespace Microsoft.AppHub.TestCloud
             return new DictionaryContentBuilderPart(keyValueItems);
         }
 
-        private IContentBuilderPart CreateAppFileContent(string appFile, CheckHashesResult CheckHashesResult)
+        private IContentBuilderPart CreateAppFileContent(string appFile, CheckHashesResult checkHashesResult)
         {
-            var checkAppHashResult = CheckHashesResult.Files[appFile];
+            var checkAppHashResult = checkHashesResult.Files[appFile];
             if (checkAppHashResult.WasAlreadyUploaded)
                 return new StringContentBuilderPart(checkAppHashResult.FileHash);
             else
                 return new FileContentBuilderPart(appFile);
         }
 
-        private IContentBuilderPart CreateFilesContent(IList<string> files, CheckHashesResult CheckHashesResult)
+        private IContentBuilderPart CreateFilesContent(IList<string> files, CheckHashesResult checkHashesResult)
         {
             return new ListContentBuilderPart(
                 files.Select<string, IContentBuilderPart>(path => 
                 {
-                    var fileCheckHashResult = CheckHashesResult.Files[path];
+                    var fileCheckHashResult = checkHashesResult.Files[path];
                     if (fileCheckHashResult.WasAlreadyUploaded)
                         return new StringContentBuilderPart(fileCheckHashResult.FileHash);
                     else
@@ -248,7 +248,7 @@ namespace Microsoft.AppHub.TestCloud
 
         private async Task<T> RetryWebRequest<T>(Func<Task<T>> request)
         {
-            var maximumTime = DateTimeOffset.UtcNow + _retryTimeout;
+            var maximumTime = DateTimeOffset.UtcNow + RetryTimeout;
 
             while (DateTimeOffset.UtcNow < maximumTime)
             {
@@ -260,10 +260,10 @@ namespace Microsoft.AppHub.TestCloud
                 {
                     _logger.LogInformation(
                         RetryingEventId, 
-                        $"Retrying in {_retryDelay.TotalSeconds} seconds. Failed to reach server: {ex.Message}");
-                    _logger.LogDebug(HttpExceptionEventId, $"Exception: {ex.ToString()}");
+                        $"Retrying in {RetryDelay.TotalSeconds} seconds. Failed to reach server: {ex.Message}");
+                    _logger.LogDebug(HttpExceptionEventId, $"Exception: {ex}");
 
-                    await Task.Delay(_retryDelay);
+                    await Task.Delay(RetryDelay);
                 }
             }
 

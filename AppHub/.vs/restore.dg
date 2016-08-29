@@ -1,6 +1,6 @@
-#:D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Cli\AppHub.Cli.xproj
-D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Cli\AppHub.Cli.xproj|D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Common\AppHub.Common.xproj
-D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Cli\AppHub.Cli.xproj|D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Common.Cli\AppHub.Common.Cli.xproj
-D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Cli\AppHub.Cli.xproj|D:\R\app-hub-cli-prototype\AppHub\src\AppHub.TestCloud\AppHub.TestCloud.xproj
+#:D:\R\app-hub-cli-prototype\AppHub\test\AppHub.TestCloud.Tests\AppHub.TestCloud.Tests.xproj
+D:\R\app-hub-cli-prototype\AppHub\test\AppHub.TestCloud.Tests\AppHub.TestCloud.Tests.xproj|D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Common\AppHub.Common.xproj
+D:\R\app-hub-cli-prototype\AppHub\test\AppHub.TestCloud.Tests\AppHub.TestCloud.Tests.xproj|D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Common.Cli\AppHub.Common.Cli.xproj
+D:\R\app-hub-cli-prototype\AppHub\test\AppHub.TestCloud.Tests\AppHub.TestCloud.Tests.xproj|D:\R\app-hub-cli-prototype\AppHub\src\AppHub.TestCloud\AppHub.TestCloud.xproj
 D:\R\app-hub-cli-prototype\AppHub\src\AppHub.TestCloud\AppHub.TestCloud.xproj|D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Common\AppHub.Common.xproj
 D:\R\app-hub-cli-prototype\AppHub\src\AppHub.TestCloud\AppHub.TestCloud.xproj|D:\R\app-hub-cli-prototype\AppHub\src\AppHub.Common.Cli\AppHub.Common.Cli.xproj

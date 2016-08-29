@@ -9,7 +9,7 @@ namespace Microsoft.AppHub.Common
     /// </summary>
     public class SimpleConsoleLogger : ILogger
     {
-        private static readonly IDictionary<LogLevel, ConsoleColors> _logLevelColors = new Dictionary<LogLevel, ConsoleColors>()
+        private static readonly IDictionary<LogLevel, ConsoleColors> LogLevelColors = new Dictionary<LogLevel, ConsoleColors>()
         {
             [LogLevel.Critical] = new ConsoleColors(ConsoleColor.White, ConsoleColor.Red),
             [LogLevel.Error] = new ConsoleColors(ConsoleColor.Black, ConsoleColor.Red),
@@ -74,7 +74,7 @@ namespace Microsoft.AppHub.Common
             var originalColors = ConsoleColors.FromCurrent();
             try
             {
-                _logLevelColors[logLevel].Apply();
+                LogLevelColors[logLevel].Apply();
                 output.Write(prefix);
             }
             finally

@@ -10,7 +10,7 @@ namespace Microsoft.AppHub.TestCloud
     /// The Test Cloud REST APIs (check_hash and upload) accept multi-part HTTP content, which is
     /// used to represent a tree of various data types: strings, files (as leaves), dictionaries and
     /// lists. This interface represents a node in that tree.
-    /// In the original UI Test upload tool, the tree was represented by IDictionary&lt;string, object&rt;, and
+    /// In the original UI Test upload tool, the tree was represented by IDictionary&lt;string, object&gt;, and
     /// then serialized to HTTP content by a few methods that recognized supported types and some of their combinations. 
     /// In this refactored version, each node in the tree is responsible for its own serialization. This makes
     /// the serialization more generic, testable, and prevents user of the API to construct a tree with types that 

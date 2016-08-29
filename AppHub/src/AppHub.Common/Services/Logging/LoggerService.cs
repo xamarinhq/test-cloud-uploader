@@ -24,7 +24,6 @@ namespace Microsoft.AppHub.Common
         /// <summary>
         /// Creates new instance of the logger service.
         /// </summary>
-        /// <param name="logToConsole">Flag that controls whether logs should be written to console.</param>
         /// <param name="minimumLogLevel">Minimum log level used by the logger.</param>
         public LoggerService(LogLevel minimumLogLevel)
         {

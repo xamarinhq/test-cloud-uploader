@@ -7793,7 +7793,7 @@
       "AppHub.Common.Cli >= 1.0.0",
       "System.Runtime.Serialization.Primitives >= 4.1.1",
       "docopt.net >= 0.6.1.8",
-      "dotnet-test-xunit >= 1.0.0-rc2-192208-24",
+      "dotnet-test-xunit >= 1.0.0-rc2-build10015",
       "xunit >= 2.1.0"
     ],
     ".NETCoreApp,Version=v1.0": [

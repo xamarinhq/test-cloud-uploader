@@ -27,22 +27,7 @@ namespace Microsoft.AppHub.TestCloud
         public const string DSymDirectoryOption = "--dsym-directory";
         public const string DebugOption = "--debug";
 
-        private static readonly string[] AllOptionIds = 
-        {
-            UserOption,
-            WorkspaceOption,
-            AppNameOption,
-            DevicesOption,
-            TestParametersOption,
-            AsyncOption,
-            AsyncJsonOption,
-            LocaleOption,
-            SeriesOption,
-            DSymDirectoryOption,
-            DebugOption
-        };
-
-        public static readonly string OptionsSyntax = $@"    
+        public const string OptionsSyntax = @"    
     --user <user>                        - Email address of the user uploading.
     --workspace <workspace>              - Path to your workspace folder (containing your tests).
     --app-name <app-name>                - App name to create or add test to.

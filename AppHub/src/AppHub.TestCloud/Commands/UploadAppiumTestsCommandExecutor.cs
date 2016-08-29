@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AppHub.Cli;
@@ -14,15 +14,15 @@ namespace Microsoft.AppHub.TestCloud
     /// <summary>
     /// Command executor that uploads Appium tests to the Test Cloud.
     /// </summary>
-    public class UploadAppiumTestsCommandExecutor: ICommandExecutor
+    public class UploadAppiumTestsCommandExecutor : ICommandExecutor
     {
         public static readonly EventId PackagingFileEventId = 1;
         public static readonly EventId CheckHashResultEventId = 2;
         public static readonly EventId UploadTestsResultEventId = 3;
         public static readonly EventId CheckStatusResultEventId = 4;
 
-        private static readonly TimeSpan DefaultWaitTime = TimeSpan.FromSeconds(10); 
-        private static readonly Uri TestCloudUri = new Uri("https://testcloud.xamarin.com/ci");
+        private static readonly TimeSpan _defaultWaitTime = TimeSpan.FromSeconds(10);
+        private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/ci");
 
         private readonly UploadTestsCommandOptions _options;
         private readonly TestCloudProxy _testCloudProxy;
@@ -41,7 +41,7 @@ namespace Microsoft.AppHub.TestCloud
             _options = options;
             _logsRecorder = logsRecorder;
             _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
-            _testCloudProxy = new TestCloudProxy(TestCloudUri, loggerService);
+            _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
         }
 
         public async Task ExecuteAsync()
@@ -74,19 +74,19 @@ namespace Microsoft.AppHub.TestCloud
                 if (ValidationHelper.UsesSharedRuntime(_options.AppFile))
                 {
                     throw new CommandException(
-                        UploadTestsCommand.CommandName, 
-@"Xamarin Test Cloud doesn't yet support shared runtime apps.
+                        UploadTestsCommand.CommandName,
+                        @"Xamarin Test Cloud doesn't yet support shared runtime apps.
 To test your app it needs to be compiled for release.
 You can learn how to compile you app for release here: 
 http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publishing_an_application/part_1_-_preparing_an_application_for_release",
-                        (int)UploadCommandExitCodes.InvalidOptions);
+                        (int) UploadCommandExitCodes.InvalidOptions);
                 }
             }
         }
 
         private async Task CheckVersionAsync()
         {
-            using (var scope = _logger.BeginScope("Checking version"))
+            using (_logger.BeginScope("Checking version"))
             {
                 var request = new CheckVersionRequest(_options.ToArgumentsArray());
                 var result = await _testCloudProxy.CheckVersionAsync(request);
@@ -98,7 +98,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
         private IList<string> GetAllFilesToUpload()
         {
-            using (var scope = _logger.BeginScope("Packaging"))
+            using (_logger.BeginScope("Packaging"))
             {
                 var result = Directory.GetFiles(_options.Workspace, "*", SearchOption.AllDirectories).ToList();
 
@@ -115,7 +115,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         private async Task<CheckHashesResult> CheckFileHashesAsync(
             string appFile, string dSymFile, IList<string> allFilesToUpload)
         {
-            using (var scope = _logger.BeginScope("Negotiating upload"))
+            using (_logger.BeginScope("Negotiating upload"))
             {
                 var request = new CheckFileHashesRequest(appFile, dSymFile, allFilesToUpload);
                 var result = await _testCloudProxy.CheckFileHashesAsync(request);
@@ -126,16 +126,16 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         }
 
         private async Task<UploadTestsResult> UploadTestsToTestCloud(
-            string appFile, 
+            string appFile,
             string dSymFile,
             string workspaceDirectory,
             IList<string> otherFiles,
-            CheckHashesResult CheckHashesResult)
+            CheckHashesResult checkHashesResult)
         {
-            using (var scope = _logger.BeginScope("Uploading negotiated files"))
+            using (_logger.BeginScope("Uploading negotiated files"))
             {
                 var request = new UploadTestsRequest(appFile, dSymFile, workspaceDirectory, otherFiles);
-                
+
                 request.TestCloudOptions["user"] = _options.User;
                 request.TestCloudOptions["device_selection"] = _options.Devices;
                 request.TestCloudOptions["app"] = _options.AppName;
@@ -150,7 +150,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 }
                 request.TestParameters["pipeline"] = "appium";
 
-                foreach (var checkHashResult in CheckHashesResult.Files)
+                foreach (var checkHashResult in checkHashesResult.Files)
                 {
                     request.CheckHashesResult.Files[checkHashResult.Key] = checkHashResult.Value;
                 }
@@ -164,7 +164,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
         private async Task<int> WaitForJob(UploadTestsResult uploadTestsResult)
         {
-            using (var scope = _logger.BeginScope("Waiting for test results"))
+            using (_logger.BeginScope("Waiting for test results"))
             {
                 var checkStatusRequest = new CheckStatusRequest(uploadTestsResult.JobId)
                 {
@@ -183,9 +183,9 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                     }
                     else
                     {
-                        var waitTime = checkStatusResult.WaitTime != null ? 
-                            TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) : DefaultWaitTime;
-                        
+                        var waitTime = checkStatusResult.WaitTime != null ?
+                            TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) : _defaultWaitTime;
+
                         await Task.Delay(waitTime);
                     }
                 }
@@ -199,23 +199,25 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 var relativePath = FileHelper.GetRelativePath(result.FilePath, _options.Workspace, new PlatformService());
                 _logger.LogDebug(
                     CheckHashResultEventId,
-                    $"File {relativePath} was " + 
+                    $"File {relativePath} was " +
                     (result.WasAlreadyUploaded ? "already uploaded." : "not uploaded."));
             }
         }
 
         private void LogUploadTestsResponse(UploadTestsResult response)
         {
-            var logLines = new List<string>();
-            logLines.Add("Tests enqueued");
-            logLines.Add($"User: {response.UserEmail}");
+            var logLines = new List<string>
+            {
+                "Tests enqueued",
+                $"User: {response.UserEmail}"
+            };
 
             if (response.Team != null)
                 logLines.Add($"Team: {response.Team}");
-            
+
             if (response.RejectedDevices != null && response.RejectedDevices.Count > 0)
             {
-                logLines.Add($"Skipping devices (you can update your selections via https://testcloud.xamarin.com):"); 
+                logLines.Add($"Skipping devices (you can update your selections via https://testcloud.xamarin.com):");
                 logLines.Add(GetDevicesListLog(response.RejectedDevices));
             }
 

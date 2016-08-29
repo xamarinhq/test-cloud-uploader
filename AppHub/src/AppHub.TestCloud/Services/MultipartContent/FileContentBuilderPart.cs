@@ -1,14 +1,13 @@
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 
 namespace Microsoft.AppHub.TestCloud
 {
     /// <summary>
     /// A multi-part tree leaf that represents a file that should be uploaded.
     /// </summary>
-    public class FileContentBuilderPart: IContentBuilderPart
+    public class FileContentBuilderPart : IContentBuilderPart
     {
         private readonly string _filePath;
 
@@ -36,7 +35,7 @@ namespace Microsoft.AppHub.TestCloud
 
             var content = new StreamContent(File.OpenRead(_filePath));
             content.Headers.Add("Content-Disposition", $"form-data; name=\"{parentName}\"; filename=\"{fileName}\"");
-            content.Headers.Add("Content-Type", "application/octet-stream"); 
+            content.Headers.Add("Content-Type", "application/octet-stream");
 
             result.Add(content);
         }

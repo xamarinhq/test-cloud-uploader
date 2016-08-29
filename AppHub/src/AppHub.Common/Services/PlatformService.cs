@@ -19,7 +19,7 @@ namespace Microsoft.AppHub.Common
         {
             var platforms = new[] { OSPlatform.Linux, OSPlatform.OSX, OSPlatform.Windows };
             
-            return platforms.First(p => RuntimeInformation.IsOSPlatform(p));
+            return platforms.First(RuntimeInformation.IsOSPlatform);
         }
 #else
         private const int UNameBufferSize = 8192;

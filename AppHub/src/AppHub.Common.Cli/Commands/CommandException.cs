@@ -7,7 +7,7 @@ namespace Microsoft.AppHub.Cli
     /// </summary>
     public class CommandException : Exception
     {
-        public CommandException(string commandName, int? exitCode = null): base() 
+        public CommandException(string commandName, int? exitCode = null)
         { 
             this.CommandName = commandName;
             this.ExitCode = exitCode;

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
@@ -65,15 +64,21 @@ namespace Microsoft.AppHub.Common
         {
             switch (logLevel)
             {
-                case LogLevel.Critical: return "crit";
-                case LogLevel.Error: return "fail";
-                case LogLevel.Warning: return "warn";
-                case LogLevel.Information: return "info";
-                case LogLevel.Debug: return "dbug";
-                case LogLevel.Trace: return "trce";
-                default: throw new ArgumentException($"Unrecognized LogLevel \"{logLevel}\"", nameof(logLevel));
+                case LogLevel.Critical:
+                    return "crit";
+                case LogLevel.Error:
+                    return "fail";
+                case LogLevel.Warning:
+                    return "warn";
+                case LogLevel.Information:
+                    return "info";
+                case LogLevel.Debug:
+                    return "dbug";
+                case LogLevel.Trace:
+                    return "trce";
+                default:
+                    throw new ArgumentException($"Unrecognized LogLevel \"{logLevel}\"", nameof(logLevel));
             }
         }
-
     }
 }
