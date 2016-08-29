@@ -15,17 +15,17 @@ namespace Microsoft.AppHub.TestCloud
     /// <summary>
     /// Proxy for TestCloud REST API.
     /// </summary>
-    public class TestCloudProxy: ITestCloudProxy
+    public class TestCloudProxy : ITestCloudProxy
     {
         public static readonly EventId HttpRequestEventId = 1;
         public static readonly EventId RetryingEventId = 2;
         public static readonly EventId HttpExceptionEventId = 3;
 
         public const string UploaderClientVersion = "1.2.0";
-        
-        private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan RetryTimeout = TimeSpan.FromMinutes(5);
-        
+
+        private static readonly TimeSpan _retryDelay = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan _retryTimeout = TimeSpan.FromMinutes(5);
+
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
 
@@ -52,23 +52,24 @@ namespace Microsoft.AppHub.TestCloud
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            request.UploaderVersion = UploaderClientVersion;            
+            request.UploaderVersion = UploaderClientVersion;
             var json = JsonConvert.SerializeObject(request);
 
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var httpResponse = await RetryWebRequest(async () => {
+            var httpResponse = await RetryWebRequest(async () =>
+            {
                 var path = "ci/check_version";
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
-                
+
                 var response = await _httpClient.PostAsync(path, httpContent);
                 response.EnsureSuccessStatusCode();
 
                 return response;
             });
-            
+
             var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
-            
+
             return JsonConvert.DeserializeObject<CheckVersionResult>(httpResponseString);
         }
 
@@ -93,26 +94,26 @@ namespace Microsoft.AppHub.TestCloud
                 contentBuilder.AddChild("hashes", new ListContentBuilderPart(
                     fileNameToHash.Values.Select(hash => new StringContentBuilderPart(hash))));
                 contentBuilder.AddChild("app_hash", new StringContentBuilderPart(appFileHash.ToLowerInvariant()));
-                
+
                 if (request.DSymFile != null)
                 {
                     var dSymFileHash = sha256.GetHash(new FileInfo(request.DSymFile));
                     contentBuilder.AddChild("dsym_hash", new StringContentBuilderPart(appFileHash));
-                    fileNameToHash[request.DSymFile] = dSymFileHash; 
+                    fileNameToHash[request.DSymFile] = dSymFileHash;
                 }
-                               
+
                 var checkFileHashesResult = await SendMultipartPostRequest<IDictionary<string, bool>>(
                     "ci/check_hash", contentBuilder);
-                
+
                 return new CheckHashesResult(
                     fileNameToHash.Keys.Select(
-                        path => 
+                        path =>
                         {
                             var hash = fileNameToHash[path];
                             var alreadyUploaded = checkFileHashesResult[hash];
-                            var fileResult = new SingleFileCheckHashResult(path, hash, alreadyUploaded); 
-                            
-                            return new KeyValuePair<string, SingleFileCheckHashResult>(path, fileResult); 
+                            var fileResult = new SingleFileCheckHashResult(path, hash, alreadyUploaded);
+
+                            return new KeyValuePair<string, SingleFileCheckHashResult>(path, fileResult);
                         }));
             }
         }
@@ -128,9 +129,16 @@ namespace Microsoft.AppHub.TestCloud
             var contentBuilder = new DictionaryContentBuilderPart();
             contentBuilder.AddChild("files", CreateFilesContent(request.OtherFiles, request.CheckHashesResult));
             contentBuilder.AddChild("paths", CreatePathsContent(request.WorkspaceDirectory, request.OtherFiles));
-            contentBuilder.AddChild("app_file", CreateAppFileContent(request.AppFile, request.CheckHashesResult));
+            contentBuilder.AddChild("app_file", CreateFileContent(request.AppFile, request.CheckHashesResult));
             contentBuilder.AddChild("app_filename", new StringContentBuilderPart(Path.GetFileName(request.AppFile)));
             contentBuilder.AddChild("test_parameters", CreateTestParametersContent(request.TestParameters));
+
+            if (request.DSymFile != null)
+            {
+                contentBuilder.AddChild("dsym_file", CreateFileContent(request.DSymFile, request.CheckHashesResult));
+                contentBuilder.AddChild("dsym_filename", new StringContentBuilderPart(Path.GetFileName(request.DSymFile)));
+            }
+
             AddTestCloudOptionsContent(contentBuilder, request.TestCloudOptions);
 
             return SendMultipartPostRequest<UploadTestsResult>("ci/upload", contentBuilder);
@@ -149,7 +157,8 @@ namespace Microsoft.AppHub.TestCloud
 
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var httpResponse = await RetryWebRequest(async () => {
+            var httpResponse = await RetryWebRequest(async () =>
+            {
                 var path = "ci/status_v3";
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
 
@@ -158,9 +167,9 @@ namespace Microsoft.AppHub.TestCloud
 
                 return response;
             });
-            
+
             var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
-            
+
             return JsonConvert.DeserializeObject<CheckStatusResult>(httpResponseString);
         }
 
@@ -168,14 +177,15 @@ namespace Microsoft.AppHub.TestCloud
         {
             var httpContent = BuildMultipartContent(contentBuilder);
 
-            var httpResponse = await RetryWebRequest(async () => {
+            var httpResponse = await RetryWebRequest(async () =>
+            {
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
                 var response = await _httpClient.PostAsync(path, httpContent);
                 response.EnsureSuccessStatusCode();
 
                 return response;
             });
-            
+
             var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<TResult>(httpResponseString);
@@ -195,33 +205,26 @@ namespace Microsoft.AppHub.TestCloud
         private IContentBuilderPart CreateTestParametersContent(IDictionary<string, string> testParameters)
         {
             var keyValueItems = testParameters
-                .Select(kv => 
+                .Select(kv =>
                     new KeyValuePair<string, IContentBuilderPart>(kv.Key, new StringContentBuilderPart(kv.Value)))
                 .ToArray();
-            
+
             return new DictionaryContentBuilderPart(keyValueItems);
         }
 
-        private IContentBuilderPart CreateAppFileContent(string appFile, CheckHashesResult checkHashesResult)
+        private IContentBuilderPart CreateFileContent(string filePath, CheckHashesResult checkHashesResult)
         {
-            var checkAppHashResult = checkHashesResult.Files[appFile];
+            var checkAppHashResult = checkHashesResult.Files[filePath];
             if (checkAppHashResult.WasAlreadyUploaded)
                 return new StringContentBuilderPart(checkAppHashResult.FileHash);
             else
-                return new FileContentBuilderPart(appFile);
+                return new FileContentBuilderPart(filePath);
         }
 
         private IContentBuilderPart CreateFilesContent(IList<string> files, CheckHashesResult checkHashesResult)
         {
-            return new ListContentBuilderPart(
-                files.Select<string, IContentBuilderPart>(path => 
-                {
-                    var fileCheckHashResult = checkHashesResult.Files[path];
-                    if (fileCheckHashResult.WasAlreadyUploaded)
-                        return new StringContentBuilderPart(fileCheckHashResult.FileHash);
-                    else
-                        return new FileContentBuilderPart(path);
-                }));
+            return new ListContentBuilderPart(files
+                .Select<string, IContentBuilderPart>(path => CreateFileContent(path, checkHashesResult)));
         }
 
         private IContentBuilderPart CreatePathsContent(string workspace, IList<string> files)
@@ -248,7 +251,7 @@ namespace Microsoft.AppHub.TestCloud
 
         private async Task<T> RetryWebRequest<T>(Func<Task<T>> request)
         {
-            var maximumTime = DateTimeOffset.UtcNow + RetryTimeout;
+            var maximumTime = DateTimeOffset.UtcNow + _retryTimeout;
 
             while (DateTimeOffset.UtcNow < maximumTime)
             {
@@ -259,11 +262,11 @@ namespace Microsoft.AppHub.TestCloud
                 catch (Exception ex) when (IsTransientException(ex))
                 {
                     _logger.LogInformation(
-                        RetryingEventId, 
-                        $"Retrying in {RetryDelay.TotalSeconds} seconds. Failed to reach server: {ex.Message}");
+                        RetryingEventId,
+                        $"Retrying in {_retryDelay.TotalSeconds} seconds. Failed to reach server: {ex.Message}");
                     _logger.LogDebug(HttpExceptionEventId, $"Exception: {ex}");
 
-                    await Task.Delay(RetryDelay);
+                    await Task.Delay(_retryDelay);
                 }
             }
 
@@ -276,8 +279,8 @@ namespace Microsoft.AppHub.TestCloud
                 return true;
 
             if (ex is AggregateException)
-                return ((AggregateException)ex).InnerExceptions.Any(iex => IsTransientException(iex));
-            
+                return ((AggregateException) ex).InnerExceptions.Any(IsTransientException);
+
             return false;
         }
     }

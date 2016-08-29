@@ -29,6 +29,7 @@ namespace Microsoft.AppHub.TestCloud
         private readonly ILogger _logger;
 
         private readonly LogsRecorder _logsRecorder;
+        private readonly DSymDirectory _dSymDirectory;
 
         public UploadAppiumTestsCommandExecutor(
             UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder)
@@ -42,6 +43,7 @@ namespace Microsoft.AppHub.TestCloud
             _logsRecorder = logsRecorder;
             _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
             _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
+            _dSymDirectory = options.DSymDirectory != null ? new DSymDirectory(options.DSymDirectory) : null;
         }
 
         public async Task ExecuteAsync()
@@ -50,9 +52,9 @@ namespace Microsoft.AppHub.TestCloud
             await CheckVersionAsync();
 
             var allFilesToUpload = GetAllFilesToUpload();
-            var checkHashesResult = await CheckFileHashesAsync(_options.AppFile, null, allFilesToUpload);
+            var checkHashesResult = await CheckFileHashesAsync(_options.AppFile, _dSymDirectory?.GetDSymFile(), allFilesToUpload);
             var uploadResult = await UploadTestsToTestCloud(
-                _options.AppFile, null, _options.Workspace, allFilesToUpload, checkHashesResult);
+                _options.AppFile, _dSymDirectory?.GetDSymFile(), _options.Workspace, allFilesToUpload, checkHashesResult);
 
             if (!(_options.Async || _options.AsyncJson))
             {
@@ -82,6 +84,8 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                         (int) UploadCommandExitCodes.InvalidOptions);
                 }
             }
+
+            _dSymDirectory?.Validate();
         }
 
         private async Task CheckVersionAsync()
@@ -143,6 +147,8 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 request.TestCloudOptions["appium"] = "true";
                 request.TestCloudOptions["series"] = _options.Series;
                 request.TestCloudOptions["api_key"] = _options.ApiKey;
+                if (_dSymDirectory != null)
+                    request.TestCloudOptions["crash_reporting"] = "true";
 
                 foreach (var testParameter in _options.TestParameters)
                 {
