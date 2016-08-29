@@ -104,7 +104,9 @@ namespace Microsoft.AppHub.TestCloud
             return new CheckHashesResult(
                 resultAppFile,
                 resultDSymFile,
-                uploadFiles.Select(fileInfo =>
+                uploadFiles
+                    .Where(fileInfo => fileInfo.FullPath != resultAppFile.FullPath && fileInfo.FullPath != request.DSymFile?.FullPath)
+                    .Select(fileInfo =>
                     new UploadFileInfo(fileInfo, wasAlreadyUploaded: checkFileHashesResult[fileInfo.FileHash])));
         }
 
@@ -126,7 +128,7 @@ namespace Microsoft.AppHub.TestCloud
             if (request.DSymFile != null)
             {
                 contentBuilder.AddChild("dsym_file", CreateFileContent(request.DSymFile));
-                contentBuilder.AddChild("dsym_filename", new StringContentBuilderPart(Path.GetFileName(request.DSymFile.FullPath)));
+                contentBuilder.AddChild("dsym_filename", new StringContentBuilderPart($"{Path.GetFileName(request.AppFile.FullPath)}_dSym"));
             }
 
             AddTestCloudOptionsContent(contentBuilder, request.TestCloudOptions);
