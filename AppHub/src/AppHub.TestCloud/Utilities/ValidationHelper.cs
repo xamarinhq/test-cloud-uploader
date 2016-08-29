@@ -11,7 +11,7 @@ namespace Microsoft.AppHub.TestCloud
         /// <summary>
         /// Checks whether an Android app uses shared runtime. 
         /// </summary>
-        /// <param name="appPath">Path to the *.apk with Android app.</param>
+        /// <param name="appPath">workspacePath to the *.apk with Android app.</param>
         /// <returns>True if the app uses shared runtime; otherwise, returns false.</returns>
         public static bool UsesSharedRuntime(string appPath)
         {
@@ -28,20 +28,20 @@ namespace Microsoft.AppHub.TestCloud
         }
 
         /// <summary>
-        /// Checkes whether given path represents an Android app.
+        /// Checkes whether given workspacePath represents an Android app.
         /// </summary>
-        /// <param name="appPath">Path to the app file.</param>
-        /// <returns>True if the path points to an Android app; otherwise, returns false.</returns>
+        /// <param name="appPath">workspacePath to the app file.</param>
+        /// <returns>True if the workspacePath points to an Android app; otherwise, returns false.</returns>
         public static bool IsAndroidApp(string appPath)
         {
             return ".apk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
         }
 
         /// <summary>
-        /// Checkes whether given path represents an iOS app.
+        /// Checkes whether given workspacePath represents an iOS app.
         /// </summary>
-        /// <param name="appPath">Path to the app file.</param>
-        /// <returns>True if the path points to an iOS app; otherwise, returns false.</returns>
+        /// <param name="appPath">workspacePath to the app file.</param>
+        /// <returns>True if the workspacePath points to an iOS app; otherwise, returns false.</returns>
         public static bool IsIosApp(string appPath)
         {
             return ".ipk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);

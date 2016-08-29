@@ -10,12 +10,12 @@ namespace Microsoft.AppHub.TestCloud
     public static class FileHelper
     {
         /// <summary>
-        /// Gets a file path relative to a given directory. 
+        /// Gets a file workspacePath relative to a given directory. 
         /// </summary>
-        /// <param name="filePath">Full file path.</param>
-        /// <param name="rootDirectoryPath">Full directory path.</param>
+        /// <param name="filePath">Full file workspacePath.</param>
+        /// <param name="rootDirectoryPath">Full directory workspacePath.</param>
         /// <param name="platformService">(Optional) A platform service that should be used to detect the current OS</param>
-        /// <returns>A file path relative to given directory.</returns>
+        /// <returns>A file workspacePath relative to given directory.</returns>
         public static string GetRelativePath(string filePath, string rootDirectoryPath, IPlatformService platformService = null)
         {
             if (filePath == null)

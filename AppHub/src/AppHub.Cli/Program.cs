@@ -27,7 +27,7 @@ namespace Microsoft.AppHub.Cli
             
             var command = GetCommand(commandsRegistry, args);
             var serviceProvider = services.BuildServiceProvider();
-            
+
             try
             {
                 var options = ParseCommandOptions(args, command);

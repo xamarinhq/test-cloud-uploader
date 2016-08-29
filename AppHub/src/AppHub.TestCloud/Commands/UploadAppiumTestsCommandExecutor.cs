@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AppHub.TestCloud.ObjectModel;
 using Microsoft.AppHub.Cli;
 using Microsoft.AppHub.Common;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,7 @@ namespace Microsoft.AppHub.TestCloud
         private readonly ILogger _logger;
 
         private readonly LogsRecorder _logsRecorder;
+        private readonly AppiumWorkspace _workspace;
         private readonly DSymDirectory _dSymDirectory;
 
         public UploadAppiumTestsCommandExecutor(
@@ -43,6 +45,8 @@ namespace Microsoft.AppHub.TestCloud
             _logsRecorder = logsRecorder;
             _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
             _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
+
+            _workspace = new AppiumWorkspace(options.Workspace);
             _dSymDirectory = options.DSymDirectory != null ? new DSymDirectory(options.DSymDirectory) : null;
         }
 
@@ -51,19 +55,28 @@ namespace Microsoft.AppHub.TestCloud
             ValidateOptions();
             await CheckVersionAsync();
 
-            var allFilesToUpload = GetAllFilesToUpload();
-            var checkHashesResult = await CheckFileHashesAsync(_options.AppFile, _dSymDirectory?.GetDSymFile(), allFilesToUpload);
-            var uploadResult = await UploadTestsToTestCloud(
-                _options.AppFile, _dSymDirectory?.GetDSymFile(), _options.Workspace, allFilesToUpload, checkHashesResult);
+            using (var sha256 = SHA256.Create())
+            {
+                var allFilesToUpload = GetAllFilesToUpload(sha256);
+                var appFile = new UploadFileInfo(_options.AppFile, _options.AppFile, sha256.GetFileHash(_options.AppFile));
+                var dSymFile = _dSymDirectory != null ? new UploadFileInfo(
+                    _dSymDirectory.GetDSymFile(),
+                    _dSymDirectory.GetDSymFile(),
+                    sha256.GetFileHash(_dSymDirectory.GetDSymFile())) :
+                    null;
 
-            if (!(_options.Async || _options.AsyncJson))
-            {
-                var exitCode = await WaitForJob(uploadResult);
-                Environment.Exit(exitCode);
-            }
-            else if (_options.AsyncJson)
-            {
-                WriteAsyncJsonResultToConsole(uploadResult.JobId);
+                var checkHashesResult = await CheckFileHashesAsync(appFile, dSymFile, allFilesToUpload);
+                var uploadResult = await UploadTestsToTestCloud(checkHashesResult.AppFile, checkHashesResult.DSymFile, checkHashesResult.UploadFiles);
+
+                if (!(_options.Async || _options.AsyncJson))
+                {
+                    var exitCode = await WaitForJob(uploadResult);
+                    Environment.Exit(exitCode);
+                }
+                else if (_options.AsyncJson)
+                {
+                    WriteAsyncJsonResultToConsole(uploadResult.JobId);
+                }
             }
         }
 
@@ -85,6 +98,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 }
             }
 
+            _workspace.Validate();
             _dSymDirectory?.Validate();
         }
 
@@ -100,16 +114,15 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             }
         }
 
-        private IList<string> GetAllFilesToUpload()
+        private IList<UploadFileInfo> GetAllFilesToUpload(HashAlgorithm hashAlgorithm)
         {
             using (_logger.BeginScope("Packaging"))
             {
-                var result = Directory.GetFiles(_options.Workspace, "*", SearchOption.AllDirectories).ToList();
+                var result = _workspace.GetUploadFiles(hashAlgorithm);
 
                 foreach (var file in result)
                 {
-                    var relativePath = FileHelper.GetRelativePath(file, _options.Workspace, new PlatformService());
-                    _logger.LogDebug(PackagingFileEventId, $"Packaging file {relativePath}");
+                    _logger.LogDebug(PackagingFileEventId, $"Packaging file {file.RelativePath}");
                 }
 
                 return result;
@@ -117,7 +130,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         }
 
         private async Task<CheckHashesResult> CheckFileHashesAsync(
-            string appFile, string dSymFile, IList<string> allFilesToUpload)
+            UploadFileInfo appFile, UploadFileInfo dSymFile, IList<UploadFileInfo> allFilesToUpload)
         {
             using (_logger.BeginScope("Negotiating upload"))
             {
@@ -130,15 +143,13 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         }
 
         private async Task<UploadTestsResult> UploadTestsToTestCloud(
-            string appFile,
-            string dSymFile,
-            string workspaceDirectory,
-            IList<string> otherFiles,
-            CheckHashesResult checkHashesResult)
+            UploadFileInfo appFile,
+            UploadFileInfo dSymFile,
+            IList<UploadFileInfo> otherFiles)
         {
             using (_logger.BeginScope("Uploading negotiated files"))
             {
-                var request = new UploadTestsRequest(appFile, dSymFile, workspaceDirectory, otherFiles);
+                var request = new UploadTestsRequest(appFile, dSymFile, otherFiles);
 
                 request.TestCloudOptions["user"] = _options.User;
                 request.TestCloudOptions["device_selection"] = _options.Devices;
@@ -155,11 +166,6 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                     request.TestParameters[testParameter.Key] = testParameter.Value;
                 }
                 request.TestParameters["pipeline"] = "appium";
-
-                foreach (var checkHashResult in checkHashesResult.Files)
-                {
-                    request.CheckHashesResult.Files[checkHashResult.Key] = checkHashResult.Value;
-                }
 
                 var result = await _testCloudProxy.UploadTestsAsync(request);
                 LogUploadTestsResponse(result);
@@ -200,9 +206,9 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
         private void LogCheckHashesResponse(CheckHashesResult response)
         {
-            foreach (var result in response.Files.Values.OrderBy(v => v.FilePath))
+            foreach (var result in response.UploadFiles.OrderBy(fileInfo => fileInfo.FullPath))
             {
-                var relativePath = FileHelper.GetRelativePath(result.FilePath, _options.Workspace, new PlatformService());
+                var relativePath = FileHelper.GetRelativePath(result.FullPath, _workspace.WorkspacePath, new PlatformService());
                 _logger.LogDebug(
                     CheckHashResultEventId,
                     $"File {relativePath} was " +

@@ -16,7 +16,7 @@ namespace Microsoft.AppHub.TestCloud
         /// <summary>
         /// Constructors. Creates new instance of DSymDirectory.
         /// </summary>
-        /// <param name="directoryPath">Path to the directory.</param>
+        /// <param name="directoryPath">workspacePath to the directory.</param>
         public DSymDirectory(string directoryPath)
         {
             if (directoryPath == null)

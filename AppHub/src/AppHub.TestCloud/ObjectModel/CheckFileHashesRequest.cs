@@ -8,9 +8,9 @@ namespace Microsoft.AppHub.TestCloud
     /// </summary>
     public class CheckFileHashesRequest
     {
-        public CheckFileHashesRequest(string appFile, string dSymFile, IList<string> otherFiles)
+        public CheckFileHashesRequest(UploadFileInfo appFile, UploadFileInfo dSymFile, IList<UploadFileInfo> otherFiles)
         {
-            if (string.IsNullOrEmpty(appFile))
+            if (appFile == null)
                 throw new ArgumentNullException(nameof(appFile));
             if (otherFiles == null)
                 throw new ArgumentNullException(nameof(otherFiles));
@@ -21,19 +21,19 @@ namespace Microsoft.AppHub.TestCloud
         }
 
         /// <summary>
-        /// Path to the file with application.
+        /// workspacePath to the file with application.
         /// </summary>
-        public string AppFile { get; }
+        public UploadFileInfo AppFile { get; }
 
         /// <summary>
-        /// Optional path to the file with dSym symbols.
+        /// Optional workspacePath to the file with dSym symbols.
         /// </summary>
         /// <returns></returns>
-        public string DSymFile { get; }
+        public UploadFileInfo DSymFile { get; }
 
         /// <summary>
         /// Paths to all other files.
         /// </summary>
-        public IList<string> OtherFiles { get; }
+        public IList<UploadFileInfo> OtherFiles { get; }
     }
 }

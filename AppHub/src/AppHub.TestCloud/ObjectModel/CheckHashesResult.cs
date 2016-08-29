@@ -1,34 +1,45 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.AppHub.TestCloud
 {
     /// <summary>
-    /// Represents a result of checking whether files were already uploaded to the Test Cloud.
+    /// Represents a result of checking whether uploadFiles were already uploaded to the Test Cloud.
     /// </summary>
     public class CheckHashesResult
     {
-        public CheckHashesResult()
+        /// <summary>
+        /// Constructor. Creates new instance of CheckHashesResult.
+        /// </summary>
+        /// <param name="appFile">Information about the app file.</param>
+        /// <param name="dSymFile">Information about the dSym file.</param>
+        /// <param name="uploadFiles">Upload files with information whether each file was already uploaded to Test Cloud.</param>
+        public CheckHashesResult(UploadFileInfo appFile, UploadFileInfo dSymFile, IEnumerable<UploadFileInfo> uploadFiles)
         {
-            this.Files = new Dictionary<string, SingleFileCheckHashResult>();
-        }
+            if (appFile == null)
+                throw new ArgumentNullException(nameof(appFile));
+            if (uploadFiles == null)
+                throw new ArgumentNullException(nameof(uploadFiles));
 
-        public CheckHashesResult(IEnumerable<KeyValuePair<string, SingleFileCheckHashResult>> files)
-        {
-            if (files == null)
-                throw new ArgumentNullException(nameof(files));
-
-            this.Files = new Dictionary<string, SingleFileCheckHashResult>();
-            
-            foreach (var kv in files)
-            {
-                this.Files.Add(kv.Key, kv.Value);
-            }
+            this.AppFile = appFile;
+            this.DSymFile = dSymFile;
+            this.UploadFiles = uploadFiles.ToList();
         }
 
         /// <summary>
-        /// Results for individual files. Keys in the dictionary are file paths.
+        /// Information about the app file.
         /// </summary>
-        public IDictionary<string, SingleFileCheckHashResult> Files { get; }
+        public UploadFileInfo AppFile { get; }
+
+        /// <summary>
+        /// Information about the dSYM file.
+        /// </summary>
+        public UploadFileInfo DSymFile { get; }
+
+        /// <summary>
+        /// Upload files with information whether each file was already uploaded to Test Cloud.
+        /// </summary>
+        public IList<UploadFileInfo> UploadFiles { get; }
     }
 }

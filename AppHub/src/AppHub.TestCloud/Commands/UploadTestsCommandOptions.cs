@@ -29,7 +29,7 @@ namespace Microsoft.AppHub.TestCloud
 
         public const string OptionsSyntax = @"    
     --user <user>                        - Email address of the user uploading.
-    --workspace <workspace>              - Path to your workspace folder (containing your tests).
+    --workspace <workspace>              - workspacePath to your workspace folder (containing your tests).
     --app-name <app-name>                - App name to create or add test to.
     --devices <devices>                  - Device selection id from the Test Cloud upload dialog.
     --async                              - Don't wait for the Test Cloud run to complete.
@@ -135,7 +135,7 @@ namespace Microsoft.AppHub.TestCloud
 
         public string Locale
         {
-            get { return _options[LocaleOption]?.ToString() ?? "en-US"; }
+            get { return _options[LocaleOption]?.ToString() ?? "en_US"; }
         }
 
         public string Series

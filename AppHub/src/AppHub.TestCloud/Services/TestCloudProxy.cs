@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AppHub.Common;
@@ -82,40 +81,31 @@ namespace Microsoft.AppHub.TestCloud
                 throw new ArgumentNullException(nameof(request));
 
             var contentBuilder = new DictionaryContentBuilderPart();
+            var uploadFiles = new List<UploadFileInfo>(request.OtherFiles) { request.AppFile };
 
-            using (var sha256 = SHA256.Create())
+            contentBuilder.AddChild("hashes", new ListContentBuilderPart(
+                uploadFiles.Select(fileInfo => new StringContentBuilderPart(fileInfo.FileHash))));
+            contentBuilder.AddChild("app_hash", new StringContentBuilderPart(request.AppFile.FileHash));
+
+            if (request.DSymFile != null)
             {
-                var appFileHash = sha256.GetHash(new FileInfo(request.AppFile));
-                var fileNameToHash = request
-                    .OtherFiles
-                    .ToDictionary(path => path, path => sha256.GetHash(new FileInfo(path)));
-                fileNameToHash[request.AppFile] = appFileHash;
-
-                contentBuilder.AddChild("hashes", new ListContentBuilderPart(
-                    fileNameToHash.Values.Select(hash => new StringContentBuilderPart(hash))));
-                contentBuilder.AddChild("app_hash", new StringContentBuilderPart(appFileHash.ToLowerInvariant()));
-
-                if (request.DSymFile != null)
-                {
-                    var dSymFileHash = sha256.GetHash(new FileInfo(request.DSymFile));
-                    contentBuilder.AddChild("dsym_hash", new StringContentBuilderPart(appFileHash));
-                    fileNameToHash[request.DSymFile] = dSymFileHash;
-                }
-
-                var checkFileHashesResult = await SendMultipartPostRequest<IDictionary<string, bool>>(
-                    "ci/check_hash", contentBuilder);
-
-                return new CheckHashesResult(
-                    fileNameToHash.Keys.Select(
-                        path =>
-                        {
-                            var hash = fileNameToHash[path];
-                            var alreadyUploaded = checkFileHashesResult[hash];
-                            var fileResult = new SingleFileCheckHashResult(path, hash, alreadyUploaded);
-
-                            return new KeyValuePair<string, SingleFileCheckHashResult>(path, fileResult);
-                        }));
+                contentBuilder.AddChild("dsym_hash", new StringContentBuilderPart(request.DSymFile.FileHash));
+                uploadFiles.Add(request.DSymFile);
             }
+
+            var checkFileHashesResult = await SendMultipartPostRequest<IDictionary<string, bool>>(
+                "ci/check_hash", contentBuilder);
+
+            var resultAppFile = new UploadFileInfo(request.AppFile, wasAlreadyUploaded: checkFileHashesResult[request.AppFile.FileHash]);
+            var resultDSymFile = request.DSymFile != null ?
+                new UploadFileInfo(request.DSymFile, wasAlreadyUploaded: checkFileHashesResult[request.DSymFile.FileHash]) :
+                null;
+
+            return new CheckHashesResult(
+                resultAppFile,
+                resultDSymFile,
+                uploadFiles.Select(fileInfo =>
+                    new UploadFileInfo(fileInfo, wasAlreadyUploaded: checkFileHashesResult[fileInfo.FileHash])));
         }
 
         /// <summary>
@@ -127,16 +117,16 @@ namespace Microsoft.AppHub.TestCloud
                 throw new ArgumentNullException(nameof(request));
 
             var contentBuilder = new DictionaryContentBuilderPart();
-            contentBuilder.AddChild("files", CreateFilesContent(request.OtherFiles, request.CheckHashesResult));
-            contentBuilder.AddChild("paths", CreatePathsContent(request.WorkspaceDirectory, request.OtherFiles));
-            contentBuilder.AddChild("app_file", CreateFileContent(request.AppFile, request.CheckHashesResult));
-            contentBuilder.AddChild("app_filename", new StringContentBuilderPart(Path.GetFileName(request.AppFile)));
+            contentBuilder.AddChild("files", CreateFilesContent(request.OtherFiles));
+            contentBuilder.AddChild("paths", CreatePathsContent(request.OtherFiles));
+            contentBuilder.AddChild("app_file", CreateFileContent(request.AppFile));
+            contentBuilder.AddChild("app_filename", new StringContentBuilderPart(Path.GetFileName(request.AppFile.FullPath)));
             contentBuilder.AddChild("test_parameters", CreateTestParametersContent(request.TestParameters));
 
             if (request.DSymFile != null)
             {
-                contentBuilder.AddChild("dsym_file", CreateFileContent(request.DSymFile, request.CheckHashesResult));
-                contentBuilder.AddChild("dsym_filename", new StringContentBuilderPart(Path.GetFileName(request.DSymFile)));
+                contentBuilder.AddChild("dsym_file", CreateFileContent(request.DSymFile));
+                contentBuilder.AddChild("dsym_filename", new StringContentBuilderPart(Path.GetFileName(request.DSymFile.FullPath)));
             }
 
             AddTestCloudOptionsContent(contentBuilder, request.TestCloudOptions);
@@ -212,27 +202,24 @@ namespace Microsoft.AppHub.TestCloud
             return new DictionaryContentBuilderPart(keyValueItems);
         }
 
-        private IContentBuilderPart CreateFileContent(string filePath, CheckHashesResult checkHashesResult)
+        private IContentBuilderPart CreateFileContent(UploadFileInfo fileInfo)
         {
-            var checkAppHashResult = checkHashesResult.Files[filePath];
-            if (checkAppHashResult.WasAlreadyUploaded)
-                return new StringContentBuilderPart(checkAppHashResult.FileHash);
+            if (fileInfo.WasAlreadyUploaded)
+                return new StringContentBuilderPart(fileInfo.FileHash);
             else
-                return new FileContentBuilderPart(filePath);
+                return new FileContentBuilderPart(fileInfo.FullPath);
         }
 
-        private IContentBuilderPart CreateFilesContent(IList<string> files, CheckHashesResult checkHashesResult)
+        private IContentBuilderPart CreateFilesContent(IEnumerable<UploadFileInfo> files)
         {
-            return new ListContentBuilderPart(files
-                .Select<string, IContentBuilderPart>(path => CreateFileContent(path, checkHashesResult)));
+            return new ListContentBuilderPart(files.Select(CreateFileContent));
         }
 
-        private IContentBuilderPart CreatePathsContent(string workspace, IList<string> files)
+        private IContentBuilderPart CreatePathsContent(IEnumerable<UploadFileInfo> files)
         {
             return new ListContentBuilderPart(
                 files
-                    .Select(path => FileHelper.GetRelativePath(path, workspace))
-                    .Select(relativePath => new StringContentBuilderPart(relativePath)));
+                    .Select(fileInfo => new StringContentBuilderPart(fileInfo.RelativePath)));
         }
 
         private MultipartContent BuildMultipartContent(IContentBuilderPart contentBuilder)

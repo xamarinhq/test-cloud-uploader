@@ -8,48 +8,34 @@ namespace Microsoft.AppHub.TestCloud
     /// </summary>
     public class UploadTestsRequest
     {
-        public UploadTestsRequest(string appFile, string dSymFile, string workspaceDirectory, IList<string> otherFiles)
+        public UploadTestsRequest(UploadFileInfo appFile, UploadFileInfo dSymFile, IList<UploadFileInfo> otherFiles)
         {
             if (appFile == null)
                 throw new ArgumentNullException(nameof(appFile));
-            if (workspaceDirectory == null)
-                throw new ArgumentNullException(nameof(workspaceDirectory));
             if (otherFiles == null)
                 throw new ArgumentNullException(nameof(otherFiles));
-            
+
             this.AppFile = appFile;
             this.DSymFile = dSymFile;
-            this.WorkspaceDirectory = workspaceDirectory;
-            this.OtherFiles = new List<string>(otherFiles);
-            this.CheckHashesResult = new CheckHashesResult();
+            this.OtherFiles = new List<UploadFileInfo>(otherFiles);
             this.TestCloudOptions = new Dictionary<string, string>();
             this.TestParameters = new Dictionary<string, string>();
         }
 
         /// <summary>
-        /// Path to the app file.
+        /// workspacePath to the app file.
         /// </summary>
-        public string AppFile { get; }
+        public UploadFileInfo AppFile { get; }
 
         /// <summary>
-        /// Path to the DSym file
+        /// workspacePath to the DSym file
         /// </summary>
-        public string DSymFile { get; }
-
-        /// <summary>
-        /// Path to the workspace directory, i.e. directory with tests.
-        /// </summary>
-        public string WorkspaceDirectory { get; }
+        public UploadFileInfo DSymFile { get; }
 
         /// <summary>
         /// List of other file paths (i.e. files other than app and dSym).
         /// </summary>
-        public IList<string> OtherFiles { get; }
-
-        /// <summary>
-        /// Result of calling CheckHashResult REST API. 
-        /// </summary>
-        public CheckHashesResult CheckHashesResult { get; }
+        public IList<UploadFileInfo> OtherFiles { get; }
 
         /// <summary>
         /// Options passed internally by the Test Cloud uploader. 

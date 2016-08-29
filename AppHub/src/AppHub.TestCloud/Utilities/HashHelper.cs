@@ -1,70 +1,41 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Microsoft.AppHub.TestCloud
 {
     public static class HashHelper
     {
-        public static string GetHash(this HashAlgorithm hashAlgorithm, DirectoryInfo directoryInfo)
-        {
-            if (directoryInfo == null)
-                throw new ArgumentNullException(nameof(directoryInfo));
-            
-            return GetHash(hashAlgorithm, directoryInfo.GetFiles("*", SearchOption.AllDirectories));
-        }
-
-        public static string GetHash(this HashAlgorithm hashAlgorithm, FileInfo file)
+        public static string GetFileHash(this HashAlgorithm hashAlgorithm, string filePath)
         {
             if (hashAlgorithm == null)
                 throw new ArgumentNullException(nameof(hashAlgorithm));
-            if (file == null)
-                throw new ArgumentNullException(nameof(file));
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentException("Argument is null or empty", nameof(filePath));
 
-            using (var stream = file.OpenRead())
+            var fileInfo = new FileInfo(filePath);
+            using (var stream = fileInfo.OpenRead())
             {
                 return GetHash(hashAlgorithm, stream);
             }
         }
 
-        public static string GetHash(this HashAlgorithm hashAlgorithm, IEnumerable<FileInfo> files)
-        {
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
-            if (files == null || !files.Any())
-                throw new ArgumentException($"Argument {nameof(files)} cannot be null or empty collection", nameof(files));
-
-            var byteHash = new List<byte>();
-
-            foreach (var file in files)
-            {
-                using (var stream = file.OpenRead())
-                {
-                    byteHash.AddRange(hashAlgorithm.ComputeHash(stream));
-                }
-            }
-
-            return ByteHashToString(hashAlgorithm.ComputeHash(byteHash.ToArray()));
-        }
-
-        public static string GetHash(this HashAlgorithm hashAlgorithm, string text)
+        public static string GetStringHash(this HashAlgorithm hashAlgorithm, string text)
         {
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
-            return GetHash(hashAlgorithm, Encoding.UTF8.GetBytes(text));
+            return GetBufferHash(hashAlgorithm, Encoding.UTF8.GetBytes(text));
         }
 
-        public static string GetHash(this HashAlgorithm hashAlgorithm, byte[] buffer)
+        public static string GetBufferHash(this HashAlgorithm hashAlgorithm, byte[] buffer)
         {
             if (hashAlgorithm == null)
                 throw new ArgumentNullException(nameof(hashAlgorithm));
             if (buffer == null)
                 throw new ArgumentNullException(nameof(buffer));
-            
+
             return ByteHashToString(hashAlgorithm.ComputeHash(buffer));
         }
 
@@ -78,24 +49,9 @@ namespace Microsoft.AppHub.TestCloud
             return ByteHashToString(hashAlgorithm.ComputeHash(stream));
         }
 
-        public static string GetHash(this HashAlgorithm hashAlgorithm, IEnumerable<string> items)
-        {
-            if (hashAlgorithm == null)
-                throw new ArgumentNullException(nameof(hashAlgorithm));
-            if (items == null)
-                throw new ArgumentNullException(nameof(items));
-
-            var byteHash = items
-                .Select(text => hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(text)))
-                .SelectMany(bytes => bytes)
-                .ToList();
-
-            return ByteHashToString(hashAlgorithm.ComputeHash(byteHash.ToArray()));
-        }
-
         private static string ByteHashToString(byte[] byteHash)
         {
             return BitConverter.ToString(byteHash).Replace("-", string.Empty).ToLowerInvariant();
         }
-    } 
+    }
 }

@@ -25,7 +25,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
                 "--devices", "testDevices",
                 "--async",
                 "--async-json",
-                "--locale", "pl-PL",
+                "--locale", "pl_PL",
                 "--series", "testSeries",
                 "--dsym-directory", "c:\\TestDSymDirectory",
                 "--test-parameters", "testKey1:testValue1,testKey2:testValue2",
@@ -42,7 +42,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
             Assert.Equal("testDevices", uploadOptions.Devices);
             Assert.True(uploadOptions.Async);
             Assert.True(uploadOptions.AsyncJson);
-            Assert.Equal("pl-PL", uploadOptions.Locale);
+            Assert.Equal("pl_PL", uploadOptions.Locale);
             Assert.Equal("testSeries", uploadOptions.Series);
             Assert.Equal("c:\\TestDSymDirectory", uploadOptions.DSymDirectory);            
             Assert.True(uploadOptions.Debug);
@@ -86,7 +86,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
             var uploadOptions = ParseOptions(args);
 
             Assert.Equal(expectedWorkspace, uploadOptions.Workspace);
-            Assert.Equal("en-US", uploadOptions.Locale);
+            Assert.Equal("en_US", uploadOptions.Locale);
             Assert.False(uploadOptions.Async);
             Assert.False(uploadOptions.AsyncJson);
             Assert.False(uploadOptions.Debug);            
