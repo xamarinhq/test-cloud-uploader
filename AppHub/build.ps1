@@ -1,9 +1,9 @@
 param (
     [string] $configuration = "Release",
-    [string] $output = "publish\$configuration"
+    [string] $outputDir = "publish\$configuration"
 )
 
-function BuildProject([string] $path, [string] $configuration)
+function BuildProject([string] $path)
 {
     try 
     {
@@ -32,7 +32,7 @@ function RunTests([string] $path)
     }
 }
 
-function PublishProject([string] $path, [string] $configuration, [string] $outputDir, [string] $platform)
+function PublishProject([string] $path, [string] $platform)
 {
     try 
     {
@@ -50,6 +50,11 @@ function PublishProject([string] $path, [string] $configuration, [string] $outpu
         $source = "$pwd\bin\$configuration\netcoreapp1.0\$platform\publish"
         $destination = "$outputDir\app.$platform.zip"
 
+        if (Test-Path $destination)
+        {
+            Remove-Item $destination
+        }
+
         Add-Type -AssemblyName "System.IO.Compression.FileSystem"
         [IO.Compression.ZipFile]::CreateFromDirectory($source, $destination)
     }
@@ -59,20 +64,20 @@ function PublishProject([string] $path, [string] $configuration, [string] $outpu
     }
 }
 
-BuildProject "src\AppHub.Common" $configuration
-BuildProject "src\AppHub.Common.Cli" $configuration
-BuildProject "src\AppHub.TestCloud" $configuration
+BuildProject "src\AppHub.Common"
+BuildProject "src\AppHub.Common.Cli"
+BuildProject "src\AppHub.TestCloud"
 
-BuildProject "test\AppHub.Common.Cli.Tests" $configuration
-BuildProject "test\AppHub.Common.Tests" $configuration
-BuildProject "test\AppHub.TestCloud.Tests" $configuration
+BuildProject "test\AppHub.Common.Cli.Tests"
+BuildProject "test\AppHub.Common.Tests"
+BuildProject "test\AppHub.TestCloud.Tests"
 
 RunTests "test\AppHub.Common.Cli.Tests"
 RunTests "test\AppHub.Common.Tests"
 RunTests "test\AppHub.TestCloud.Tests"
 
-BuildProject "src\AppHub.Cli" $configuration
+BuildProject "src\AppHub.Cli"
 
-PublishProject "src\AppHub.Cli" $configuration $output "win10-x64"
-PublishProject "src\AppHub.Cli" $configuration $output "osx.10.10-x64"
-PublishProject "src\AppHub.Cli" $configuration $output "ubuntu.14.04-x64"
+PublishProject "src\AppHub.Cli" "win10-x64"
+PublishProject "src\AppHub.Cli" "osx.10.10-x64"
+PublishProject "src\AppHub.Cli" "ubuntu.14.04-x64"
