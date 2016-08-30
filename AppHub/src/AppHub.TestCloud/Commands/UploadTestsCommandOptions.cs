@@ -28,16 +28,16 @@ namespace Microsoft.AppHub.TestCloud
         public const string DebugOption = "--debug";
 
         public const string OptionsSyntax = @"    
-    --user <user>                        - Email address of the user uploading.
-    --workspace <workspace>              - workspacePath to your workspace folder (containing your tests).
+    --user <user>                        - Email address of the user.
+    --workspace <workspace>              - Path to the workspace folder (containing your tests).
     --app-name <app-name>                - App name to create or add test to.
     --devices <devices>                  - Device selection id from the Test Cloud upload dialog.
     --async                              - Don't wait for the Test Cloud run to complete.
     --async-json                         - Don't wait for the Test Cloud run to complete and output async results in json format.
-    --locale <locale>                    - System language.
-    --series <series>                    - Test series.
+    --locale <locale>                    - System language (en_US by default)
+    --series <series>                    - Test series name.
     --dsym-directory <dsym-directory>    - Optional dSYM directory for iOS crash symbolication.
-    --test-parameters <cspairs>          - Test parameters (e.g. user:nat@xamarin.com password:xamarin)
+    --test-parameters <cspairs>          - Comma-separated test parameters (e.g. user:nat@xamarin.com,password:xamarin)
     --debug                              - Prints out more debug information.
 ";
 

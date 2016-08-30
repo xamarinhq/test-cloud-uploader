@@ -12,7 +12,7 @@ namespace Microsoft.AppHub.TestCloud
 
         public string Name => CommandName;
 
-        public string Summary => "Temporary command for Test Cloud connections";
+        public string Summary => "Upload tests to the Test Cloud";
 
         public string Syntax => $@"Command '{this.Name}': {this.Summary}. 
 
