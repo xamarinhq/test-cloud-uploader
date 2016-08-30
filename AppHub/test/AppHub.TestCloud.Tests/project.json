@@ -2,7 +2,7 @@
   "version": "1.0.0-*",
   "buildOptions": {
     "debugType": "portable",
-    "copyToOutput": ["Services/MultipartContent/TestFile.txt"]
+    "copyToOutput": ["Services/MultipartContent/TestFile.txt", "ObjectModel/pom.xml"]
   },
   "dependencies": {
     "System.Runtime.Serialization.Primitives": "4.1.1",
