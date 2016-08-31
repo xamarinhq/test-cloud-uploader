@@ -1,6 +1,8 @@
 configuration=${1:-Release}
 output="`pwd`/publish/$configuration"
 
+root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+
 function BuildProject {
     path=$1
 
@@ -43,6 +45,9 @@ function PublishProject {
     popd
 }
 
+pushd .
+cd $root
+
 BuildProject "./src/AppHub.Common"
 BuildProject "./src/AppHub.Common.Cli"
 BuildProject "./src/AppHub.TestCloud"
@@ -59,3 +64,5 @@ RunTests "./test/AppHub.TestCloud.Tests"
 PublishProject "./src/AppHub.Cli" "win10-x64"
 PublishProject "./src/AppHub.Cli" "osx.10.10-x64"
 PublishProject "./src/AppHub.Cli" "ubuntu.14.04-x64"
+
+popd
