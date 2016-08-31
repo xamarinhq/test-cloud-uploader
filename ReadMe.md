@@ -50,4 +50,4 @@ using .NET Core.
 ## Build status
 | Windows | Mac      |
 |:-------:|:--------:|
-|[![](https://mseng.visualstudio.com/_apis/public/build/definitions/96a62c4a-58c2-4dbb-94b6-5979ebc7f2af/3996/badge)](https://mseng.visualstudio.com/AppInsights/Devices%20-%20HockeyApp%20SDK/_build/index?path=%5C&definitionId=3996&_a=completed)| (no build for now) |
+|TODO|TODO|
