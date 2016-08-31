@@ -6,6 +6,7 @@ has more details how to prepare your tests to run in the Test Cloud.
 
 ### Workspace validation
 The upload tool recognizes the workspace as Appium tests workspace if it:
+
 1. Contains file pom.xml
 2. Contains directory dependency-jars
 3. Contains directory test-classes, with at least one *.class file inside.
