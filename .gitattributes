@@ -7,7 +7,7 @@
 # Explicitly declare text files you want to always be normalized and converted.
 ###############################################################################
 *.sh text eol=lf
-*.project.lock.json text eol=crlf
+project.lock.json text eol=crlf
 
 ###############################################################################
 # Set default behavior for command prompt diff.

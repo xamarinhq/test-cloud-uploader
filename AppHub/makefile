@@ -1,3 +1,5 @@
+.PHONY: default
+
 build:
 	./scripts/build.sh
 
@@ -7,4 +9,6 @@ test:
 publish:
 	./scripts/publish.sh
 
-.PHONY: build test publish
+default: build test publish
+
+.DEFAULT_GOAL := default
