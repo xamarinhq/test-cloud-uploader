@@ -12,7 +12,7 @@ function RunTests {
     cd "$path"
 
     local projectName="`basename $path`"
-    local outputXml="./bin/$configuration/netcoreapp1.0/$projectName.results.xml"
+    local outputXml="./bin/$configuration/netcoreapp1.0/$projectName.xunit-results.xml"
     dotnet test -c $configuration -xml "$outputXml"
     local result=$?
  
