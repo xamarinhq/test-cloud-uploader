@@ -39,7 +39,6 @@ cd "$root"
 
 PublishProject "./src/AppHub.Cli" "osx.10.10-x64"
 PublishProject "./src/AppHub.Cli" "osx.10.11-x64"
-PublishProject "./src/AppHub.Cli" "osx.10.12-x64"
 PublishProject "./src/AppHub.Cli" "ubuntu.14.04-x64"
 
 popd
