@@ -27,8 +27,8 @@ namespace Microsoft.AppHub.TestCloud
         public const string DSymDirectoryOption = "--dsym-directory";
         public const string DebugOption = "--debug";
 
-        public const string OptionsDescription = @"
-    <app-file>                           - An Android or iOS application to test.
+        public const string OptionsDescription = 
+@"    <app-file>                           - An Android or iOS application to test.
     <api-key>                            - Test Cloud API key.
     --user <user>                        - Email address of the user.
     --workspace <workspace>              - Path to the workspace folder (containing your tests).

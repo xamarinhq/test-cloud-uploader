@@ -81,9 +81,7 @@ namespace Microsoft.AppHub.TestCloud
 
         private void ValidateOptions()
         {
-            _options.Validate();
-
-            if (!ValidationHelper.IsAndroidApp(_options.AppFile))
+            if (ValidationHelper.IsAndroidApp(_options.AppFile))
             {
                 if (ValidationHelper.UsesSharedRuntime(_options.AppFile))
                 {
@@ -97,13 +95,12 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 }
             }
 
-            _workspace.Validate();
             _dSymDirectory?.Validate();
         }
 
         private async Task CheckVersionAsync()
         {
-            using (_logger.BeginScope("Checking version"))
+            using (_logger.BeginScope("Verifying uploader version"))
             {
                 var request = new CheckVersionRequest(_options.ToArgumentsArray());
                 var result = await _testCloudProxy.CheckVersionAsync(request);
@@ -115,7 +112,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
         private IList<UploadFileInfo> GetAllFilesToUpload(HashAlgorithm hashAlgorithm)
         {
-            using (_logger.BeginScope("Packaging"))
+            using (_logger.BeginScope("Preparing files to upload"))
             {
                 var result = _workspace.GetUploadFiles(hashAlgorithm);
 
@@ -131,7 +128,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         private async Task<CheckHashesResult> CheckFileHashesAsync(
             UploadFileInfo appFile, UploadFileInfo dSymFile, IList<UploadFileInfo> allFilesToUpload)
         {
-            using (_logger.BeginScope("Negotiating upload"))
+            using (_logger.BeginScope("Checking which files were already uploaded"))
             {
                 var request = new CheckFileHashesRequest(appFile, dSymFile, allFilesToUpload);
                 var result = await _testCloudProxy.CheckFileHashesAsync(request);
@@ -146,7 +143,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             UploadFileInfo dSymFile,
             IList<UploadFileInfo> otherFiles)
         {
-            using (_logger.BeginScope("Uploading negotiated files"))
+            using (_logger.BeginScope("Uploading new files and creating test run"))
             {
                 var request = new UploadTestsRequest(appFile, dSymFile, otherFiles);
 

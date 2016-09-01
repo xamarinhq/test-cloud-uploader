@@ -10,7 +10,7 @@ namespace Microsoft.AppHub.TestCloud
     /// <summary>
     /// Represents an Appium workspace directory.
     /// </summary>
-    public class AppiumWorkspace
+    public class AppiumWorkspace : ITestWorkspace
     {
         private readonly string _workspacePath;
 
@@ -37,55 +37,73 @@ namespace Microsoft.AppHub.TestCloud
         /// <summary>
         /// Verifies that the workspace is a valid directory with Appium tests.
         /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
         public void Validate()
         {
-            ValidatePomFile();
-            ValidateDependencyJarsDirectory();
-            ValidateTestClassesDirectory();
+            ValidatePomFile(true);
+            ValidateDependencyJarsDirectory(true);
+            ValidateTestClassesDirectory(true);
         }
 
-        private void ValidatePomFile()
+        public bool IsValid()
+        {
+            return ValidatePomFile(false) &&
+                   ValidateDependencyJarsDirectory(false) &&
+                   ValidateTestClassesDirectory(false);
+        }
+
+        private bool ValidatePomFile(bool throwException)
         {
             var pomFilePath = Path.Combine(_workspacePath, "pom.xml");
             if (!File.Exists(pomFilePath))
             {
-                throw new CommandException(
-                    UploadTestsCommand.CommandName,
+                return ThrowOrReturnFalse(
+                    throwException,
                     "The Appium workspace directory must contain file \"pom.xml\"");
             }
+
+            return true;
         }
 
-        private void ValidateDependencyJarsDirectory()
+        private bool ValidateDependencyJarsDirectory(bool throwException)
         {
             var dependencyJarsPath = Path.Combine(_workspacePath, "dependency-jars");
             if (!Directory.Exists(dependencyJarsPath))
             {
-                throw new CommandException(
-                    UploadTestsCommand.CommandName,
+                return ThrowOrReturnFalse(
+                    throwException,
                     "The Appium workspace directory must contain directory \"dependency-jars\"");
             }
+
+            return true;
         }
 
-        private void ValidateTestClassesDirectory()
+        private bool ValidateTestClassesDirectory(bool throwException)
         {
             var testClassesPath = Path.Combine(_workspacePath, "test-classes");
             if (!Directory.Exists(testClassesPath))
             {
-                throw new CommandException(
-                    UploadTestsCommand.CommandName,
+                return ThrowOrReturnFalse(
+                    throwException,
                     "The Appium workspace directory must contain directory \"test-classes\"");
             }
 
             var classFiles = Directory.GetFiles(testClassesPath, "*.class", SearchOption.AllDirectories);
             if (classFiles.Length == 0)
             {
-                throw new CommandException(
-                    UploadTestsCommand.CommandName,
+                return ThrowOrReturnFalse(
+                    throwException,
                     "Test Appium workspace directory must contain at least one *.class files in directory \"test-classes\"");
             }
+
+            return true;
+        }
+
+        private bool ThrowOrReturnFalse(bool throwException, string errorMessage)
+        {
+            if (throwException)
+                throw new CommandException(UploadTestsCommand.CommandName, errorMessage);
+
+            return false;
         }
 
         /// <summary>
