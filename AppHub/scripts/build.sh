@@ -2,7 +2,7 @@
 
 configuration=${1:-Release}
 output="`pwd`/publish/$configuration"
-root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../"
+root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 
 echo "Root folder: $root"
 
@@ -21,7 +21,7 @@ function Restore {
 function BuildProject {
     path=$1
     pushd .
-    cd $path
+    cd "$path"
  
     dotnet build -c $configuration
     local result=$?
@@ -35,7 +35,7 @@ function BuildProject {
 }
 
 pushd .
-cd $root
+cd "$root"
 
 Restore
 

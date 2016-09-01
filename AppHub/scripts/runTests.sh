@@ -9,11 +9,11 @@ exitCode=0
 function RunTests {
     path=$1
     pushd .
-    cd $path
+    cd "$path"
 
     local projectName="`basename $path`"
     local outputXml="./bin/$configuration/netcoreapp1.0/$projectName.results.xml"
-    dotnet test -c $configuration -xml $outputXml
+    dotnet test -c $configuration -xml "$outputXml"
     local result=$?
  
     if [ $result -ne 0 ]
@@ -25,7 +25,7 @@ function RunTests {
 }
 
 pushd .
-cd $root
+cd "$root"
 
 RunTests "./test/AppHub.Common.Cli.Tests"
 RunTests "./test/AppHub.Common.Tests"
