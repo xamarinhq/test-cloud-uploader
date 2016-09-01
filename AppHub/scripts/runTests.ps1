@@ -12,7 +12,7 @@ function RunTests([string] $path)
         Push-Location
         Set-Location (Join-Path $rootDir $path)
         $projectName = [System.IO.Path]::GetFileName($path)
-        $outputXml = "bin\$configuration\netcoreapp1.0\$projectName"
+        $outputXml = ".\bin\$configuration\netcoreapp1.0\$projectName.results.xml"
         
         dotnet test -c $configuration -xml "$outputXml"
 

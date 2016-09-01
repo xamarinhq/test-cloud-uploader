@@ -144,7 +144,12 @@ value2.1.1.2
             
             var actualContent = CleanupActualContent(multipartContent.ReadAsStringAsync().Result);
 
-            Assert.Equal(expectedContent, actualContent); 
+            Assert.Equal(CleanupExpectedContent(expectedContent), actualContent); 
+        }
+
+        private string CleanupExpectedContent(string content)
+        {
+            return content.Replace("\r", string.Empty);
         }
 
         private string CleanupActualContent(string content)
@@ -160,7 +165,7 @@ value2.1.1.2
                     result.AppendLine(line);
             }
 
-            return result.ToString();
+            return result.ToString().Replace("\r", string.Empty);
         }
     }
 }

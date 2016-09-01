@@ -12,6 +12,11 @@ function Restore()
         Push-Location
         Set-Location $rootDir
         dotnet restore
+
+        if ($LASTEXITCODE -ne 0)
+        {
+            $script:exitCode = $LASTEXITCODE
+        }
     }
     finally
     {
