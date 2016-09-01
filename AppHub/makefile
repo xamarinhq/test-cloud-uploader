@@ -1,10 +1,10 @@
 build:
-	scripts/build.sh
+	./scripts/build.sh
 
 test:
-	scripts/runTest.sh
+	./scripts/runTest.sh
 
 publish:
-	scripts/publish.sh
+	./scripts/publish.sh
 
 .PHONY: build test publish

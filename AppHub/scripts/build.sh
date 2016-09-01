@@ -1,3 +1,5 @@
+#!/bin/bash
+
 configuration=${1:-Release}
 output="`pwd`/publish/$configuration"
 root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
