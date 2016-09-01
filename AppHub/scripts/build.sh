@@ -37,6 +37,8 @@ function BuildProject {
 pushd .
 cd "$root"
 
+echo "Using .NET Core version `dotnet --version`"
+
 Restore
 
 BuildProject "./src/AppHub.Common"
