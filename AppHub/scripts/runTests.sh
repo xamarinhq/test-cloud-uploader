@@ -15,7 +15,10 @@ function RunTests {
 
     local projectName="`basename $path`"
     local outputXml="./bin/$configuration/netcoreapp1.0/$projectName.xunit-results.xml"
+    echo "Output XML: $outputXml"
+
     dotnet test -c $configuration -xml "$outputXml"
+    
     local result=$?
  
     if [ $result -ne 0 ]

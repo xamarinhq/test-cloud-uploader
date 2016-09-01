@@ -151,7 +151,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         }
 
         [Fact]
-        public void ValidationShouldFailWhenUserIsMissing()
+        public void ParsingShouldFailWhenUserIsMissing()
         {
             var args = new[] 
             {
@@ -162,13 +162,11 @@ namespace Microsoft.AppHub.TestCloud.Tests
                 "--app-name", "testApp"
             };
 
-            var uploadOptions = ParseOptions(args);
-
-            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+            Assert.Throws<DocoptInputErrorException>(() => ParseOptions(args));
         }
 
         [Fact]
-        public void ValidationShouldFailWhenAppNameIsMissing()
+        public void ParsingShouldFailWhenAppNameIsMissing()
         {
             var args = new[] 
             {
@@ -179,13 +177,11 @@ namespace Microsoft.AppHub.TestCloud.Tests
                 "--devices", "testDevices"
             };
 
-            var uploadOptions = ParseOptions(args);
-            
-            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+            Assert.Throws<DocoptInputErrorException>(() => ParseOptions(args));
         }
 
         [Fact]
-        public void ValidationShouldFailWhenDeviceSelectionIsMissing()
+        public void ParsingShouldFailWhenDeviceSelectionIsMissing()
         {
             var args = new[] 
             {
@@ -196,9 +192,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
                 "--app-name", "testApp"
             };
 
-            var uploadOptions = ParseOptions(args);
-
-            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+            Assert.Throws<DocoptInputErrorException>(() => ParseOptions(args));
         }
 
         [Fact]

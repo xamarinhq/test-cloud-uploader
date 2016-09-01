@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using DocoptNet;
 using Microsoft.AppHub.Cli;
 using Microsoft.AppHub.Common;
@@ -17,9 +18,21 @@ namespace Microsoft.AppHub.TestCloud
         public string Syntax => $@"Command '{this.Name}': {this.Summary}. 
 
 Usage:
-    {ProgramUtilities.CurrentExecutableName} {this.Name} <app-file> <api-key> [options]
+{GetPossibleOptionSyntax()}
 
-Options: {UploadTestsCommandOptions.OptionsSyntax}";     
+Options: {UploadTestsCommandOptions.OptionsDescription}";
+
+        private string GetPossibleOptionSyntax()
+        {
+            var result = new StringBuilder();
+
+            foreach (var syntax in UploadTestsCommandOptions.OptionsSyntax)
+            {
+                result.AppendFormat($"    {ProgramUtilities.CurrentExecutableName} {this.Name} {syntax}");
+            }
+
+            return result.ToString();
+        }
 
         public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {

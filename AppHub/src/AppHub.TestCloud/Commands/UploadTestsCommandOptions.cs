@@ -27,10 +27,12 @@ namespace Microsoft.AppHub.TestCloud
         public const string DSymDirectoryOption = "--dsym-directory";
         public const string DebugOption = "--debug";
 
-        public const string OptionsSyntax = @"    
+        public const string OptionsDescription = @"
+    <app-file>                           - An Android or iOS application to test.
+    <api-key>                            - Test Cloud API key.
     --user <user>                        - Email address of the user.
     --workspace <workspace>              - Path to the workspace folder (containing your tests).
-    --app-name <app-name>                - App name to create or add test to.
+    --app-name <app-name>                - App name to create or add tests to.
     --devices <devices>                  - Device selection id from the Test Cloud upload dialog.
     --async                              - Don't wait for the Test Cloud run to complete.
     --async-json                         - Don't wait for the Test Cloud run to complete and output async results in json format.
@@ -40,6 +42,11 @@ namespace Microsoft.AppHub.TestCloud
     --test-parameters <cspairs>          - Comma-separated test parameters (e.g. user:nat@xamarin.com,password:xamarin)
     --debug                              - Prints out more debug information.
 ";
+
+        public static readonly string[] OptionsSyntax =
+        {
+            "<app-file> <api-key> --user <user> --app-name <app-name> --devices <devices> [options]"
+        };
 
         private readonly IDictionary<string, ValueObject> _options;
         private IList<KeyValuePair<string, string>> _parsedTestParameters;
