@@ -76,4 +76,4 @@ _[Ss]cripts
 
 AppHub/publish
 project.lock.json
-.vs/restore.dg
+restore.dg
