@@ -48,6 +48,8 @@ to create their own extensions, or to create commands that cannot be easily impl
 using .NET Core.
 
 ## Build status
-| Windows | Mac      |
-|:-------:|:--------:|
-|TODO     | [![Build Status](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/badge/icon)](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/) |
+
+| Branch  | Windows  | OS X      |
+|:-------:|:--------:|:--------:|
+| master (stable) | [![Build Status](http://xtc-jenkins.xamdev.com/view/Uploader/job/Uploader%20master/badge/icon)](http://xtc-jenkins.xamdev.com/view/Uploader/job/Uploader%20master/) | [![Build Status](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/badge/icon)](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/) | 
+| develop | [![Build Status](http://xtc-jenkins.xamdev.com/view/Uploader/job/Uploader%20develop/badge/icon)](http://xtc-jenkins.xamdev.com/view/Uploader/job/Uploader%20develop/)     | [![Build Status](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20develop/badge/icon)](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20develop/)     | 
