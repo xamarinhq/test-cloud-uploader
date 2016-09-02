@@ -2,7 +2,7 @@
 
 configuration=${1:-Release}
 root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
-output="$root/publish/$configuration"
+output="$root/../publish/$configuration"
 
 echo "Root folder: $root"
 
@@ -12,12 +12,12 @@ function PublishProject {
     path=$1
     platform=$2
 
-    mkdir -p $output
+    mkdir -p "$output"
 
     pushd .
     cd "$path"
 
-    dotnet publish -c $configuration -r $platform
+    dotnet publish -c "$configuration" -r "$platform"
     local result=$?
     if [ $result -ne 0 ]
     then
