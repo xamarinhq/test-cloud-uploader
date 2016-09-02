@@ -101,7 +101,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         private void CreatePomFile()
         {
             var testDir = Path.GetDirectoryName(this.GetType().GetTypeInfo().Assembly.Location);
-            var sourcePath = Path.Combine(testDir, "ObjectModel", "pom.xml");
+            var sourcePath = Path.Combine(testDir, "Services", "pom.xml");
             var targetPath = Path.Combine(_workspace.WorkspacePath, "pom.xml");
             File.Copy(sourcePath, targetPath); 
         }

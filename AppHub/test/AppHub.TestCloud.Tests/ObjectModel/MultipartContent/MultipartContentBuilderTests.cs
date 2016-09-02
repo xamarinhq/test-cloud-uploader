@@ -60,7 +60,7 @@ bar2
         public void FilesAreCorrectlySerialized()
         {
             var assemblyFolder = Path.GetDirectoryName(this.GetType().GetTypeInfo().Assembly.Location);
-            var testFilePath = Path.Combine(assemblyFolder, "Services/MultipartContent/TestFile.txt");
+            var testFilePath = Path.Combine(assemblyFolder, "ObjectModel/MultipartContent/TestFile.txt");
 
             var builder = new DictionaryContentBuilderPart(
                 new KeyValuePair<string, IContentBuilderPart>("foo", new FileContentBuilderPart(testFilePath)));

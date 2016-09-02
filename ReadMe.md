@@ -50,4 +50,4 @@ using .NET Core.
 ## Build status
 | Windows | Mac      |
 |:-------:|:--------:|
-|TODO|TODO|
+|TODO     | [![Build Status](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/badge/icon)](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/) |
