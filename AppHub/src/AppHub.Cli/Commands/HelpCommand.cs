@@ -18,7 +18,7 @@ namespace Microsoft.AppHub.Cli.Commands
 
         public string Summary
         {
-            get { return "Prints help for a command"; }
+            get { return "Print help for a command"; }
         }
 
         public string Syntax

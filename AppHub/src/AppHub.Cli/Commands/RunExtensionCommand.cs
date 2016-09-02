@@ -21,7 +21,7 @@ namespace Microsoft.AppHub.TestCloud
 
         public string Summary
         {
-            get { return "Runs external command extension"; }
+            get { return "Run external command extension"; }
         }
 
         public string Syntax
