@@ -49,7 +49,7 @@ cd "$root"
 
 PublishProject "./src/AppHub.Cli" "osx.10.10-x64" "tar.gz"
 PublishProject "./src/AppHub.Cli" "ubuntu.14.04-x64" "tar.gz"
-PublishProject "./src/AppHub.Cli" "win10-x64" "zip"
+PublishProject "./src/AppHub.Cli" "win7-x64" "zip"
 
 popd
 
