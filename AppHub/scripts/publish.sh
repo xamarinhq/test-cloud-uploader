@@ -11,6 +11,7 @@ exitCode=0
 function PublishProject {
     path=$1
     platform=$2
+    archiveFormat=$3
 
     mkdir -p "$output"
 
@@ -25,11 +26,18 @@ function PublishProject {
     fi
 
     cd "./bin/$configuration/netcoreapp1.0/$platform"
-    mkdir apphub
+    mkdir -p apphub
     cp -R ./publish/* ./apphub
     
-    dst="$output/app.$platform.tar.gz"
-    tar -zcvf "$dst" apphub
+    echo "Archive format: $archiveFormat"
+    if [ $archiveFormat == "tar.gz" ]
+    then
+        dst="$output/app.$platform.tar.gz"
+        tar -zcvf "$dst" apphub
+    else
+        dst="$output/app.$platform.zip"
+        zip -r "$dst" apphub
+    fi
 
     rm -R ./app
 
@@ -39,9 +47,9 @@ function PublishProject {
 pushd .
 cd "$root"
 
-PublishProject "./src/AppHub.Cli" "osx.10.10-x64"
-PublishProject "./src/AppHub.Cli" "osx.10.11-x64"
-PublishProject "./src/AppHub.Cli" "ubuntu.14.04-x64"
+PublishProject "./src/AppHub.Cli" "osx.10.10-x64" "tar.gz"
+PublishProject "./src/AppHub.Cli" "ubuntu.14.04-x64" "tar.gz"
+PublishProject "./src/AppHub.Cli" "win10-x64" "zip"
 
 popd
 
