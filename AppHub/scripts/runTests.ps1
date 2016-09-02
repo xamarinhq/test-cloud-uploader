@@ -13,7 +13,8 @@ function RunTests([string] $path)
         Set-Location (Join-Path $rootDir $path)
         $projectName = [System.IO.Path]::GetFileName($path)
         $outputXml = ".\bin\$configuration\netcoreapp1.0\$projectName.xunit-results.xml"
-        
+        echo "Output XML: $outputXml"
+
         dotnet test -c $configuration -xml "$outputXml"
 
         if ($LASTEXITCODE -ne 0)

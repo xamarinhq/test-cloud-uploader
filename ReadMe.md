@@ -8,7 +8,7 @@ Unified command line interface for App Hub.
 
 1. Download ```app.win7-x64.zip``` from the [last stable build](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/).
    
-   After downloading, right-click on the Zip file, select "Unlock", and click the "OK" button.
+   After downloading, right-click on the Zip file, select "Unblock", and click the "OK" button.
 2. Unzip the file.
 
 ### OS X
