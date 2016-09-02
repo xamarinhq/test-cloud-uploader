@@ -4,12 +4,14 @@ configuration=${1:-Release}
 output="`pwd`/publish/$configuration"
 root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 
+echo "Root folder: $root"
+
 exitCode=0
 
 function RunTests {
     path=$1
     pushd .
-    cd $path
+    cd "$path"
 
     local projectName="`basename $path`"
     local outputXml="./bin/$configuration/netcoreapp1.0/$projectName.xunit-results.xml"
@@ -28,7 +30,7 @@ function RunTests {
 }
 
 pushd .
-cd $root
+cd "$root"
 
 RunTests "./test/AppHub.Common.Cli.Tests"
 RunTests "./test/AppHub.Common.Tests"

@@ -75,3 +75,5 @@ _[Ss]cripts
 *.dot[Cc]over
 
 AppHub/publish
+
+project.lock.json

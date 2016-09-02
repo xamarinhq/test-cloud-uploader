@@ -4,6 +4,8 @@ configuration=${1:-Release}
 output="`pwd`/publish/$configuration"
 root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 
+echo "Root folder: $root"
+
 exitCode=0
 
 function Restore {
@@ -19,7 +21,7 @@ function Restore {
 function BuildProject {
     path=$1
     pushd .
-    cd $path
+    cd "$path"
  
     dotnet build -c $configuration
     local result=$?
@@ -33,7 +35,9 @@ function BuildProject {
 }
 
 pushd .
-cd $root
+cd "$root"
+
+echo "Using .NET Core version `dotnet --version`"
 
 Restore
 
