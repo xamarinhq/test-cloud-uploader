@@ -68,25 +68,39 @@ namespace Microsoft.AppHub.TestCloud
         protected virtual void ValidateRequiredOptions()
         {
             if (!File.Exists(this.AppFile))
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, $"Cannot find app file: {this.AppFile}");
-            
+            }
+
             if (!Directory.Exists(this.Workspace))
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, $"Cannot find workspace directory: {this.Workspace}");
+            }
 
             if (!string.IsNullOrWhiteSpace(this.DSymDirectory) && !Directory.Exists(this.DSymDirectory))
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, $"Cannot find dSYM directory: {this.DSymDirectory}");
+            }
 
             if (string.IsNullOrWhiteSpace(this.Devices))
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, $"Missing required option '{DevicesOption}'");
+            }
 
             if (string.IsNullOrWhiteSpace(this.AppName))
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, $"Missing required option '{AppNameOption}'");
+            }
 
             if (string.IsNullOrEmpty(this.User))
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, $"Missing required option '{UserOption}'");
+            }
 
             if (_parsedTestParameters == null)
+            {
                 _parsedTestParameters = ParseTestParameters(_options[TestParametersOption]?.ToString()).ToList();
+            }
         }
 
         public string AppFile

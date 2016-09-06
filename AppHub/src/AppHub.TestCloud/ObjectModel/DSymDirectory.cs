@@ -49,16 +49,22 @@ namespace Microsoft.AppHub.TestCloud
         private string ValidateAndGetDSymFile()
         {
             if (!Directory.Exists(_directoryPath))
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, $"Directory with dSYM files \"{_directoryPath}\" doesn't exist.");
+            }
 
             if (!".dsym".Equals(Path.GetExtension(_directoryPath), StringComparison.OrdinalIgnoreCase))
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, "Directory with dSYM files must have the extension \".dsym\".");
+            }
 
             var dwarfPath = Path.GetFullPath(Path.Combine(_directoryPath, "Contents", "Resources", "DWARF"));
             var dwarfFiles = Directory.EnumerateFiles(dwarfPath).ToArray();
 
             if (dwarfFiles.Length != 1)
+            {
                 throw new CommandException(UploadTestsCommand.CommandName, "Directory with dSYM files contains more than one file in Contents/Resoruces/DWARF");
+            }
 
             return dwarfFiles[0];
         }

@@ -109,7 +109,9 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 var result = await _testCloudProxy.CheckVersionAsync(request);
 
                 if (result.ErrorMessage != null)
+                {
                     throw new CommandException(UploadTestsCommand.CommandName, result.ErrorMessage);
+                }
             }
         }
 
@@ -157,13 +159,17 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 request.TestCloudOptions["appium"] = "true";
                 request.TestCloudOptions["series"] = _options.Series;
                 request.TestCloudOptions["api_key"] = _options.ApiKey;
+
                 if (_dSymDirectory != null)
+                {
                     request.TestCloudOptions["crash_reporting"] = "true";
+                }
 
                 foreach (var testParameter in _options.TestParameters)
                 {
                     request.TestParameters[testParameter.Key] = testParameter.Value;
                 }
+
                 request.TestParameters["pipeline"] = "appium";
 
                 var result = await _testCloudProxy.UploadTestsAsync(request);
@@ -224,7 +230,9 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             };
 
             if (response.Team != null)
+            {
                 logLines.Add($"Team: {response.Team}");
+            }
 
             if (response.RejectedDevices != null && response.RejectedDevices.Count > 0)
             {

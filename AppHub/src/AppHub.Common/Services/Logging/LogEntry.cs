@@ -65,9 +65,13 @@ namespace Microsoft.AppHub.Common
         public override string ToString()
         {
             if (this.LogLevel >= LogLevel.Error)
+            {
                 return $"Error: {this.Message}";
+            }
             else
+            {
                 return this.Message;
+            }
         }
 
         /// <summary>

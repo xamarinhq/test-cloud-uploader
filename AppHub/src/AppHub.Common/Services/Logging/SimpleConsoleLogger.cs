@@ -41,7 +41,9 @@ namespace Microsoft.AppHub.Common
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
+            {
                 return;
+            }
 
             var message = formatter(state, exception);
             if (_minimumLogLevel > LogLevel.Debug)

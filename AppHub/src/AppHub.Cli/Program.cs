@@ -55,7 +55,9 @@ namespace Microsoft.AppHub.Cli
             var commandName = args[0];
             ICommand result;
             if (!registry.Commands.TryGetValue(commandName, out result))
+            {
                 result = registry.Commands[RunExtensionCommandDescription.RunExtensionCommandName];
+            }
 
             return result;
         }
