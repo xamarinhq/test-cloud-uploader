@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using Microsoft.AppHub.TestCloud.ObjectModel;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.Services
 {
     /// <summary>
     /// Interface that represents TestCloud REST API.

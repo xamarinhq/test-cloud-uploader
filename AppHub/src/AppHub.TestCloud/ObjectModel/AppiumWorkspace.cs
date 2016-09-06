@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using Microsoft.AppHub.Cli;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.TestCloud.Commands;
+using Microsoft.AppHub.TestCloud.Utilities;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.ObjectModel
 {
     /// <summary>
     /// Represents an Appium workspace directory.

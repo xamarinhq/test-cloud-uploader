@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services
 {
     /// <summary>
     /// Default implementation of IProcessService. 

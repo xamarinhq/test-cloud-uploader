@@ -1,4 +1,4 @@
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services
 {
     /// <summary>
     /// External process execution results.

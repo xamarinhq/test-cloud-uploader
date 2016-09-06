@@ -2,9 +2,10 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AppHub.Common.Services;
 using Xunit;
 
-namespace Microsoft.AppHub.Common.Tests
+namespace Microsoft.AppHub.Common.Tests.Services
 {
     public class ProcessServiceTests
     {

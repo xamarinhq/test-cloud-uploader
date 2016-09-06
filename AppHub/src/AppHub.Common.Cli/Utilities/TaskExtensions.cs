@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Cli.Utilities
 {
     /// <summary>
     /// Extensions and constants for Task.

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
-using Microsoft.AppHub.Common;
+using Microsoft.AppHub.Common.Services;
 
-namespace Microsoft.AppHub.TestCloud.Tests
+namespace Microsoft.AppHub.TestCloud.Tests.Utilities
 {
     public class TestPlatformService: IPlatformService
     {

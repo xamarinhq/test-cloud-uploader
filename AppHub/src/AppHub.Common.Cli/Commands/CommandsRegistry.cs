@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.AppHub.Cli
+namespace Microsoft.AppHub.Common.Cli.Commands
 {
     /// <summary>
 	/// Registry that stores command descriptions. 

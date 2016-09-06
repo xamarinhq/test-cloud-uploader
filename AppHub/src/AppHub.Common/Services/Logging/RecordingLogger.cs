@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services.Logging
 {
     /// <summary>
     /// ILogger implementation that records all received log entries.

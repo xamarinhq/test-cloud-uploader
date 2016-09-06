@@ -2,9 +2,8 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using Microsoft.AppHub.Cli;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.Utilities
 {
     public static class ValidationHelper
     {

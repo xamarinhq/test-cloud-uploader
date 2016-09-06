@@ -5,11 +5,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AppHub.Common;
+using Microsoft.AppHub.Common.Services.Logging;
+using Microsoft.AppHub.TestCloud.ObjectModel;
+using Microsoft.AppHub.TestCloud.ObjectModel.MultipartContent;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.Services
 {
     /// <summary>
     /// Proxy for TestCloud REST API.

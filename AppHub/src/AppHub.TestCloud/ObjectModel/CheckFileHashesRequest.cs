@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.ObjectModel
 {
     /// <summary>
     /// Stores data required by the ITestCloudProxy.CheckFileHashesAsync REST API.

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services.Logging
 {
     /// <summary>
     /// Represents service that creates logger and unique log event IDs. 

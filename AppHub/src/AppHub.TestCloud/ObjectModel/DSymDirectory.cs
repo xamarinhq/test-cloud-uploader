@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Microsoft.AppHub.Cli;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.TestCloud.Commands;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.ObjectModel
 {
     /// <summary>
     /// Represents a dSYM directory.

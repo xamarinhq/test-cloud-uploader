@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using DocoptNet;
+using Microsoft.AppHub.Common.Cli.Commands;
 
-namespace Microsoft.AppHub.Cli.Tests
+namespace Microsoft.AppHub.Common.Cli.Tests.Commands
 {
     public class TestCommand : ICommand
     {

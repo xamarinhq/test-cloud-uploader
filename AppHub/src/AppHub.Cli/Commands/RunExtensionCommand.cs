@@ -1,14 +1,17 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DocoptNet;
-using Microsoft.AppHub.Cli;
 using Microsoft.AppHub.Common;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.Common.Cli.Utilities;
+using Microsoft.AppHub.Common.Services;
+using Microsoft.AppHub.Common.Services.Logging;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.Cli.Commands
 {
     public class RunExtensionCommandDescription: ICommand
     {

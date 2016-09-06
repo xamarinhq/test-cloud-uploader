@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services.Logging
 {
     /// <summary>
     /// Extension methods for the ILogger interface.

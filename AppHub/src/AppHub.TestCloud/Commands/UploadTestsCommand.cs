@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using DocoptNet;
-using Microsoft.AppHub.Cli;
-using Microsoft.AppHub.Common;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.Common.Cli.Utilities;
+using Microsoft.AppHub.Common.Services.Logging;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.Commands
 {
     public class UploadTestsCommand: ICommand
     {
