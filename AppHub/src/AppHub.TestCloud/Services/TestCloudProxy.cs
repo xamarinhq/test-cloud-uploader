@@ -97,9 +97,10 @@ namespace Microsoft.AppHub.TestCloud
                 "ci/check_hash", contentBuilder);
 
             var resultAppFile = new UploadFileInfo(request.AppFile, wasAlreadyUploaded: checkFileHashesResult[request.AppFile.FileHash]);
-            var resultDSymFile = request.DSymFile != null ?
-                new UploadFileInfo(request.DSymFile, wasAlreadyUploaded: checkFileHashesResult[request.DSymFile.FileHash]) :
-                null;
+
+            var resultDSymFile = request.DSymFile != null 
+                ? new UploadFileInfo(request.DSymFile, wasAlreadyUploaded: checkFileHashesResult[request.DSymFile.FileHash]) 
+                : null;
 
             return new CheckHashesResult(
                 resultAppFile,
