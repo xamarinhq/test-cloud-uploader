@@ -3,12 +3,12 @@
 This project contains Test Cloud commands for the common AppHub CLI.
 
 ## Commands
-### upload-tests 
+### test 
 ```
-Command 'upload-tests': Upload tests to the Test Cloud.
+Command 'test': Upload tests to the Test Cloud.
 
 Usage:
-    app upload-tests <app-file> <api-key> [options]
+    app test <app-file> <api-key> [options]
 
 Options:
     --user <user>                        - Email address of the user.
@@ -25,7 +25,7 @@ Options:
 ```
 
 ## Supported test frameworks
-The upload-tests command supports the following test frameworks:
+The test command supports the following test frameworks:
 
 - [UI Test](Docs/UITest.md)
 - [Calabash](Docs/Calabash.md)

@@ -10,7 +10,7 @@ namespace Microsoft.AppHub.Common
         /// </summary>
         public static string CurrentExecutableName
         {
-            get { return "app"; }
+            get { return "xtc"; }
         }
     }
 }

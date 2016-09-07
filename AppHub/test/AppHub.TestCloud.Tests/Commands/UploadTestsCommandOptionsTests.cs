@@ -16,7 +16,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 "testApp.apk", 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
@@ -75,7 +75,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
 
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 apkPath, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
@@ -99,7 +99,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 "z:\\not_existing_app.apk", 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
@@ -117,7 +117,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
@@ -136,7 +136,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
@@ -155,7 +155,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
                 "--devices", "testDevices",
@@ -170,7 +170,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
@@ -185,7 +185,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com@xamarin.com",
@@ -200,7 +200,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
@@ -219,7 +219,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
@@ -237,7 +237,7 @@ namespace Microsoft.AppHub.TestCloud.Tests
         {
             var args = new[] 
             {
-                "upload-tests",
+                "test",
                 "c:\\Temp\\testApp.apk", 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",

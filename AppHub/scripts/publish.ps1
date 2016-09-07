@@ -27,7 +27,7 @@ function PublishProject([string] $path, [string] $platform)
         }
 
         $source = "$pwd\bin\$configuration\netcoreapp1.0\$platform\publish"
-        $destination = "$outputDir\app.$platform.zip"
+        $destination = "$outputDir\xtc.$platform.zip"
 
         if (Test-Path $destination)
         {
@@ -43,7 +43,7 @@ function PublishProject([string] $path, [string] $platform)
     }
 }
 
-#PublishProject "src\AppHub.Cli" "win10-x64"
+PublishProject "src\AppHub.Cli" "win10-x64"
 #PublishProject "src\AppHub.Cli" "win7-x64"
 #PublishProject "src\AppHub.Cli" "osx.10.10-x64"
 #PublishProject "src\AppHub.Cli" "ubuntu.14.04-x64"
