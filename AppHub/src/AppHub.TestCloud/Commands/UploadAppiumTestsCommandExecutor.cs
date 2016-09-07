@@ -58,11 +58,12 @@ namespace Microsoft.AppHub.TestCloud
             {
                 var allFilesToUpload = GetAllFilesToUpload(sha256);
                 var appFile = new UploadFileInfo(_options.AppFile, _options.AppFile, sha256.GetFileHash(_options.AppFile));
-                var dSymFile = _dSymDirectory != null ? new UploadFileInfo(
-                    _dSymDirectory.GetDSymFile(),
-                    _dSymDirectory.GetDSymFile(),
-                    sha256.GetFileHash(_dSymDirectory.GetDSymFile())) :
-                    null;
+                var dSymFile = _dSymDirectory != null 
+                    ? new UploadFileInfo(
+                        _dSymDirectory.GetDSymFile(),
+                        _dSymDirectory.GetDSymFile(),
+                        sha256.GetFileHash(_dSymDirectory.GetDSymFile())) 
+                    : null;
 
                 var checkHashesResult = await CheckFileHashesAsync(appFile, dSymFile, allFilesToUpload);
                 var uploadResult = await UploadTestsToTestCloud(checkHashesResult.AppFile, checkHashesResult.DSymFile, checkHashesResult.UploadFiles);
@@ -194,8 +195,9 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                     }
                     else
                     {
-                        var waitTime = checkStatusResult.WaitTime != null ?
-                            TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) : _defaultWaitTime;
+                        var waitTime = checkStatusResult.WaitTime != null 
+                            ? TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) 
+                            : _defaultWaitTime;
 
                         await Task.Delay(waitTime);
                     }
