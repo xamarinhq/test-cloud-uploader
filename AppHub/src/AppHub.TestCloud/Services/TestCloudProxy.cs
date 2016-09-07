@@ -87,6 +87,7 @@ namespace Microsoft.AppHub.TestCloud.Services
 
             contentBuilder.AddChild("hashes", new ListContentBuilderPart(
                 uploadFiles.Select(fileInfo => new StringContentBuilderPart(fileInfo.FileHash))));
+
             contentBuilder.AddChild("app_hash", new StringContentBuilderPart(request.AppFile.FileHash));
 
             if (request.DSymFile != null)
@@ -210,9 +211,13 @@ namespace Microsoft.AppHub.TestCloud.Services
         private IContentBuilderPart CreateFileContent(UploadFileInfo fileInfo)
         {
             if (fileInfo.WasAlreadyUploaded)
+            {
                 return new StringContentBuilderPart(fileInfo.FileHash);
+            }
             else
+            {
                 return new FileContentBuilderPart(fileInfo.FullPath);
+            }
         }
 
         private IContentBuilderPart CreateFilesContent(IEnumerable<UploadFileInfo> files)
@@ -268,10 +273,14 @@ namespace Microsoft.AppHub.TestCloud.Services
         private static bool IsTransientException(Exception ex)
         {
             if (ex is HttpRequestException)
+            {
                 return true;
+            }
 
             if (ex is AggregateException)
-                return ((AggregateException) ex).InnerExceptions.Any(IsTransientException);
+            {
+                return ((AggregateException)ex).InnerExceptions.Any(IsTransientException);
+            }
 
             return false;
         }

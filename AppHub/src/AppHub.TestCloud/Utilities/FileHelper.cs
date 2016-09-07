@@ -24,7 +24,9 @@ namespace Microsoft.AppHub.TestCloud.Utilities
                 throw new ArgumentNullException(nameof(rootDirectoryPath));
 
             if (platformService == null)
+            {
                 platformService = PlatformService.Instance;
+            }
 
             var filePathSegments = GetPathSegments(filePath);
             var rootDirectoryPathSegments = GetPathSegments(rootDirectoryPath);
@@ -32,9 +34,13 @@ namespace Microsoft.AppHub.TestCloud.Utilities
             var commonPrefixLength = FindLongestPathPrefix(filePathSegments, rootDirectoryPathSegments, platformService);
 
             if (commonPrefixLength == 0)
+            {
                 return filePath.Replace("\\", "/");
+            }
             else
+            {
                 return ConcatenatePathSegments(filePathSegments.Skip(commonPrefixLength));
+            }
         }
 
         private static string[] GetPathSegments(string path)
