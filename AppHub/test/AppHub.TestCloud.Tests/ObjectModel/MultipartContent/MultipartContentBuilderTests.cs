@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using Microsoft.AppHub.TestCloud.ObjectModel.MultipartContent;
 using Xunit;
 
-namespace Microsoft.AppHub.TestCloud.Tests
+namespace Microsoft.AppHub.TestCloud.Tests.ObjectModel.MultipartContent
 {
     /// <summary>
     /// Tests which verify that all content builder classes produce correct multi-part HTTP content.
@@ -139,7 +139,7 @@ value2.1.1.2
 
         private void RunTest(IContentBuilderPart contentBuilder, string expectedContent)
         {
-            var multipartContent = new MultipartContent();
+            var multipartContent = new System.Net.Http.MultipartContent();
             contentBuilder.BuildMultipartContent(string.Empty, multipartContent);
             
             var actualContent = CleanupActualContent(multipartContent.ReadAsStringAsync().Result);

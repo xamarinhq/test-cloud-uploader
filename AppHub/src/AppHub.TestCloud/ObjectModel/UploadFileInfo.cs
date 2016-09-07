@@ -1,6 +1,6 @@
 using System;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.ObjectModel
 {
     /// <summary>
     /// Stores information about a file to upload to Test Cloud.

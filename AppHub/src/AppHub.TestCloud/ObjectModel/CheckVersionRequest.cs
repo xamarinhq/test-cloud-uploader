@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.ObjectModel
 {
     /// <summary>
     /// Stores data required by the ITestCloudProxy.CheckVersion REST API.

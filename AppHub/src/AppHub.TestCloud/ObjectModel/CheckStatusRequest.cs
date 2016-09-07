@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.ObjectModel
 {
     /// <summary>
     /// Stores data required by the ITestCloudProxy.CheckStatus REST API.

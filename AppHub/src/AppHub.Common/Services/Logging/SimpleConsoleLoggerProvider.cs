@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services.Logging
 {
     /// <summary>
     /// A provider (factory class) for SimpleConsoleLogger.

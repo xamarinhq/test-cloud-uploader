@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.ObjectModel.MultipartContent
 {
     /// <summary>
     /// A multi-part tree leaf that represents a string value.
@@ -21,7 +21,7 @@ namespace Microsoft.AppHub.TestCloud
         /// </summary>
         /// <param name="parentName">Name of the parent node.</param>
         /// <param name="result">The System.Net.Http.MultipartContent that will store the result.</param>
-        public void BuildMultipartContent(string parentName, MultipartContent result)
+        public void BuildMultipartContent(string parentName, System.Net.Http.MultipartContent result)
         {
             if (parentName == null)
                 throw new ArgumentNullException(nameof(parentName));

@@ -1,11 +1,11 @@
 using System.IO;
-using Microsoft.AppHub.Common;
+using System.Runtime.InteropServices;
+using Microsoft.AppHub.Common.Services;
+using Microsoft.AppHub.TestCloud.Utilities;
 using Xunit;
 
-namespace Microsoft.AppHub.TestCloud.Tests
+namespace Microsoft.AppHub.TestCloud.Tests.Utilities
 {
-    using System.Runtime.InteropServices;
-
     public class FileHelperTests
     {
         [Fact]

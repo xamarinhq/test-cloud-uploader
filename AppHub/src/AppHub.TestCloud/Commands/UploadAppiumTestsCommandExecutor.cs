@@ -4,12 +4,16 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AppHub.Cli;
-using Microsoft.AppHub.Common;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.Common.Services;
+using Microsoft.AppHub.Common.Services.Logging;
+using Microsoft.AppHub.TestCloud.ObjectModel;
+using Microsoft.AppHub.TestCloud.Services;
+using Microsoft.AppHub.TestCloud.Utilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.Commands
 {
     /// <summary>
     /// Command executor that uploads Appium tests to the Test Cloud.

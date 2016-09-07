@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DocoptNet;
 using Microsoft.AppHub.Common;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.Common.Cli.Utilities;
 
 namespace Microsoft.AppHub.Cli.Commands
 {

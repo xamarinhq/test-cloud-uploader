@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services
 {
     /// <summary>
     /// Represents servicve that detects current platform.

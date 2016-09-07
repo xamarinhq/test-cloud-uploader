@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DocoptNet;
 
-namespace Microsoft.AppHub.Cli
+namespace Microsoft.AppHub.Common.Cli.Commands
 {
     public static class CommandExtensions
     {

@@ -2,10 +2,11 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AppHub.Cli;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.TestCloud.ObjectModel;
 using Xunit;
 
-namespace Microsoft.AppHub.TestCloud.Tests
+namespace Microsoft.AppHub.TestCloud.Tests.Services
 {
     public class WorkspaceDirectoryTests: IDisposable
     {

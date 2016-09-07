@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Microsoft.AppHub.Cli
+namespace Microsoft.AppHub.Common.Cli.Commands
 {
     /// <summary> 
     /// Interface for CLI command executors.

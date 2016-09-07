@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services
 {
     public class PlatformService: IPlatformService
     {

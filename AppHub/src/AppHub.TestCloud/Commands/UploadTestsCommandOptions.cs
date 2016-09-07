@@ -1,12 +1,12 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.AppHub.Cli;
 using DocoptNet;
+using Microsoft.AppHub.Common.Cli.Commands;
 
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.Commands
 {
     /// <summary>
     /// Represents command-line options for upload-tests command.

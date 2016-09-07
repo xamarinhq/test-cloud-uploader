@@ -1,4 +1,4 @@
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Cli.Utilities
 {
     /// <summary>
     /// Extensions and constants for getting information about current executable.

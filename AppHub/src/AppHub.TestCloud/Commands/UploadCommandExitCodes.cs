@@ -1,4 +1,4 @@
-namespace Microsoft.AppHub.TestCloud
+namespace Microsoft.AppHub.TestCloud.Commands
 {
     public enum UploadCommandExitCodes
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Microsoft.AppHub.Cli
+namespace Microsoft.AppHub.Common.Cli.Commands
 {
     /// <summary>
     /// Exception that represents a failure in command execution. 

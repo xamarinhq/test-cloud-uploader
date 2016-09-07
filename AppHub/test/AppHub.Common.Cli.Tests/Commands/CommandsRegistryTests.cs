@@ -1,7 +1,8 @@
 ﻿using System;
+using Microsoft.AppHub.Common.Cli.Commands;
 using Xunit;
 
-namespace Microsoft.AppHub.Cli.Tests
+namespace Microsoft.AppHub.Common.Cli.Tests.Commands
 {
     public class CommandsRegistryTests
     {

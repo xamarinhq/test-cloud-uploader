@@ -4,7 +4,11 @@ using System.Linq;
 using DocoptNet;
 using Microsoft.AppHub.Common;
 using Microsoft.AppHub.Cli.Commands;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.Common.Services;
+using Microsoft.AppHub.Common.Services.Logging;
 using Microsoft.AppHub.TestCloud;
+using Microsoft.AppHub.TestCloud.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

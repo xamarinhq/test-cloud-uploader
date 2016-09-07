@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using DocoptNet;
 
-namespace Microsoft.AppHub.Cli
+namespace Microsoft.AppHub.Common.Cli.Commands
 {
     /// <summary> 
     /// Describes a CLI command.

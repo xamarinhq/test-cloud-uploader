@@ -1,13 +1,14 @@
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AppHub.Cli;
-using Microsoft.AppHub.Common;
+using System.Runtime.InteropServices;
 using DocoptNet;
+using Microsoft.AppHub.Common.Cli.Commands;
+using Microsoft.AppHub.Common.Services;
+using Microsoft.AppHub.TestCloud.Commands;
 using Xunit;
 
-namespace Microsoft.AppHub.TestCloud.Tests
+namespace Microsoft.AppHub.TestCloud.Tests.Commands
 {
     public class UploadTestsCommandOptionsTests
     {

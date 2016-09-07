@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Microsoft.AppHub.Common
+namespace Microsoft.AppHub.Common.Services
 {
     /// <summary>
     /// Represents service that runs an external process. 

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AppHub.Common.Services.Logging;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
-namespace Microsoft.AppHub.Common.Tests
+namespace Microsoft.AppHub.Common.Tests.Services.Logging
 {
     public class RecordingLoggerTests
     {
