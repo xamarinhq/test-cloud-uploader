@@ -9,7 +9,7 @@ using Microsoft.AppHub.Common.Cli.Commands;
 namespace Microsoft.AppHub.TestCloud.Commands
 {
     /// <summary>
-    /// Represents command-line options for upload-tests command.
+    /// Represents command-line options for 'test' command.
     /// </summary>
     public class UploadTestsCommandOptions
     {

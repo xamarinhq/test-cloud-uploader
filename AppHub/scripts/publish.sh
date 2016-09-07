@@ -32,14 +32,14 @@ function PublishProject {
     echo "Archive format: $archiveFormat"
     if [ $archiveFormat == "tar.gz" ]
     then
-        dst="$output/app.$platform.tar.gz"
+        dst="$output/xtc.$platform.tar.gz"
         tar -zcvf "$dst" apphub
     else
-        dst="$output/app.$platform.zip"
+        dst="$output/xtc.$platform.zip"
         zip -r "$dst" apphub
     fi
 
-    rm -R ./app
+    rm -R ./apphub
 
     popd
 }

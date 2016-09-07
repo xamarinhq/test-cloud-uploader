@@ -1,7 +1,7 @@
 {
   "version": "1.0.0-*",
   "buildOptions": {
-    "outputName": "app",
+    "outputName": "xtc",
     "debugType": "portable",
     "emitEntryPoint": true
   },

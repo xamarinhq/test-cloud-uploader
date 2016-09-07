@@ -27,7 +27,7 @@ function PublishProject([string] $path, [string] $platform)
         }
 
         $source = "$pwd\bin\$configuration\netcoreapp1.0\$platform\publish"
-        $destination = "$outputDir\app.$platform.zip"
+        $destination = "$outputDir\xtc.$platform.zip"
 
         if (Test-Path $destination)
         {
