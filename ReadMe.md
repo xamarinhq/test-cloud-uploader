@@ -21,9 +21,9 @@ Unified command line interface for App Hub.
 3. In order to use XTC uploader, you need to install the latest version of OpenSLL. 
    The easiest way to get this is from [Homebrew](http://brew.sh/). After installing ```brew```,
    do the following:
-
+   
    ```./apphub/osx.install.openssl.sh```
-
+   
 ## Usage
 ```
 ./xtc help
