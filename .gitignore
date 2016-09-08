@@ -74,6 +74,7 @@ _[Ss]cripts
 *.ncrunchsolution
 *.dot[Cc]over
 
+publish
 AppHub/publish
 project.lock.json
 restore.dg

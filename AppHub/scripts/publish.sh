@@ -29,6 +29,11 @@ function PublishProject {
     mkdir -p apphub
     cp -R ./publish/* ./apphub
     
+    if [[ $platform == osx* ]]
+    then
+        cp "$root/scripts/osx.install.openssl.sh" ./apphub
+    fi
+
     echo "Archive format: $archiveFormat"
     if [ $archiveFormat == "tar.gz" ]
     then
