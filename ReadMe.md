@@ -13,6 +13,7 @@ Unified command line interface for App Hub.
 
 ### OS X
 1. Download ```xtc.osx.10.10-x64.tar.gz``` from the [last stable build](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/lastSuccessfulBuild/artifact/publish/Release/app.osx.10.10-x64.tar.gz).
+
 2. Unpack the archive file:
 
    ```tar -xvzf xtc.osx.10.10-x64.tar.gz```
