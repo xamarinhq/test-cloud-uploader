@@ -1,6 +1,6 @@
 # XTC Command Line Interface (CLI)
 
-Unified command line interface for App Hub.
+Unified command line interface for XTC.
 
 ## Installation
 
