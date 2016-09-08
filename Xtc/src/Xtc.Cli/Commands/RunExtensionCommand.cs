@@ -102,10 +102,7 @@ Usage:
             }
             catch (Exception ex)
             {
-                _logger.LogError(
-                    ExecutionFailedEventId, 
-                    $"Error while executing extension: '{_commandName}': {ex}");
-                throw new CommandException("run", $"Cannot exeucte process '{_commandName}'", ex);
+                throw new CommandException("run", $"Cannot execute command '{_commandName}'", ex);
             }
         }
 
