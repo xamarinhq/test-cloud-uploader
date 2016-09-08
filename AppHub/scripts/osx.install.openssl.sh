@@ -1,6 +1,6 @@
 #!/bin/bash
 
-type brew >/dev/null 2>&1 || { echo >&2 "This scripts requires Homebrew - an OS X package manager. Please install it by following instructions at http://brew.sh"; exit 1; }
+type brew >/dev/null 2>&1 || { echo >&2 "This scripts requires Homebrew - an OS X package manager. Please install it by following instructions from http://brew.sh."; exit 1; }
 
 brew update
 brew install openssl
