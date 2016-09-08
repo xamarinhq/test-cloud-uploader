@@ -25,7 +25,7 @@ Unified command line interface for App Hub.
    The easiest way to get this is from [Homebrew](http://brew.sh/). After installing ```brew```,
    do the following:
 
-   ```bash apphub/osx.install.openssl.sh```
+   ```./apphub/osx.install.openssl.sh```
 
 ## Usage
 ```
