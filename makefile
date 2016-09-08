@@ -1,13 +1,13 @@
 .PHONY: default
 
 build:
-	./AppHub/scripts/build.sh
+	./Xtc/scripts/build.sh
 
 test:
-	./AppHub/scripts/runTests.sh
+	./Xtc/scripts/runTests.sh
 
 publish:
-	./AppHub/scripts/publish.sh
+	./Xtc/scripts/publish.sh
 
 default: build test publish
 
