@@ -22,8 +22,8 @@ Unified command line interface for XTC.
    The easiest way to get this is from [Homebrew](http://brew.sh/). After installing ```brew```,
    do the following:
    
-   ```./apphub/osx.install.openssl.sh```
-   
+   ``` ./apphub/osx.install.openssl.sh ```
+
 ## Usage
 ```
 ./xtc help
