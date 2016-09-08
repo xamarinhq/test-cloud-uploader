@@ -75,6 +75,6 @@ _[Ss]cripts
 *.dot[Cc]over
 
 publish
-AppHub/publish
+Xtc/publish
 project.lock.json
 restore.dg
