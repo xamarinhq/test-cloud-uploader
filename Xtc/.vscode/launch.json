@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/src/Xtc.Cli/bin/Debug/netcoreapp1.0/app.dll",
+            "args": ["test-cloud", "c:\\Temp\\app.txt", "c:\\Temp\\Foo.txt"],
+            "cwd": "${workspaceRoot}/src/Xtc.Cli",
+            "externalConsole": false,
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command.pickProcess}"
+        }
+    ]
+}
