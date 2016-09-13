@@ -281,7 +281,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
         private string GetDevicesListLog(IEnumerable<string> devices)
         {
-            return devices.Aggregate(new StringBuilder(), (sb, d) => sb.Append($"    {d}"), sb => sb.ToString());
+            return devices.Aggregate(new StringBuilder(), (sb, d) => sb.AppendLine($"    {d}"), sb => sb.ToString());
         }
     }
 }
