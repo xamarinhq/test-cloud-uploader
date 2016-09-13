@@ -32,7 +32,7 @@ function PublishProject {
     
     if [[ $platform == osx* ]]
     then
-        cp "$root/scripts/osx.install.openssl.sh" ./tmp/xtc
+        cp "$root/scripts/osx.install.openssl.sh" ./xtc
     fi
 
     echo "Archive format: $archiveFormat"
