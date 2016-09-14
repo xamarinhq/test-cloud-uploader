@@ -183,8 +183,6 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                     request.TestParameters[testParameter.Key] = testParameter.Value;
                 }
 
-                request.TestParameters["pipeline"] = "appium";
-
                 var result = await _testCloudProxy.UploadTestsAsync(request);
                 LogUploadTestsResponse(result);
 
