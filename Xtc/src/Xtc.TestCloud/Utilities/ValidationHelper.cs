@@ -43,7 +43,7 @@ namespace Microsoft.Xtc.TestCloud.Utilities
         /// <returns>True if the workspacePath points to an iOS app; otherwise, returns false.</returns>
         public static bool IsIosApp(string appPath)
         {
-            return ".ipk".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
+            return ".ipa".Equals(Path.GetExtension(appPath), StringComparison.Ordinal);
         }
     }
 }
