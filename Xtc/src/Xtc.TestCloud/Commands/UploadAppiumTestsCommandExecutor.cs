@@ -27,7 +27,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
         public static readonly EventId CheckStatusResultEventId = 4;
 
         private static readonly TimeSpan _defaultWaitTime = TimeSpan.FromSeconds(10);
-        private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/ci");
+        private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/");
 
         private readonly UploadTestsCommandOptions _options;
         private readonly TestCloudProxy _testCloudProxy;
@@ -89,7 +89,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
         {
             _options.Validate();
 
-            if (!ValidationHelper.IsAndroidApp(_options.AppFile))
+            if (ValidationHelper.IsAndroidApp(_options.AppFile))
             {
                 if (ValidationHelper.UsesSharedRuntime(_options.AppFile))
                 {
@@ -101,6 +101,13 @@ You can learn how to compile you app for release here:
 http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publishing_an_application/part_1_-_preparing_an_application_for_release",
                         (int) UploadCommandExitCodes.InvalidOptions);
                 }
+            }
+            else if (!ValidationHelper.IsIosApp(_options.AppFile))
+            {
+                throw new CommandException(
+                    UploadTestsCommand.CommandName,
+                    @"Provided file with application must be either Android or iOS application",
+                    (int) UploadCommandExitCodes.InvalidOptions);
             }
 
             _workspace.Validate();
@@ -175,8 +182,6 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 {
                     request.TestParameters[testParameter.Key] = testParameter.Value;
                 }
-
-                request.TestParameters["pipeline"] = "appium";
 
                 var result = await _testCloudProxy.UploadTestsAsync(request);
                 LogUploadTestsResponse(result);
