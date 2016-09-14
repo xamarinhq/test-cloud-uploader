@@ -56,13 +56,12 @@ namespace Microsoft.Xtc.TestCloud.Services
             request.UploaderVersion = UploaderClientVersion;
             var json = JsonConvert.SerializeObject(request);
 
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
             var httpResponse = await RetryWebRequest(async () =>
             {
                 var path = "ci/check_version";
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
 
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(path, httpContent);
                 response.EnsureSuccessStatusCode();
 
@@ -151,13 +150,12 @@ namespace Microsoft.Xtc.TestCloud.Services
             request.UploaderVersion = UploaderClientVersion;
             var json = JsonConvert.SerializeObject(request);
 
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
             var httpResponse = await RetryWebRequest(async () =>
             {
                 var path = "ci/status_v3";
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
 
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(path, httpContent);
                 response.EnsureSuccessStatusCode();
 
@@ -171,11 +169,11 @@ namespace Microsoft.Xtc.TestCloud.Services
 
         private async Task<TResult> SendMultipartPostRequest<TResult>(string path, IContentBuilderPart contentBuilder)
         {
-            var httpContent = BuildMultipartContent(contentBuilder);
-
             var httpResponse = await RetryWebRequest(async () =>
             {
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
+                
+                var httpContent = BuildMultipartContent(contentBuilder);
                 var response = await _httpClient.PostAsync(path, httpContent);
                 response.EnsureSuccessStatusCode();
 

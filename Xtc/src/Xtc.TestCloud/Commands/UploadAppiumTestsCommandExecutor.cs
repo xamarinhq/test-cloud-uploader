@@ -21,13 +21,16 @@ namespace Microsoft.Xtc.TestCloud.Commands
     /// </summary>
     public class UploadAppiumTestsCommandExecutor : ICommandExecutor
     {
+        private const string TestCloudEndpointEnvironmentVariable = "XTC_ENDPOINT"; 
+
         public static readonly EventId PackagingFileEventId = 1;
         public static readonly EventId CheckHashResultEventId = 2;
         public static readonly EventId UploadTestsResultEventId = 3;
         public static readonly EventId CheckStatusResultEventId = 4;
+        public static readonly EventId CustomEndpointEventId = 5;
 
         private static readonly TimeSpan _defaultWaitTime = TimeSpan.FromSeconds(10);
-        private static readonly Uri _testCloudUri = new Uri("https://testcloud.xamarin.com/");
+        private static readonly Uri _defaultTestCloudUri = new Uri("https://testcloud.xamarin.com/");
 
         private readonly UploadTestsCommandOptions _options;
         private readonly TestCloudProxy _testCloudProxy;
@@ -48,10 +51,41 @@ namespace Microsoft.Xtc.TestCloud.Commands
             _options = options;
             _logsRecorder = logsRecorder;
             _logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
-            _testCloudProxy = new TestCloudProxy(_testCloudUri, loggerService);
-
+            
+            var testCloudUri = GetTestCloudUri();
+            _testCloudProxy = new TestCloudProxy(testCloudUri, loggerService);
             _workspace = new AppiumWorkspace(options.Workspace);
             _dSymDirectory = options.DSymDirectory != null ? new DSymDirectory(options.DSymDirectory) : null;
+        }
+
+        private Uri GetTestCloudUri()
+        {
+            var customEndpoint = Environment.GetEnvironmentVariable(TestCloudEndpointEnvironmentVariable);
+            if (string.IsNullOrEmpty(customEndpoint))
+            {
+                return _defaultTestCloudUri;
+            }
+
+            try
+            {
+                var result = new Uri(customEndpoint);
+
+                _logger.LogDebug(
+                    CustomEndpointEventId,
+                    $"Environment variable {TestCloudEndpointEnvironmentVariable} was set. " + 
+                    $"Using custom Test Cloud endpoint URI: {result}.");
+
+                return result;
+            }
+            catch (UriFormatException)
+            {
+                _logger.LogWarning(
+                    CustomEndpointEventId,
+                    $"Value of environment variable {TestCloudEndpointEnvironmentVariable} ({customEndpoint}) " + 
+                    $"is not valid URI. Using default endpoint URI ({_defaultTestCloudUri}).");
+                
+                return _defaultTestCloudUri;
+            }
         }
 
         public async Task ExecuteAsync()
