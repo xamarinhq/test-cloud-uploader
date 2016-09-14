@@ -66,25 +66,20 @@ namespace Microsoft.Xtc.TestCloud.Commands
                 return _defaultTestCloudUri;
             }
 
+            _logger.LogDebug(
+                CustomEndpointEventId,
+                $"Environment variable {TestCloudEndpointEnvironmentVariable} was set. " + 
+                $"Using custom Test Cloud endpoint URI: {customEndpoint}.");
+
             try
             {
-                var result = new Uri(customEndpoint);
-
-                _logger.LogDebug(
-                    CustomEndpointEventId,
-                    $"Environment variable {TestCloudEndpointEnvironmentVariable} was set. " + 
-                    $"Using custom Test Cloud endpoint URI: {result}.");
-
-                return result;
+                return new Uri(customEndpoint);
             }
             catch (UriFormatException)
             {
-                _logger.LogWarning(
-                    CustomEndpointEventId,
-                    $"Value of environment variable {TestCloudEndpointEnvironmentVariable} ({customEndpoint}) " + 
-                    $"is not valid URI. Using default endpoint URI ({_defaultTestCloudUri}).");
-                
-                return _defaultTestCloudUri;
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    $"Invalid custom Test Cloud endpoint URI: {customEndpoint}");
             }
         }
 
