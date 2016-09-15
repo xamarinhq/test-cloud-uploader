@@ -196,11 +196,15 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
 
                 request.TestCloudOptions["user"] = _options.User;
                 request.TestCloudOptions["device_selection"] = _options.Devices;
-                request.TestCloudOptions["app"] = _options.AppName;
                 request.TestCloudOptions["locale"] = _options.Locale;
                 request.TestCloudOptions["appium"] = "true";
                 request.TestCloudOptions["series"] = _options.Series;
                 request.TestCloudOptions["api_key"] = _options.ApiKey;
+
+                if (_options.AppName != null)
+                {
+                    request.TestCloudOptions["app"] = _options.AppName;
+                }
 
                 if (_dSymDirectory != null)
                 {

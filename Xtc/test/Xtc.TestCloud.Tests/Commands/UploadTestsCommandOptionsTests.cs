@@ -80,7 +80,6 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 apkPath, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
-                "--app-name", "testApp",
                 "--devices", "testDevices"
             };
 
@@ -90,9 +89,10 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
             Assert.Equal("en_US", uploadOptions.Locale);
             Assert.False(uploadOptions.Async);
             Assert.False(uploadOptions.AsyncJson);
-            Assert.False(uploadOptions.Debug);            
+            Assert.False(uploadOptions.Debug);
             Assert.Null(uploadOptions.Series);
             Assert.Null(uploadOptions.DSymDirectory);
+            Assert.Null(uploadOptions.AppName);
         }
 
         [Fact]
@@ -104,8 +104,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "z:\\not_existing_app.apk", 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
-                "--devices", "testDevices",
-                "--app-name", "testApp",
+                "--devices", "testDevices"
             };
 
             var uploadOptions = ParseOptions(args);
@@ -123,7 +122,6 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
-                "--app-name", "testApp",
                 "--workspace", "z:\\not_existing_workspace_directory"
             };
 
@@ -142,7 +140,6 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
-                "--app-name", "testApp",
                 "--dsym-directory", "z:\\not_existing_dSym_directory"
             };
 
@@ -160,22 +157,6 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
                 "--devices", "testDevices",
-                "--app-name", "testApp"
-            };
-
-            Assert.Throws<DocoptInputErrorException>(() => ParseOptions(args));
-        }
-
-        [Fact]
-        public void ParsingShouldFailWhenAppNameIsMissing()
-        {
-            var args = new[] 
-            {
-                "test",
-                Assembly.GetEntryAssembly().Location, 
-                "testApiKey",
-                "--user", "testUser@xamarin.com",
-                "--devices", "testDevices"
             };
 
             Assert.Throws<DocoptInputErrorException>(() => ParseOptions(args));
@@ -189,8 +170,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "test",
                 Assembly.GetEntryAssembly().Location, 
                 "testApiKey",
-                "--user", "testUser@xamarin.com@xamarin.com",
-                "--app-name", "testApp"
+                "--user", "testUser@xamarin.com@xamarin.com"
             };
 
             Assert.Throws<DocoptInputErrorException>(() => ParseOptions(args));
@@ -206,7 +186,6 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
-                "--app-name", "testApp",
                 "--test-parameters", "testKey testValue"
             };
 
@@ -225,7 +204,6 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
-                "--app-name", "testApp",
                 "--test-parameters", "testKey:testValue"
             };
 
@@ -242,7 +220,6 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "c:\\Temp\\testApp.apk", 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
-                "--app-name", "testApp",
                 "--devices", "testDevices",
                 "--unrecognized-option"
             };
