@@ -45,7 +45,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
 
         public static readonly string[] OptionsSyntax =
         {
-            "<app-file> <api-key> --user <user> --app-name <app-name> --devices <devices> [options]"
+            "<app-file> <api-key> --user <user> --devices <devices> [options]"
         };
 
         private readonly IDictionary<string, ValueObject> _options;
@@ -85,11 +85,6 @@ namespace Microsoft.Xtc.TestCloud.Commands
             if (string.IsNullOrWhiteSpace(this.Devices))
             {
                 throw new CommandException(UploadTestsCommand.CommandName, $"Missing required option '{DevicesOption}'");
-            }
-
-            if (string.IsNullOrWhiteSpace(this.AppName))
-            {
-                throw new CommandException(UploadTestsCommand.CommandName, $"Missing required option '{AppNameOption}'");
             }
 
             if (string.IsNullOrEmpty(this.User))
