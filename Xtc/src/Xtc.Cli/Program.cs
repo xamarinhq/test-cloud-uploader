@@ -14,6 +14,8 @@ namespace Microsoft.Xtc.Cli
 {
     public class Program
     {
+        public const int DefaultErrorExitCode = 3;
+
         public static void Main(string[] args)
         {
             var services = new ServiceCollection();
@@ -53,20 +55,19 @@ namespace Microsoft.Xtc.Cli
             {                
                 var typedException = (CommandException)ex;
                 logger.LogError(typedException.Message);
-                
-                if (typedException.ExitCode != null)
-                {
-                    Environment.Exit(typedException.ExitCode.Value);
-                }
+                Environment.Exit(typedException.ExitCode ?? DefaultErrorExitCode);
             }
             else if (ex is DocoptInputErrorException)
             {
-                logger.LogError($"Invalid arguments for command \"{command.Name}\": {ex.Message}");
+                logger.LogError(
+                    $"Invalid arguments for command \"{command.Name}\".{Environment.NewLine}{command.Syntax}");
+                Environment.Exit(DefaultErrorExitCode);
             } 
             else
             {
                 logger.LogError($"Error while executing command {command.Name}: {ex.Message}");
                 logger.LogDebug(ex.ToString());
+                Environment.Exit(DefaultErrorExitCode);
             }
         }
 

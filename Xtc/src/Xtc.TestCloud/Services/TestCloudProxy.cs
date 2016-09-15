@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,10 +63,7 @@ namespace Microsoft.Xtc.TestCloud.Services
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
 
                 var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(path, httpContent);
-                response.EnsureSuccessStatusCode();
-
-                return response;
+                return await _httpClient.PostAsync(path, httpContent);
             });
 
             var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
@@ -156,10 +154,7 @@ namespace Microsoft.Xtc.TestCloud.Services
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
 
                 var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(path, httpContent);
-                response.EnsureSuccessStatusCode();
-
-                return response;
+                return await _httpClient.PostAsync(path, httpContent);
             });
 
             var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
@@ -174,10 +169,7 @@ namespace Microsoft.Xtc.TestCloud.Services
                 _logger.LogDebug(HttpRequestEventId, $"HTTP POST request to {_httpClient.BaseAddress + path}");
                 
                 var httpContent = BuildMultipartContent(contentBuilder);
-                var response = await _httpClient.PostAsync(path, httpContent);
-                response.EnsureSuccessStatusCode();
-
-                return response;
+                return await _httpClient.PostAsync(path, httpContent);
             });
 
             var httpResponseString = await httpResponse.Content.ReadAsStringAsync();
@@ -244,43 +236,70 @@ namespace Microsoft.Xtc.TestCloud.Services
             return $"--{DateTimeOffset.UtcNow.Ticks.ToString("x")}--";
         }
 
-        private async Task<T> RetryWebRequest<T>(Func<Task<T>> request)
+        private async Task<HttpResponseMessage> RetryWebRequest(Func<Task<HttpResponseMessage>> request)
         {
             var maximumTime = DateTimeOffset.UtcNow + _retryTimeout;
 
-            while (DateTimeOffset.UtcNow < maximumTime)
+            while (true)
             {
                 try
                 {
-                    return await request();
-                }
-                catch (Exception ex) when (IsTransientException(ex))
-                {
-                    _logger.LogInformation(
-                        RetryingEventId,
-                        $"Retrying in {_retryDelay.TotalSeconds} seconds. Failed to reach server: {ex.Message}");
-                    _logger.LogDebug(HttpExceptionEventId, $"Exception: {ex}");
+                    var result = await request();
 
-                    await Task.Delay(_retryDelay);
+                    if ((int)result.StatusCode < 400)
+                    {
+                        return result;
+                    }
+
+                    if (IsTransientErrorCode(result.StatusCode) && DateTimeOffset.UtcNow < maximumTime)
+                    {
+                        _logger.LogInformation(
+                            RetryingEventId,
+                            $"Retrying in {_retryDelay.TotalSeconds} seconds. Server returned status code: {result.StatusCode}");
+
+                        await Task.Delay(_retryDelay);
+                    }
+                    else
+                    {
+                        var errorMessage = await GetCustomErrorMessage(result);
+                        throw new HttpRequestException(errorMessage);
+                    }
+                }
+                // The HttpException may be thrown when error occurs in layers lower than HTTP.
+                catch (HttpRequestException ex) when (ex.InnerException != null)
+                {
+                    // The default error message for is not useful. For example, when the host name
+                    // cannot be resolved, it contains generic message "An error occurred while sending
+                    // the request. Inner exception has more information.
+                    var errorMessage = $"{ex.Message}{Environment.NewLine}{ex.InnerException.Message}";
+                    throw new HttpRequestException(errorMessage, ex);
                 }
             }
-
-            return await request();
         }
 
-        private static bool IsTransientException(Exception ex)
+        private async Task<string> GetCustomErrorMessage(HttpResponseMessage response)
         {
-            if (ex is HttpRequestException)
+            var defaultErrorMessage = $"Response status code does not indicate success: " + 
+                                      $"{(int)response.StatusCode} ({response.StatusCode})";
+            var json = await response.Content?.ReadAsStringAsync();
+            
+            if (!string.IsNullOrEmpty(json))
             {
-                return true;
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResult>(json);
+                return errorResponse.ErrorMessage ?? defaultErrorMessage;
             }
-
-            if (ex is AggregateException)
+            else
             {
-                return ((AggregateException)ex).InnerExceptions.Any(IsTransientException);
+                return defaultErrorMessage;
             }
+        }
 
-            return false;
+        private static bool IsTransientErrorCode(HttpStatusCode statusCode)
+        {
+            return statusCode == HttpStatusCode.GatewayTimeout ||
+                   statusCode == HttpStatusCode.RequestTimeout ||
+                   statusCode == HttpStatusCode.ServiceUnavailable ||
+                   statusCode == HttpStatusCode.InternalServerError;
         }
     }
 }
