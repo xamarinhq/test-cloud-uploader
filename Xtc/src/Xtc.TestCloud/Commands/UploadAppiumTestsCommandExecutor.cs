@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,7 +80,8 @@ namespace Microsoft.Xtc.TestCloud.Commands
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName, 
-                    $"Invalid custom Test Cloud endpoint URI: {customEndpoint}");
+                    $"Invalid custom Test Cloud endpoint URI: {customEndpoint}",
+                    (int)UploadCommandExitCodes.InvalidTestCloudEndpoint);
             }
         }
 
@@ -128,7 +130,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
 To test your app it needs to be compiled for release.
 You can learn how to compile you app for release here: 
 http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publishing_an_application/part_1_-_preparing_an_application_for_release",
-                        (int) UploadCommandExitCodes.InvalidOptions);
+                        (int) UploadCommandExitCodes.InvalidAppFile);
                 }
             }
             else if (!ValidationHelper.IsIosApp(_options.AppFile))
@@ -136,7 +138,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
                 throw new CommandException(
                     UploadTestsCommand.CommandName,
                     @"Provided file with application must be either Android or iOS application",
-                    (int) UploadCommandExitCodes.InvalidOptions);
+                    (int) UploadCommandExitCodes.InvalidAppFile);
             }
 
             _workspace.Validate();
@@ -147,12 +149,22 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         {
             using (_logger.BeginScope("Checking version"))
             {
-                var request = new CheckVersionRequest(_options.ToArgumentsArray());
-                var result = await _testCloudProxy.CheckVersionAsync(request);
-
-                if (result.ErrorMessage != null)
+                try
                 {
-                    throw new CommandException(UploadTestsCommand.CommandName, result.ErrorMessage);
+                    var request = new CheckVersionRequest(_options.ToArgumentsArray());
+                    var result = await _testCloudProxy.CheckVersionAsync(request);
+
+                    if (result.ErrorMessage != null)
+                    {
+                        throw new CommandException(
+                            UploadTestsCommand.CommandName, 
+                            result.ErrorMessage,
+                            (int)UploadCommandExitCodes.ServerError);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw TranslateException(ex);
                 }
             }
         }
@@ -177,11 +189,18 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         {
             using (_logger.BeginScope("Negotiating upload"))
             {
-                var request = new CheckFileHashesRequest(appFile, dSymFile, allFilesToUpload);
-                var result = await _testCloudProxy.CheckFileHashesAsync(request);
-                LogCheckHashesResponse(result);
+                try
+                {
+                    var request = new CheckFileHashesRequest(appFile, dSymFile, allFilesToUpload);
+                    var result = await _testCloudProxy.CheckFileHashesAsync(request);
+                    LogCheckHashesResponse(result);
 
-                return result;
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    throw TranslateException(ex);
+                }
             }
         }
 
@@ -192,34 +211,41 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         {
             using (_logger.BeginScope("Uploading negotiated files"))
             {
-                var request = new UploadTestsRequest(appFile, dSymFile, otherFiles);
-
-                request.TestCloudOptions["user"] = _options.User;
-                request.TestCloudOptions["device_selection"] = _options.Devices;
-                request.TestCloudOptions["locale"] = _options.Locale;
-                request.TestCloudOptions["appium"] = "true";
-                request.TestCloudOptions["series"] = _options.Series;
-                request.TestCloudOptions["api_key"] = _options.ApiKey;
-
-                if (_options.AppName != null)
+                try
                 {
-                    request.TestCloudOptions["app"] = _options.AppName;
-                }
+                    var request = new UploadTestsRequest(appFile, dSymFile, otherFiles);
 
-                if (_dSymDirectory != null)
+                    request.TestCloudOptions["user"] = _options.User;
+                    request.TestCloudOptions["device_selection"] = _options.Devices;
+                    request.TestCloudOptions["locale"] = _options.Locale;
+                    request.TestCloudOptions["appium"] = "true";
+                    request.TestCloudOptions["series"] = _options.Series;
+                    request.TestCloudOptions["api_key"] = _options.ApiKey;
+
+                    if (_options.AppName != null)
+                    {
+                        request.TestCloudOptions["app"] = _options.AppName;
+                    }
+
+                    if (_dSymDirectory != null)
+                    {
+                        request.TestCloudOptions["crash_reporting"] = "true";
+                    }
+
+                    foreach (var testParameter in _options.TestParameters)
+                    {
+                        request.TestParameters[testParameter.Key] = testParameter.Value;
+                    }
+
+                    var result = await _testCloudProxy.UploadTestsAsync(request);
+                    LogUploadTestsResponse(result);
+
+                    return result;
+                }
+                catch (Exception ex)
                 {
-                    request.TestCloudOptions["crash_reporting"] = "true";
+                    throw TranslateException(ex);
                 }
-
-                foreach (var testParameter in _options.TestParameters)
-                {
-                    request.TestParameters[testParameter.Key] = testParameter.Value;
-                }
-
-                var result = await _testCloudProxy.UploadTestsAsync(request);
-                LogUploadTestsResponse(result);
-
-                return result;
             }
         }
 
@@ -227,29 +253,36 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         {
             using (_logger.BeginScope("Waiting for test results"))
             {
-                var checkStatusRequest = new CheckStatusRequest(uploadTestsResult.JobId)
+                try
                 {
-                    ApiKey = _options.ApiKey,
-                    User = _options.User
-                };
+                    var checkStatusRequest = new CheckStatusRequest(uploadTestsResult.JobId)
+                    {
+                        ApiKey = _options.ApiKey,
+                        User = _options.User
+                    };
 
-                while (true)
+                    while (true)
+                    {
+                        var checkStatusResult = await _testCloudProxy.CheckStatusAsync(checkStatusRequest);
+                        LogCheckStatusResponse(checkStatusResult);
+
+                        if (checkStatusResult.ExitCode != null)
+                        {
+                            return checkStatusResult.ExitCode.Value;
+                        }
+                        else
+                        {
+                            var waitTime = checkStatusResult.WaitTime != null 
+                                ? TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) 
+                                : _defaultWaitTime;
+
+                            await Task.Delay(waitTime);
+                        }
+                    }
+                }
+                catch (Exception ex)
                 {
-                    var checkStatusResult = await _testCloudProxy.CheckStatusAsync(checkStatusRequest);
-                    LogCheckStatusResponse(checkStatusResult);
-
-                    if (checkStatusResult.ExitCode != null)
-                    {
-                        return checkStatusResult.ExitCode.Value;
-                    }
-                    else
-                    {
-                        var waitTime = checkStatusResult.WaitTime != null 
-                            ? TimeSpan.FromSeconds(checkStatusResult.WaitTime.Value) 
-                            : _defaultWaitTime;
-
-                        await Task.Delay(waitTime);
-                    }
+                    throw TranslateException(ex);
                 }
             }
         }
@@ -320,6 +353,15 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         private string GetDevicesListLog(IEnumerable<string> devices)
         {
             return devices.Aggregate(new StringBuilder(), (sb, d) => sb.AppendLine($"    {d}"), sb => sb.ToString());
+        }
+
+        private Exception TranslateException(Exception ex)
+        {
+            var exitCode = ex is HttpRequestException ? 
+                UploadCommandExitCodes.ServerError : 
+                UploadCommandExitCodes.UnknownError;
+
+            return new CommandException(UploadTestsCommand.CommandName, ex.Message, ex, (int)exitCode); 
         }
     }
 }

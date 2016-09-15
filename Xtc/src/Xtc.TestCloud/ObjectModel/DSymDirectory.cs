@@ -51,12 +51,18 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
         {
             if (!Directory.Exists(_directoryPath))
             {
-                throw new CommandException(UploadTestsCommand.CommandName, $"Directory with dSYM files \"{_directoryPath}\" doesn't exist.");
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    $"Directory with dSYM files \"{_directoryPath}\" doesn't exist.",
+                    (int)UploadCommandExitCodes.InvalidDSymDirectory);
             }
 
             if (!".dsym".Equals(Path.GetExtension(_directoryPath), StringComparison.OrdinalIgnoreCase))
             {
-                throw new CommandException(UploadTestsCommand.CommandName, "Directory with dSYM files must have the extension \".dsym\".");
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    "Directory with dSYM files must have the extension \".dsym\".",
+                    (int)UploadCommandExitCodes.InvalidDSymDirectory);
             }
 
             var dwarfPath = Path.GetFullPath(Path.Combine(_directoryPath, "Contents", "Resources", "DWARF"));
@@ -64,7 +70,10 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
 
             if (dwarfFiles.Length != 1)
             {
-                throw new CommandException(UploadTestsCommand.CommandName, "Directory with dSYM files contains more than one file in Contents/Resoruces/DWARF");
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    "Directory with dSYM files contains more than one file in Contents/Resoruces/DWARF",
+                    (int)UploadCommandExitCodes.InvalidDSymDirectory);
             }
 
             return dwarfFiles[0];

@@ -56,7 +56,8 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName,
-                    "The Appium workspace directory must contain file \"pom.xml\"");
+                    "The Appium workspace directory must contain file \"pom.xml\"",
+                    (int)UploadCommandExitCodes.InvalidWorkspace);
             }
         }
 
@@ -67,7 +68,8 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName,
-                    "The Appium workspace directory must contain directory \"dependency-jars\"");
+                    "The Appium workspace directory must contain directory \"dependency-jars\"",
+                    (int)UploadCommandExitCodes.InvalidWorkspace);
             }
         }
 
@@ -78,7 +80,8 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName,
-                    "The Appium workspace directory must contain directory \"test-classes\"");
+                    "The Appium workspace directory must contain directory \"test-classes\"",
+                    (int)UploadCommandExitCodes.InvalidWorkspace);
             }
 
             var classFiles = Directory.GetFiles(testClassesPath, "*.class", SearchOption.AllDirectories);
@@ -86,7 +89,8 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName,
-                    "Test Appium workspace directory must contain at least one *.class files in directory \"test-classes\"");
+                    "Test Appium workspace directory must contain at least one *.class files in directory \"test-classes\"",
+                    (int)UploadCommandExitCodes.InvalidWorkspace);
             }
         }
 
