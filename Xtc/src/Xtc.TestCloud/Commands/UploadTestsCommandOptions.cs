@@ -69,27 +69,42 @@ namespace Microsoft.Xtc.TestCloud.Commands
         {
             if (!File.Exists(this.AppFile))
             {
-                throw new CommandException(UploadTestsCommand.CommandName, $"Cannot find app file: {this.AppFile}");
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    $"Cannot find app file: {this.AppFile}",
+                    (int)UploadCommandExitCodes.InvalidAppFile);
             }
 
             if (!Directory.Exists(this.Workspace))
             {
-                throw new CommandException(UploadTestsCommand.CommandName, $"Cannot find workspace directory: {this.Workspace}");
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    $"Cannot find workspace directory: {this.Workspace}",
+                    (int)UploadCommandExitCodes.InvalidWorkspace);
             }
 
             if (!string.IsNullOrWhiteSpace(this.DSymDirectory) && !Directory.Exists(this.DSymDirectory))
             {
-                throw new CommandException(UploadTestsCommand.CommandName, $"Cannot find dSYM directory: {this.DSymDirectory}");
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    $"Cannot find dSYM directory: {this.DSymDirectory}",
+                    (int)UploadCommandExitCodes.InvalidDSymDirectory);
             }
 
             if (string.IsNullOrWhiteSpace(this.Devices))
             {
-                throw new CommandException(UploadTestsCommand.CommandName, $"Missing required option '{DevicesOption}'");
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    $"Missing required option '{DevicesOption}'",
+                    (int)UploadCommandExitCodes.InvalidOptions);
             }
 
             if (string.IsNullOrEmpty(this.User))
             {
-                throw new CommandException(UploadTestsCommand.CommandName, $"Missing required option '{UserOption}'");
+                throw new CommandException(
+                    UploadTestsCommand.CommandName, 
+                    $"Missing required option '{UserOption}'",
+                    (int)UploadCommandExitCodes.InvalidOptions);
             }
 
             if (_parsedTestParameters == null)

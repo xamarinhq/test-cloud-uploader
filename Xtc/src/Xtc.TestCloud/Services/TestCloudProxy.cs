@@ -280,7 +280,7 @@ namespace Microsoft.Xtc.TestCloud.Services
         private async Task<string> GetCustomErrorMessage(HttpResponseMessage response)
         {
             var defaultErrorMessage = $"Response status code does not indicate success: " + 
-                                      $"{(int)response.StatusCode} ({response.StatusCode}).";
+                                      $"{(int)response.StatusCode} ({response.StatusCode})";
             var json = await response.Content?.ReadAsStringAsync();
             
             if (!string.IsNullOrEmpty(json))
