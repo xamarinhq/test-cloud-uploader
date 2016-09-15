@@ -61,7 +61,8 @@ namespace Microsoft.Xtc.Cli
             }
             else if (ex is DocoptInputErrorException)
             {
-                logger.LogError($"Invalid arguments for command \"{command.Name}\": {ex.Message}");
+                logger.LogError(
+                    $"Invalid arguments for command \"{command.Name}\".{Environment.NewLine}{command.Syntax}");
             } 
             else
             {
