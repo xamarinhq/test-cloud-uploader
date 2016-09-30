@@ -4,7 +4,9 @@ using System.Text;
 using DocoptNet;
 using Microsoft.Xtc.Common.Cli.Commands;
 using Microsoft.Xtc.Common.Cli.Utilities;
+using Microsoft.Xtc.Common.Services;
 using Microsoft.Xtc.Common.Services.Logging;
+using Microsoft.Xtc.TestCloud.Services;
 
 namespace Microsoft.Xtc.TestCloud.Commands
 {
@@ -37,10 +39,17 @@ Options: {UploadTestsCommandOptions.OptionsDescription}";
 
         public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {
+            var loggerService = (ILoggerService)serviceProvider.GetService(typeof(ILoggerService));
+                        
+            var nativeDependenciesVerifier = new NativeDependenciesVerifier(
+                loggerService,
+                (IPlatformService)serviceProvider.GetService(typeof(IPlatformService)));
+                
+            nativeDependenciesVerifier.Verify(this.Name);
+
             var uploadOptions = new UploadTestsCommandOptions(options);
             
             LogsRecorder logsRecorder = null;
-            var loggerService = (ILoggerService)serviceProvider.GetService(typeof(ILoggerService));
 
             if (uploadOptions.AsyncJson)
             {

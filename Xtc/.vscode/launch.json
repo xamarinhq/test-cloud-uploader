@@ -6,8 +6,8 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceRoot}/src/Xtc.Cli/bin/Debug/netcoreapp1.0/app.dll",
-            "args": ["test-cloud", "c:\\Temp\\app.txt", "c:\\Temp\\Foo.txt"],
+            "program": "${workspaceRoot}/src/Xtc.Cli/bin/Debug/netcoreapp1.0/osx.10.11-x64/xtc.dll",
+            "args": [ "test", "/Users/tomaskmi/appium.app.ipa", "APIKEY", "--user", "test@test.com", "--devices", "DEVICES" ],
             "cwd": "${workspaceRoot}/src/Xtc.Cli",
             "externalConsole": false,
             "stopAtEntry": false

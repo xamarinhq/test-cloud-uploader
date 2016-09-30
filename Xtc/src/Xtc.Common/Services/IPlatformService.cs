@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace Microsoft.Xtc.Common.Services
 {
     /// <summary>
-    /// Represents servicve that detects current platform.
+    /// Represents service that detects current platform.
     /// </summary>
     public interface IPlatformService
     {
