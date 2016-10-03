@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export DOTNET_RUNTIME_ID=osx.10.11-x64
+
 configuration=${1:-Release}
 root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 output="$root/../publish/$configuration"
@@ -32,7 +34,10 @@ function PublishProject {
     
     if [[ $platform == osx* ]]
     then
-        cp "$root/scripts/osx.install.openssl.sh" ./xtc
+        # Path for Homebrew OpenSSL installation path
+        install_name_tool -add_rpath /usr/local/opt/openssl/lib/ ./xtc/System.Security.Cryptography.Native.dylib
+        # Path for MacPorts OpenSSL insallation path
+        install_name_tool -add_rpath /opt/local/lib/ ./xtc/System.Security.Cryptography.Native.dylib
     fi
 
     echo "Archive format: $archiveFormat"
