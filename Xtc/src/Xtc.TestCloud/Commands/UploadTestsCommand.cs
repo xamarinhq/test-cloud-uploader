@@ -40,13 +40,6 @@ Options: {UploadTestsCommandOptions.OptionsDescription}";
         public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {
             var loggerService = (ILoggerService)serviceProvider.GetService(typeof(ILoggerService));
-                        
-            var nativeDependenciesVerifier = new NativeDependenciesVerifier(
-                loggerService,
-                (IPlatformService)serviceProvider.GetService(typeof(IPlatformService)));
-                
-            nativeDependenciesVerifier.Verify(this.Name);
-
             var uploadOptions = new UploadTestsCommandOptions(options);
             
             LogsRecorder logsRecorder = null;
