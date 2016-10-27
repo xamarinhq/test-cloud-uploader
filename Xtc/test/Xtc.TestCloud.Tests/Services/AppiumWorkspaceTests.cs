@@ -26,7 +26,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Services
 
         public void Dispose()
         {
-            Directory.Delete(_workspace.WorkspacePath, true);
+            Directory.Delete(_workspace.WorkspacePath(), true);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Services
 
         private async Task CreateDirectoryInWorkspace(string path)
         {
-            var fullPath = Path.Combine(_workspace.WorkspacePath, path);
+            var fullPath = Path.Combine(_workspace.WorkspacePath(), path);
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
@@ -96,14 +96,14 @@ namespace Microsoft.Xtc.TestCloud.Tests.Services
         private async Task CreateFileInWorkspace(string path, string content)
         {
             await CreateDirectoryInWorkspace(Path.GetDirectoryName(path));
-            File.WriteAllText(Path.Combine(_workspace.WorkspacePath, path), content);
+            File.WriteAllText(Path.Combine(_workspace.WorkspacePath(), path), content);
         }
 
         private void CreatePomFile()
         {
             var testDir = Path.GetDirectoryName(this.GetType().GetTypeInfo().Assembly.Location);
             var sourcePath = Path.Combine(testDir, "Services", "pom.xml");
-            var targetPath = Path.Combine(_workspace.WorkspacePath, "pom.xml");
+            var targetPath = Path.Combine(_workspace.WorkspacePath(), "pom.xml");
             File.Copy(sourcePath, targetPath); 
         }
 

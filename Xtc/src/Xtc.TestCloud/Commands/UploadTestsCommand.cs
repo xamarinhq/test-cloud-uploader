@@ -7,6 +7,7 @@ using Microsoft.Xtc.Common.Cli.Utilities;
 using Microsoft.Xtc.Common.Services;
 using Microsoft.Xtc.Common.Services.Logging;
 using Microsoft.Xtc.TestCloud.Services;
+using Microsoft.Xtc.TestCloud.Utilities;
 
 namespace Microsoft.Xtc.TestCloud.Commands
 {
@@ -51,7 +52,14 @@ Options: {UploadTestsCommandOptions.OptionsDescription}";
                     new RecordingLoggerProvider(loggerService.MinimumLogLevel, logsRecorder));
             }
 
-            return new UploadAppiumTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
+            if (WorkspaceHelper.IsAppiumWorkspace(uploadOptions.Workspace))
+            {
+                return new UploadAppiumTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
+            } 
+            else
+            {
+                return new UploadEspressoTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
+            }
         }
     }
 }
