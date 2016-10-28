@@ -55,6 +55,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
 
             _options = options;
             _logsRecorder = logsRecorder;
+            _logger = loggerService.CreateLogger<UploadJUnitTestsCommandExecutor>();
             
             var testCloudUri = GetTestCloudUri();
             _testCloudProxy = new TestCloudProxy(testCloudUri, loggerService);

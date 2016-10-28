@@ -25,7 +25,6 @@ namespace Microsoft.Xtc.TestCloud.Commands
         public UploadAppiumTestsCommandExecutor(
             UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder) : base(options, loggerService, logsRecorder)
         {
-            this.Logger = loggerService.CreateLogger<UploadAppiumTestsCommandExecutor>();
             this.TestName = "appium";
             this.Workspace = new AppiumWorkspace(options.Workspace);
         }

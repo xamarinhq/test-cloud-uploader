@@ -15,7 +15,6 @@ namespace Microsoft.Xtc.TestCloud.Commands
     {
         public UploadEspressoTestsCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder) : base(options, loggerService, logsRecorder)
         {
-            this.Logger = loggerService.CreateLogger<UploadEspressoTestsCommandExecutor>();
             this.TestName = "espresso";
             this.Workspace = new EspressoWorkspace(options.Workspace);
         }
