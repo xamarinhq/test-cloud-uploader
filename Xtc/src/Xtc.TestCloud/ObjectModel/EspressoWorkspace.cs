@@ -33,7 +33,7 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
         /// </summary>
         public void Validate() 
         {
-            ValidateContainsOneApk();
+            ValidateContainsOneTestApk();
         }
 
         /// <summary>
@@ -44,14 +44,33 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             return _workspacePath;
         }
 
-        protected void ValidateContainsOneApk()
+        /// <summary>
+        /// Returns all files from the workspace that should be uploaded.
+        /// </summary>
+        /// <returns>List of files from the workspace directory that should be uploaded.</returns>
+        public IList<UploadFileInfo> GetFilesToUpload(HashAlgorithm hashAlgorithm)
         {
-            var apks = Directory.GetFiles(_workspacePath, "*.apk", SearchOption.TopDirectoryOnly);
+            string workspacePath = WorkspacePath();
+
+            if (hashAlgorithm == null)
+                throw new ArgumentNullException(nameof(hashAlgorithm));
+            
+            var testApk = Directory.GetFiles(workspacePath, "*-androidTest.apk", SearchOption.TopDirectoryOnly).Single();
+            var relativePath = FileHelper.GetRelativePath(testApk, workspacePath);
+            var hash = hashAlgorithm.GetFileHash(testApk);
+
+            return new List<UploadFileInfo> {new UploadFileInfo(testApk, relativePath, hash)};
+        }
+
+
+        protected void ValidateContainsOneTestApk()
+        {
+            var apks = Directory.GetFiles(_workspacePath, "*-androidTest.apk", SearchOption.TopDirectoryOnly);
             if (apks.Length != 1)
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName,
-                    "Espresso workspace directory must contain exactly one apk file",
+                    "Espresso workspace directory must contain exactly one test apk file (which ends with -androidApk.apk).",
                     (int)UploadCommandExitCodes.InvalidWorkspace);
             }
         }

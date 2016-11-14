@@ -23,5 +23,10 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
         /// Validates the workspace for a given test type
         /// </summary>
         void Validate();
+
+        /// <summary>
+        /// What files to upload
+        /// </summary>
+        IList<UploadFileInfo> GetFilesToUpload(HashAlgorithm hashAlgorithm);
     } 
 }
