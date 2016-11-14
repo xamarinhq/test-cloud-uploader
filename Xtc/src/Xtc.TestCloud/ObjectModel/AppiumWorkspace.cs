@@ -65,6 +65,29 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             ValidateTestClassesDirectory();
         }
 
+        /// <summary>
+        /// Returns all files from the workspace that should be uploaded.
+        /// </summary>
+        /// <returns>List of files from the workspace directory that should be uploaded.</returns>
+        public IList<UploadFileInfo> GetFilesToUpload(HashAlgorithm hashAlgorithm)
+        {
+            string workspacePath = WorkspacePath();
+
+            if (hashAlgorithm == null)
+                throw new ArgumentNullException(nameof(hashAlgorithm));
+
+            return Directory
+                .GetFiles(workspacePath, "*", SearchOption.AllDirectories)
+                .Select(filePath =>
+                {
+                    var relativePath = FileHelper.GetRelativePath(filePath, workspacePath);
+                    var hash = hashAlgorithm.GetFileHash(filePath);
+
+                    return new UploadFileInfo(filePath, relativePath, hash);
+                })
+                .ToList();
+        }
+
         private void ValidatePomFile()
         {
             if (!PomFileExists())

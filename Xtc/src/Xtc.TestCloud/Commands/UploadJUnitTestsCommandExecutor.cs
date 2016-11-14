@@ -176,7 +176,7 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
         {
             using (_logger.BeginScope("Packaging"))
             {
-                var result = WorkspaceHelper.GetUploadFiles(_workspace, hashAlgorithm);
+                var result = _workspace.GetFilesToUpload(hashAlgorithm);
 
                 foreach (var file in result)
                 {
