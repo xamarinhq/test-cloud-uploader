@@ -2,6 +2,12 @@
 
 Unified command line interface for XTC.
 
+# Notice 
+
+This is a temporary product used to upload Espresso, Appium and XCUITest tests to Xamarin Test Cloud. This project will be deleted and removed when Visual Studio Mobile Center launches publicly, and will be replaced by the [Mobile Center CLI](https://github.com/Microsoft/mobile-center-cli).
+
+This project will not accept contributions outside of Microsoft due to the temporary nature of the product.
+
 ## Installation
 
 ### Windows
