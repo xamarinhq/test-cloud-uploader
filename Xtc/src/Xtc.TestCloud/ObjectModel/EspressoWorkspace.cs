@@ -70,7 +70,7 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName,
-                    "Espresso workspace directory must contain exactly one test apk file (which ends with -androidApk.apk).",
+                    "Espresso workspace directory must contain exactly one test apk file (which ends with -androidTest.apk).",
                     (int)UploadCommandExitCodes.InvalidWorkspace);
             }
         }
