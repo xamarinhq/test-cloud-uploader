@@ -31,7 +31,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
     <app-file>                           - An Android or iOS application to test.
     <api-key>                            - Test Cloud API key.
     --user <user>                        - Email address of the user.
-    --workspace <workspace>              - Path to the workspace folder (containing your tests [appium] or test apk [espresso]).
+    --workspace <workspace>              - Path to the workspace folder (containing your tests).
     --app-name <app-name>                - App name to create or add tests to.
     --devices <devices>                  - Device selection id from the Test Cloud upload dialog.
     --async                              - Don't wait for the Test Cloud run to complete.

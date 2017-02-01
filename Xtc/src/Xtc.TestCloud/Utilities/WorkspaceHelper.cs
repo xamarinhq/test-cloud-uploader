@@ -30,6 +30,48 @@ namespace Microsoft.Xtc.TestCloud.Utilities
         }
 
         /// <summary>
+        /// Convenience method for determining if workspace is an Espresso Workspace
+        /// </summary>
+        /// <param name="workspacePath">Path to the workspace directory.</param>
+        /// <return>true if the workspace is appropriate for an appium test
+        public static bool IsEspressoWorkspace(string workspacePath)
+        {
+            if (workspacePath == null)
+                throw new ArgumentNullException(nameof(workspacePath));
+
+            try 
+            {
+                new EspressoWorkspace(workspacePath).Validate();
+            }
+            catch (CommandException) 
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Convenience method for determining if workspace is an XCUITest Workspace
+        /// </summary>
+        /// <param name="workspacePath">Path to the workspace directory.</param>
+        /// <return>true if the workspace is appropriate for an appium test
+        public static bool IsXCUITestWorkspace(string workspacePath)
+        {
+            if (workspacePath == null)
+                throw new ArgumentNullException(nameof(workspacePath));
+
+            try 
+            {
+                new XCUITestWorkspace(workspacePath).Validate();
+            }
+            catch (CommandException) 
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Returns all files from the workspace that should be uploaded.
         /// </summary>
         /// <returns>List with all files from the workspace directory.</returns>

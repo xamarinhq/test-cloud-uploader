@@ -56,9 +56,20 @@ Options: {UploadTestsCommandOptions.OptionsDescription}";
             {
                 return new UploadAppiumTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
             } 
-            else
+            else if (WorkspaceHelper.IsEspressoWorkspace(uploadOptions.Workspace))
             {
                 return new UploadEspressoTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
+            }
+            else if (WorkspaceHelper.IsXCUITestWorkspace(uploadOptions.Workspace))
+            {
+                return new UploadXCUITestCommandExecutor(uploadOptions, loggerService, logsRecorder);
+            }
+            else
+            {
+                throw new CommandException(
+                    UploadTestsCommand.CommandName,
+                    @"Unable to recognize workspace format",
+                    (int) UploadCommandExitCodes.InvalidWorkspace);
             }
         }
     }

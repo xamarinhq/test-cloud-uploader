@@ -11,7 +11,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
     /// <summary>
     /// Command executor that uploads Espresso tests to the Test Cloud.
     /// </summary>
-    public class UploadEspressoTestsCommandExecutor : UploadJUnitTestsCommandExecutor
+    public class UploadEspressoTestsCommandExecutor : UploadXTCTestCommandExecutor
     {
         public UploadEspressoTestsCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder) : base(options, loggerService, logsRecorder)
         {

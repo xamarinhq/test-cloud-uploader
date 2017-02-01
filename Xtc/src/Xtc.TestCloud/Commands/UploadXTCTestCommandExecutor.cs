@@ -18,9 +18,9 @@ using LoggerExtensions = Microsoft.Xtc.Common.Services.Logging.LoggerExtensions;
 namespace Microsoft.Xtc.TestCloud.Commands
 {
     /// <summary>
-    /// Command executor that uploads Appium tests to the Test Cloud.
+    /// Generic command executor for currently supported XTC tests
     /// </summary>
-    public class UploadJUnitTestsCommandExecutor : ICommandExecutor
+    public class UploadXTCTestCommandExecutor : ICommandExecutor
     {
         private const string TestCloudEndpointEnvironmentVariable = "XTC_ENDPOINT"; 
 
@@ -46,7 +46,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
         protected IWorkspace Workspace { get { return _workspace; } set { _workspace = value; } }
         protected string TestName { get { return _testName; } set { _testName = value; } }
 
-        public UploadJUnitTestsCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder)
+        public UploadXTCTestCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -55,7 +55,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
 
             _options = options;
             _logsRecorder = logsRecorder;
-            _logger = loggerService.CreateLogger<UploadJUnitTestsCommandExecutor>();
+            _logger = loggerService.CreateLogger<UploadXTCTestCommandExecutor>();
             
             var testCloudUri = GetTestCloudUri();
             _testCloudProxy = new TestCloudProxy(testCloudUri, loggerService);
