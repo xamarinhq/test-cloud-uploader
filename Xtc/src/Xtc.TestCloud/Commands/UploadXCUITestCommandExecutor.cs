@@ -13,7 +13,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
     {
         public UploadXCUITestCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder) : base(options, loggerService, logsRecorder)
         {
-            this.TestName = "XCUITest";
+            this.TestName = "xcuitest";
             this.Workspace = new XCUITestWorkspace(options.Workspace);
         }
 
