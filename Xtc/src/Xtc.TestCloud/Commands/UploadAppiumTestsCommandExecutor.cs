@@ -20,7 +20,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
     /// <summary>
     /// Command executor that uploads Appium tests to the Test Cloud.
     /// </summary>
-    public class UploadAppiumTestsCommandExecutor : UploadJUnitTestsCommandExecutor
+    public class UploadAppiumTestsCommandExecutor : UploadXTCTestCommandExecutor
     {
         public UploadAppiumTestsCommandExecutor(
             UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder) : base(options, loggerService, logsRecorder)

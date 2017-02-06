@@ -10,17 +10,17 @@ using Microsoft.Xtc.TestCloud.Utilities;
 namespace Microsoft.Xtc.TestCloud.ObjectModel
 {
     /// <summary>
-    /// Represents an Espresso workspace directory.
+    /// Represents an XCUITest workspace directory.
     /// </summary>
-    public class EspressoWorkspace : IWorkspace
+    public class XCUITestWorkspace : IWorkspace
     {
         private readonly string _workspacePath;
 
         /// <summary>
-        /// Constructor. Creates new instance of the Espresso Workspace.
+        /// Constructor. Creates new instance of the XCUITest Workspace.
         /// </summary>
         /// <param name="workspacePath">Path to the workspace directory.</param>
-        public EspressoWorkspace(string workspacePath)
+        public XCUITestWorkspace(string workspacePath)
         {
             if (workspacePath == null)
                 throw new ArgumentNullException(nameof(workspacePath));
@@ -33,7 +33,7 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
         /// </summary>
         public void Validate() 
         {
-            ValidateContainsOneTestApk();
+            ValidateContainsXCUITestBundle();
         }
 
         /// <summary>
@@ -55,22 +55,25 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             if (hashAlgorithm == null)
                 throw new ArgumentNullException(nameof(hashAlgorithm));
             
-            var testApk = Directory.GetFiles(workspacePath, "*-androidTest.apk", SearchOption.TopDirectoryOnly).Single();
-            var relativePath = FileHelper.GetRelativePath(testApk, workspacePath);
-            var hash = hashAlgorithm.GetFileHash(testApk);
+            var testRunner = Directory.GetFiles(workspacePath, "*-Runner.ipa", SearchOption.TopDirectoryOnly).Single();
+            var relativePath = FileHelper.GetRelativePath(testRunner, workspacePath);
+            var hash = hashAlgorithm.GetFileHash(testRunner);
 
-            return new List<UploadFileInfo> {new UploadFileInfo(testApk, relativePath, hash)};
+            return new List<UploadFileInfo> {new UploadFileInfo(testRunner, relativePath, hash)};
         }
 
 
-        protected void ValidateContainsOneTestApk()
+        protected void ValidateContainsXCUITestBundle()
         {
-            var apks = Directory.GetFiles(_workspacePath, "*-androidTest.apk", SearchOption.TopDirectoryOnly);
-            if (apks.Length != 1)
+            //TODO:
+            //We could unzip the .ipa and validate that it has an .xctest bundle and xctestconfiguration file
+            //which points to the target application. 
+            var testRunners = Directory.GetFiles(_workspacePath, "*-Runner.ipa", SearchOption.TopDirectoryOnly);
+            if (testRunners.Length != 1)
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName,
-                    "Espresso workspace directory must contain exactly one test apk file (which ends with -androidTest.apk).",
+                    "XCUITestWorkspace directory must contain exactly one test runner (should end in '-Runner.ipa')",
                     (int)UploadCommandExitCodes.InvalidWorkspace);
             }
         }
