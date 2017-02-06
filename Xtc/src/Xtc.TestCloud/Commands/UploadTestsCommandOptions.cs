@@ -45,7 +45,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
 
         public static readonly string[] OptionsSyntax =
         {
-            "<app-file> <api-key> --user <user> --devices <devices> [options]"
+            "<app-file> <api-key> --user <user> --devices <devices> --workspace <workspace> [options]"
         };
 
         private readonly IDictionary<string, ValueObject> _options;
