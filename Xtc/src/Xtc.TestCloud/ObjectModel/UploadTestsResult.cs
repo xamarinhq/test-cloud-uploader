@@ -28,6 +28,12 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
         public string Team { get; set; }
 
         /// <summary>
+        /// Type of Test (e.g. Appium, Espreso, etc.)
+        /// </summary>
+        [JsonProperty("type")]
+        public string TestType { get; set; }
+
+        /// <summary>
         /// List of rejected devices.
         /// </summary>
         [JsonProperty("rejected_devices")]

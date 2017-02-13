@@ -307,7 +307,8 @@ http://docs.xamarin.com/guides/android/deployment%2C_testing%2C_and_metrics/publ
             var logLines = new List<string>
             {
                 "Tests enqueued",
-                $"User: {response.UserEmail}"
+                $"User: {response.UserEmail}",
+                $"Test Type: {response.TestType}"
             };
 
             if (response.Team != null)
