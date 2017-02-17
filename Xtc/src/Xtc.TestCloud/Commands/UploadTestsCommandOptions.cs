@@ -130,7 +130,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
 
         public string Workspace
         {
-            get { return _options[WorkspaceOption]?.ToString() ?? Path.GetDirectoryName(this.AppFile); }
+            get { return _options[WorkspaceOption]?.ToString(); }
         }
 
         public string AppName
