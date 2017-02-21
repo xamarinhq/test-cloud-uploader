@@ -61,17 +61,14 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
         {
             var platformService = new PlatformService();
             string apkPath;
-            string expectedWorkspace;
 
             if (platformService.CurrentPlatform == OSPlatform.Windows)
             {
                 apkPath = "c:\\Temp\\TestApp.apk";
-                expectedWorkspace = "c:\\Temp";
             }
             else
             {
                 apkPath = "/tmp/app/TestApp.apk";
-                expectedWorkspace = "/tmp/app";
             }
 
             var args = new[] 
@@ -80,12 +77,12 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 apkPath, 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
-                "--devices", "testDevices"
+                "--devices", "testDevices",
+                "--workspace", "."
             };
 
             var uploadOptions = ParseOptions(args);
 
-            Assert.Equal(expectedWorkspace, uploadOptions.Workspace);
             Assert.Equal("en_US", uploadOptions.Locale);
             Assert.False(uploadOptions.Async);
             Assert.False(uploadOptions.AsyncJson);
@@ -104,6 +101,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "z:\\not_existing_app.apk", 
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
+                "--workspace", ".",
                 "--devices", "testDevices"
             };
 
@@ -140,6 +138,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
+                "--workspace", ".",
                 "--dsym-directory", "z:\\not_existing_dSym_directory"
             };
 
@@ -177,6 +176,21 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
         }
 
         [Fact]
+        public void ParsingShouldFailWhenWorkspaceIsMissing()
+        {
+            var args = new[] 
+            {
+                "test",
+                Assembly.GetEntryAssembly().Location, 
+                "testApiKey",
+                "--user", "testUser@xamarin.com@xamarin.com",
+                "--devices", "testDevices",
+            };
+
+            Assert.Throws<DocoptInputErrorException>(() => ParseOptions(args));
+        }
+
+        [Fact]
         public void ValidationShouldFailWhenTestParametersAreIncorrect()
         {
             var args = new[] 
@@ -186,6 +200,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
+                "--workspace", ".",
                 "--test-parameters", "testKey testValue"
             };
 
@@ -204,6 +219,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "testApiKey",
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
+                "--workspace", ".",
                 "--test-parameters", "testKey:testValue"
             };
 
