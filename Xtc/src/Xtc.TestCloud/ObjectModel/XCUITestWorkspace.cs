@@ -55,20 +55,18 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
             if (hashAlgorithm == null)
                 throw new ArgumentNullException(nameof(hashAlgorithm));
             
-            var testRunner = Directory.GetFiles(workspacePath, "*-Runner.ipa", SearchOption.TopDirectoryOnly).Single();
-            var relativePath = FileHelper.GetRelativePath(testRunner, workspacePath);
-            var hash = hashAlgorithm.GetFileHash(testRunner);
+            var testRunnerApp = Directory.GetDirectories(workspacePath, "*-Runner.app", SearchOption.TopDirectoryOnly).Single();
+            var testRunnerIpa = FileHelper.ArchiveAppBundle(testRunnerApp);
+            var relativePath = FileHelper.GetRelativePath(testRunnerIpa, workspacePath);
+            var hash = hashAlgorithm.GetFileHash(testRunnerIpa);
 
-            return new List<UploadFileInfo> {new UploadFileInfo(testRunner, relativePath, hash)};
+            return new List<UploadFileInfo> {new UploadFileInfo(testRunnerIpa, relativePath, hash)};
         }
 
 
         protected void ValidateContainsXCUITestBundle()
         {
-            //TODO:
-            //We could unzip the .ipa and validate that it has an .xctest bundle and xctestconfiguration file
-            //which points to the target application. 
-            var testRunners = Directory.GetFiles(_workspacePath, "*-Runner.ipa", SearchOption.TopDirectoryOnly);
+            var testRunners = Directory.GetDirectories(_workspacePath, "*-Runner.app", SearchOption.TopDirectoryOnly);
             if (testRunners.Length != 1)
             {
                 throw new CommandException(
