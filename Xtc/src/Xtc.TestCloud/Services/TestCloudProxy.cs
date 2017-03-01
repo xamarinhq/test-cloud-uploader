@@ -26,7 +26,7 @@ namespace Microsoft.Xtc.TestCloud.Services
         public const string UploaderClientVersion = "1.2.0";
 
         private static readonly TimeSpan _retryDelay = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan _retryTimeout = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan _retryTimeout = TimeSpan.FromMinutes(10);
 
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
@@ -40,7 +40,8 @@ namespace Microsoft.Xtc.TestCloud.Services
 
             _httpClient = new HttpClient()
             {
-                BaseAddress = endpointUri
+                BaseAddress = endpointUri,
+                Timeout = _retryTimeout
             };
 
             _logger = loggerService.CreateLogger<TestCloudProxy>();
@@ -264,6 +265,19 @@ namespace Microsoft.Xtc.TestCloud.Services
                         var errorMessage = await GetCustomErrorMessage(result);
                         throw new HttpRequestException(errorMessage);
                     }
+                }
+                catch (TaskCanceledException)
+                {
+                    if (DateTimeOffset.UtcNow >= maximumTime)
+                    {
+                        throw new Exception("The request timed out");
+                    }
+
+                    _logger.LogInformation(
+                        RetryingEventId,
+                        $"Retrying in {_retryDelay.TotalSeconds} seconds. The task timed out (TaskCanceledException).");
+
+                    await Task.Delay(_retryDelay);
                 }
                 // The HttpException may be thrown when error occurs in layers lower than HTTP.
                 catch (HttpRequestException ex) when (ex.InnerException != null)
