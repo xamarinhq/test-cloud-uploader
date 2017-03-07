@@ -210,6 +210,39 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
         }
 
         [Fact]
+        public void ValidationShouldPassWithNoAppForXCUITestWithWorkspace() 
+        {
+            var args = new[] 
+            {
+                "xcuitest",
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--devices", "testDevices",
+                "--workspace", "."
+            };
+
+            var uploadOptions = ParseOptions(args, true);
+            uploadOptions.Validate(false);
+        }
+
+        [Fact]
+        public void ValidationShouldFailWhenMissingRequiredApp() 
+        {
+            var args = new[] 
+            {
+                "xcuitest",
+                "testApiKey",
+                "--user", "testUser@xamarin.com",
+                "--devices", "testDevices",
+                "--workspace", "."
+            };
+
+            var uploadOptions = ParseOptions(args, true);
+
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
+        }
+
+        [Fact]
         public void ValidationShouldPassWhenAllRequiredOptionsAreCorrect()
         {
             var args = new[] 
@@ -245,9 +278,17 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
             Assert.Throws<DocoptInputErrorException>(() => new Docopt().Apply(command.Syntax, args));
         }
 
-        private UploadTestsCommandOptions ParseOptions(string[] args)
+        private UploadTestsCommandOptions ParseOptions(string[] args, bool forXCUITest = false)
         {
-            var command = new UploadTestsCommand();
+            ICommand command;
+            if (forXCUITest) 
+            { 
+                command = new UploadXCUITestsCommand();
+            }
+            else
+            {
+                command = new UploadTestsCommand();
+            }
             var docoptOptions = new Docopt().Apply(command.Syntax, args);
             
             return new UploadTestsCommandOptions(docoptOptions);
