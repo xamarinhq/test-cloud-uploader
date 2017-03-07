@@ -116,6 +116,7 @@ If you are using MacPorts (https://www.macports.org/), execute this command:
             registry.AddCommand(new HelpCommandDescription());
             registry.AddCommand(new RunExtensionCommandDescription());
             registry.AddCommand(new UploadTestsCommand());
+            registry.AddCommand(new UploadXCUITestsCommand());
 
             return registry;
         }

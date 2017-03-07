@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Microsoft.Xtc.Common.Cli.Commands;
 using Microsoft.Xtc.TestCloud.Commands;
 using Microsoft.Xtc.TestCloud.Utilities;
@@ -15,6 +16,15 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
     public class XCUITestWorkspace : IWorkspace
     {
         private readonly string _workspacePath;
+
+        public static string FindAUT(string workspacePath)
+        {
+            var regex = new Regex("^*[^-Runner].app$");
+            var apps =  Directory.GetDirectories(workspacePath)
+                        .Where(path => regex.IsMatch(path))
+                        .ToArray();
+            return apps.Length > 0 ? apps[0] : null;
+        }
 
         /// <summary>
         /// Constructor. Creates new instance of the XCUITest Workspace.

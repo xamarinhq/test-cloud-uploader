@@ -64,7 +64,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
 
         protected virtual void ValidateOptions()
         {
-            _options.Validate();
+            _options.Validate(false);
 
             if (ValidationHelper.IsAndroidApp(_options.AppFile))
             {

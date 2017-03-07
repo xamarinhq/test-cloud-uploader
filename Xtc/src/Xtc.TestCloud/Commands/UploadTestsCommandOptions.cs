@@ -48,6 +48,11 @@ namespace Microsoft.Xtc.TestCloud.Commands
             "<app-file> <api-key> --user <user> --devices <devices> --workspace <workspace> [options]"
         };
 
+        public static readonly string[] XCUITestOptionsSyntax = 
+        {
+            "<api-key> --user <user> --devices <devices> --workspace <workspace> [options]"
+        };
+
         private readonly IDictionary<string, ValueObject> _options;
         private IList<KeyValuePair<string, string>> _parsedTestParameters;
 
@@ -60,14 +65,14 @@ namespace Microsoft.Xtc.TestCloud.Commands
             _parsedTestParameters = null;
         }
 
-        public void Validate()
+        public void Validate(bool appRequired = true)
         {
-            ValidateRequiredOptions();
+            ValidateRequiredOptions(appRequired);
         }
 
-        protected virtual void ValidateRequiredOptions()
+        protected virtual void ValidateRequiredOptions(bool appRequired)
         {
-            if (!File.Exists(this.AppFile))
+            if (appRequired && !File.Exists(this.AppFile))
             {
                 throw new CommandException(
                     UploadTestsCommand.CommandName, 
@@ -113,9 +118,13 @@ namespace Microsoft.Xtc.TestCloud.Commands
             }
         }
 
+        private string _appFile;
+
         public string AppFile
         {
-            get { return _options[AppFileOption].ToString(); }
+            get { return _appFile ?? 
+                (_options.ContainsKey(AppFileOption) ? _options[AppFileOption].ToString() : null); }
+            set { _appFile = value; }
         }
 
         public string ApiKey
