@@ -24,13 +24,13 @@ namespace Microsoft.Xtc.TestCloud.Commands
 Usage:
 {GetPossibleOptionSyntax()}
 
-Options: {UploadTestsCommandOptions.OptionsDescription}";
+Options: {UploadTestsCommandOptions.OptionsDescription()}";
 
         private string GetPossibleOptionSyntax()
         {
             var result = new StringBuilder();
 
-            foreach (var syntax in UploadTestsCommandOptions.OptionsSyntax)
+            foreach (var syntax in UploadTestsCommandOptions.OptionsSyntax())
             {
                 result.AppendFormat($"    {ProgramUtilities.CurrentExecutableName} {this.Name} {syntax}");
             }
@@ -59,10 +59,6 @@ Options: {UploadTestsCommandOptions.OptionsDescription}";
             else if (WorkspaceHelper.IsEspressoWorkspace(uploadOptions.Workspace))
             {
                 return new UploadEspressoTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
-            }
-            else if (WorkspaceHelper.IsXCUITestWorkspace(uploadOptions.Workspace))
-            {
-                return new UploadXCUITestCommandExecutor(uploadOptions, loggerService, logsRecorder);
             }
             else
             {

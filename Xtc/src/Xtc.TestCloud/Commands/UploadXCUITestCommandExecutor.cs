@@ -3,7 +3,6 @@ using Microsoft.Xtc.TestCloud.ObjectModel;
 using Microsoft.Xtc.TestCloud.Utilities;
 using Microsoft.Xtc.Common.Cli.Commands;
 using System.IO;
-using System;
 
 namespace Microsoft.Xtc.TestCloud.Commands
 {
@@ -11,16 +10,11 @@ namespace Microsoft.Xtc.TestCloud.Commands
     /// Command executor that uploads XCUITest tests to the Test Cloud.
     /// </summary>
     public class UploadXCUITestCommandExecutor : UploadXTCTestCommandExecutor
-    {
-        public UploadXCUITestCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder) : base(options, loggerService, logsRecorder)
+    {   
+        public UploadXCUITestCommandExecutor(UploadXCUITestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder) : base(options, loggerService, logsRecorder)
         {
             this.TestName = "xcuitest";
             this.Workspace = new XCUITestWorkspace(options.Workspace);
-            
-            if (_options.AppFile == null) {
-                var appBundle = XCUITestWorkspace.FindAUT(options.Workspace);
-                _options.AppFile = FileHelper.ArchiveAppBundle(appBundle);
-            }
         }
 
         protected override void ValidateOptions()

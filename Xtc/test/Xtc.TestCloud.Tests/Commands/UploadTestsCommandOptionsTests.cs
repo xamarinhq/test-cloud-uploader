@@ -209,24 +209,27 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
             Assert.Throws<CommandException>(() => uploadOptions.Validate());
         }
 
+        //TODO: Move
         [Fact]
-        public void ValidationShouldPassWithNoAppForXCUITestWithWorkspace() 
+        public void ValidationShouldFailWhenSpecifiedAppDoesNotExist() 
         {
             var args = new[] 
             {
                 "xcuitest",
                 "testApiKey",
+                "--app-file", "someapp.ipa",
                 "--user", "testUser@xamarin.com",
                 "--devices", "testDevices",
                 "--workspace", "."
             };
 
-            var uploadOptions = ParseOptions(args, true);
-            uploadOptions.Validate(false);
+            var uploadOptions = ParseOptions(args, forXCUITest:true);
+            Assert.Throws<CommandException>(() => uploadOptions.Validate());
         }
 
+        //TODO: Move
         [Fact]
-        public void ValidationShouldFailWhenMissingRequiredApp() 
+        public void ValidationShouldFailWhenAppsNotFoundInWorkspace() 
         {
             var args = new[] 
             {
@@ -237,7 +240,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "--workspace", "."
             };
 
-            var uploadOptions = ParseOptions(args, true);
+            var uploadOptions = ParseOptions(args, forXCUITest:true);
 
             Assert.Throws<CommandException>(() => uploadOptions.Validate());
         }
@@ -284,14 +287,15 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
             if (forXCUITest) 
             { 
                 command = new UploadXCUITestsCommand();
+                var docoptOptions = new Docopt().Apply(command.Syntax, args);
+                return new UploadXCUITestsCommandOptions(docoptOptions);
             }
             else
             {
                 command = new UploadTestsCommand();
+                var docoptOptions = new Docopt().Apply(command.Syntax, args);
+                return new UploadTestsCommandOptions(docoptOptions);
             }
-            var docoptOptions = new Docopt().Apply(command.Syntax, args);
-            
-            return new UploadTestsCommandOptions(docoptOptions);
         }
     }
 }

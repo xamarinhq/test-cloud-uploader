@@ -4,9 +4,7 @@ using System.Text;
 using DocoptNet;
 using Microsoft.Xtc.Common.Cli.Commands;
 using Microsoft.Xtc.Common.Cli.Utilities;
-using Microsoft.Xtc.Common.Services;
 using Microsoft.Xtc.Common.Services.Logging;
-using Microsoft.Xtc.TestCloud.Services;
 using Microsoft.Xtc.TestCloud.Utilities;
 
 namespace Microsoft.Xtc.TestCloud.Commands
@@ -24,13 +22,13 @@ namespace Microsoft.Xtc.TestCloud.Commands
 Usage:
 {GetPossibleOptionSyntax()}
 
-Options: {UploadTestsCommandOptions.OptionsDescription}";
+Options: {UploadXCUITestsCommandOptions.OptionsDescription()}";
 
         private string GetPossibleOptionSyntax()
         {
             var result = new StringBuilder();
 
-            foreach (var syntax in UploadTestsCommandOptions.XCUITestOptionsSyntax)
+            foreach (var syntax in UploadXCUITestsCommandOptions.OptionsSyntax())
             {
                 result.AppendFormat($"    {ProgramUtilities.CurrentExecutableName} {this.Name} {syntax}");
             }
@@ -41,7 +39,7 @@ Options: {UploadTestsCommandOptions.OptionsDescription}";
         public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {
             var loggerService = (ILoggerService)serviceProvider.GetService(typeof(ILoggerService));
-            var uploadOptions = new UploadTestsCommandOptions(options);
+            var uploadOptions = new UploadXCUITestsCommandOptions(options);
             
             LogsRecorder logsRecorder = null;
 
