@@ -4,33 +4,31 @@ using System.Text;
 using DocoptNet;
 using Microsoft.Xtc.Common.Cli.Commands;
 using Microsoft.Xtc.Common.Cli.Utilities;
-using Microsoft.Xtc.Common.Services;
 using Microsoft.Xtc.Common.Services.Logging;
-using Microsoft.Xtc.TestCloud.Services;
 using Microsoft.Xtc.TestCloud.Utilities;
 
 namespace Microsoft.Xtc.TestCloud.Commands
 {
-    public class UploadTestsCommand: ICommand
+    public class UploadXCUITestsCommand: ICommand
     {
-        public const string CommandName = "test";
+        public const string CommandName = "xcuitest";
 
         public string Name => CommandName;
 
-        public string Summary => "Upload tests to the Test Cloud";
+        public string Summary => "Upload xcuitests to the Test Cloud";
 
         public string Syntax => $@"Command '{this.Name}': {this.Summary}. 
 
 Usage:
 {GetPossibleOptionSyntax()}
 
-Options: {UploadTestsCommandOptions.OptionsDescription()}";
+Options: {UploadXCUITestsCommandOptions.OptionsDescription()}";
 
         private string GetPossibleOptionSyntax()
         {
             var result = new StringBuilder();
 
-            foreach (var syntax in UploadTestsCommandOptions.OptionsSyntax())
+            foreach (var syntax in UploadXCUITestsCommandOptions.OptionsSyntax())
             {
                 result.AppendFormat($"    {ProgramUtilities.CurrentExecutableName} {this.Name} {syntax}");
             }
@@ -41,7 +39,7 @@ Options: {UploadTestsCommandOptions.OptionsDescription()}";
         public ICommandExecutor CreateCommandExecutor(IDictionary<string, ValueObject> options, IServiceProvider serviceProvider)
         {
             var loggerService = (ILoggerService)serviceProvider.GetService(typeof(ILoggerService));
-            var uploadOptions = new UploadTestsCommandOptions(options);
+            var uploadOptions = new UploadXCUITestsCommandOptions(options);
             
             LogsRecorder logsRecorder = null;
 
@@ -52,13 +50,9 @@ Options: {UploadTestsCommandOptions.OptionsDescription()}";
                     new RecordingLoggerProvider(loggerService.MinimumLogLevel, logsRecorder));
             }
 
-            if (WorkspaceHelper.IsAppiumWorkspace(uploadOptions.Workspace))
+            if (WorkspaceHelper.IsXCUITestWorkspace(uploadOptions.Workspace))
             {
-                return new UploadAppiumTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
-            } 
-            else if (WorkspaceHelper.IsEspressoWorkspace(uploadOptions.Workspace))
-            {
-                return new UploadEspressoTestsCommandExecutor(uploadOptions, loggerService, logsRecorder);
+                return new UploadXCUITestCommandExecutor(uploadOptions, loggerService, logsRecorder);
             }
             else
             {

@@ -247,9 +247,8 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
 
         private UploadTestsCommandOptions ParseOptions(string[] args)
         {
-            var command = new UploadTestsCommand();
+            ICommand command = new UploadTestsCommand();
             var docoptOptions = new Docopt().Apply(command.Syntax, args);
-            
             return new UploadTestsCommandOptions(docoptOptions);
         }
     }

@@ -37,7 +37,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
         private readonly LogsRecorder _logsRecorder;
         private readonly DSymDirectory _dSymDirectory;
 
-        protected readonly UploadTestsCommandOptions _options;
+        protected readonly IUploadTestsCommandOptions _options;
         private ILogger _logger;
         private IWorkspace _workspace;
         private string _testName;
@@ -46,7 +46,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
         protected IWorkspace Workspace { get { return _workspace; } set { _workspace = value; } }
         protected string TestName { get { return _testName; } set { _testName = value; } }
 
-        public UploadXTCTestCommandExecutor(UploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder)
+        public UploadXTCTestCommandExecutor(IUploadTestsCommandOptions options, ILoggerService loggerService, LogsRecorder logsRecorder)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));

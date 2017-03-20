@@ -57,6 +57,18 @@ namespace Microsoft.Xtc.TestCloud.Utilities
                 throw new InvalidOperationException("Can not archive an iOS application on Windows");
             }
 
+            if (!Path.GetExtension(appBundlePath).Equals(".app"))
+            {
+                throw new ArgumentException(
+                    $@"Expected bundle to end with .app, got ${appBundlePath}");
+            }
+
+            if (!Directory.Exists(appBundlePath))
+            {
+                throw new FileNotFoundException(
+                  $@"'${appBundlePath}' does not exist or is not a directory");
+            }
+
             // path/to/MyApp.ipa
             var ipaFilePath = Path.ChangeExtension(appBundlePath, ".ipa");
 

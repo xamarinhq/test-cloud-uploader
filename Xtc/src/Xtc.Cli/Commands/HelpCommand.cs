@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DocoptNet;
-using Microsoft.Xtc.Common;
 using Microsoft.Xtc.Common.Cli.Commands;
 using Microsoft.Xtc.Common.Cli.Utilities;
 

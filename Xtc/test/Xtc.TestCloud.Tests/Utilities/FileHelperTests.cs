@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Xtc.Common.Services;
@@ -66,6 +67,23 @@ namespace Microsoft.Xtc.TestCloud.Tests.Utilities
             var windowsPlatform = new TestPlatformService() { CurrentPlatform = OSPlatform.Windows };
 
             Assert.Equal("Dir2/Foo.bar", FileHelper.GetRelativePath(filePath, rootDirectoryPath, windowsPlatform));
+        }
+
+        [Fact]
+        public void ArchiveAppBundleShouldFailForInvalidFileTypes()
+        {
+            var invalid = new string[] { "bluemoon.txt", "bluemoon.ipa", "bluemoon.apk", "bluemoon" };
+            foreach (string invalidAppname in invalid) 
+            {
+                Assert.Throws<ArgumentException>(() => FileHelper.ArchiveAppBundle(invalidAppname));
+            }
+        }
+
+        [Fact]
+        public void ArchiveAppBundleShouldFailIfFileDoesNotExist()
+        {
+            var imaginary = "Unicorn.app";
+            Assert.Throws<FileNotFoundException>(() => FileHelper.ArchiveAppBundle(imaginary));
         }
     } 
 }

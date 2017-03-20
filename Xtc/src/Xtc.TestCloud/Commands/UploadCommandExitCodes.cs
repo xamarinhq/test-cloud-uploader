@@ -9,6 +9,7 @@ namespace Microsoft.Xtc.TestCloud.Commands
         InvalidDSymDirectory = 6,
         InvalidOptions = 7,
         InvalidTestCloudEndpoint = 8,
-        ServerError = 9
+        ServerError = 9,
+        MissingAppFile = 10
     }
 }
