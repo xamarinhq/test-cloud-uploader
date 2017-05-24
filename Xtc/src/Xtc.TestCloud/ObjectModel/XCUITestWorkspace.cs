@@ -19,7 +19,7 @@ namespace Microsoft.Xtc.TestCloud.ObjectModel
 
         public static string FindAUT(string workspacePath)
         {
-            var regex = new Regex("^*[^-Runner].app$");
+            var regex = new Regex("^(?:.(?!-Runner.app))+.app$");
             var apps =  Directory.GetDirectories(workspacePath)
                         .Where(path => regex.IsMatch(path))
                         .ToArray();
