@@ -24,7 +24,7 @@ function Restore()
     }
 }
 
-function BuildProject([string] $path)
+function BuildSolution([string] $path)
 {
     try 
     {
@@ -45,14 +45,5 @@ function BuildProject([string] $path)
 
 Restore
 
-BuildProject "src\Xtc.Common"
-BuildProject "src\Xtc.Common.Cli"
-BuildProject "src\Xtc.TestCloud"
-
-BuildProject "test\Xtc.Common.Cli.Tests"
-BuildProject "test\Xtc.Common.Tests"
-BuildProject "test\Xtc.TestCloud.Tests"
-
-BuildProject "src\Xtc.Cli"
-
+BuildProject "."
 exit $script:exitCode

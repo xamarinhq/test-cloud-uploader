@@ -20,7 +20,7 @@ function Restore {
     fi
 }
 
-function BuildProject {
+function BuildSolution {
     path=$1
     pushd .
     cd "$path"
@@ -43,15 +43,7 @@ echo "Using .NET Core version `dotnet --version`"
 
 Restore
 
-BuildProject "./src/Xtc.Common"
-BuildProject "./src/Xtc.Common.Cli"
-BuildProject "./src/Xtc.TestCloud"
-BuildProject "./src/Xtc.Cli"
-
-BuildProject "./test/Xtc.Common.Cli.Tests"
-BuildProject "./test/Xtc.Common.Tests"
-BuildProject "./test/Xtc.TestCloud.Tests"
-
+BuildSolution "."
 popd
 
 exit $exitCode

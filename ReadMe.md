@@ -1,4 +1,4 @@
-# XTC Command Line Interface (CLI)
+# XTC Command Line Interface (CLI) 
 
 Unified command line interface for XTC.
 
