@@ -35,9 +35,9 @@ function PublishProject {
     if [[ $platform == osx* ]]
     then
         # Path for Homebrew OpenSSL installation path
-        install_name_tool -add_rpath /usr/local/opt/openssl/lib/ ./xtc/System.Security.Cryptography.Native.dylib
+        install_name_tool -add_rpath /usr/local/opt/openssl/lib/ ./xtc/System.Security.Cryptography.Native.OpenSsl.dylib
         # Path for MacPorts OpenSSL insallation path
-        install_name_tool -add_rpath /opt/local/lib/ ./xtc/System.Security.Cryptography.Native.dylib
+        install_name_tool -add_rpath /opt/local/lib/ ./xtc/System.Security.Cryptography.Native.OpenSsl.dylib
     fi
 
     echo "Archive format: $archiveFormat"
