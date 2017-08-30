@@ -45,5 +45,5 @@ function BuildSolution([string] $path)
 
 Restore
 
-BuildProject "."
+BuildSolution "."
 exit $script:exitCode

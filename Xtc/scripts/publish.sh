@@ -61,6 +61,7 @@ cd "$root"
 
 PublishProject "./src/Xtc.Cli" "osx.10.10-x64" "tar.gz"
 PublishProject "./src/Xtc.Cli" "ubuntu.14.04-x64" "tar.gz"
+PublishProject "./src/Xtc.Cli" "ubuntu.16.04-x64" "tar.gz"
 PublishProject "./src/Xtc.Cli" "win7-x64" "zip"
 
 popd
