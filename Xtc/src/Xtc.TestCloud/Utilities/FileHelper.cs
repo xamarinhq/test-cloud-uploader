@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Xtc.Common.Services;
+using System.IO.Compression;
 
 namespace Microsoft.Xtc.TestCloud.Utilities
 {
@@ -51,29 +52,118 @@ namespace Microsoft.Xtc.TestCloud.Utilities
         /// <returns>Path to the resulting ipa</returns>
         public static string ArchiveAppBundle(string appBundlePath)
         {
-            var platformService = new PlatformService();
-            if (platformService.CurrentPlatform == OSPlatform.Windows)
-            {
-                throw new InvalidOperationException("Can not archive an iOS application on Windows");
-            }
-
             if (!Path.GetExtension(appBundlePath).Equals(".app"))
             {
                 throw new ArgumentException(
                     $@"Expected bundle to end with .app, got ${appBundlePath}");
             }
 
-            if (!Directory.Exists(appBundlePath))
+			if (!Directory.Exists(appBundlePath))
+			{
+				throw new FileNotFoundException(
+				  $@"'${appBundlePath}' does not exist or is not a directory");
+			}
+
+			var platformService = new PlatformService();
+            if (platformService.CurrentPlatform == OSPlatform.OSX && false) 
             {
-                throw new FileNotFoundException(
-                  $@"'${appBundlePath}' does not exist or is not a directory");
+				return CreateIpaWithDitto(appBundlePath);
+            } 
+            else
+            {
+                return CreateIpaWithZip(appBundlePath);   
             }
+        }
 
-            // path/to/MyApp.ipa
-            var ipaFilePath = Path.ChangeExtension(appBundlePath, ".ipa");
-
+        private static string CreateIpaWithZip(string appBundlePath)
+        {
             // /tmp/<uuid>
             string tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            // /tmp/<uuid>/Payload/MyApp.app
+            string destination = CreateTempAppDestination(appBundlePath, tmpDir);
+
+            try
+            {
+                Copy(appBundlePath, destination);
+				var ipaFilePath = Path.ChangeExtension(appBundlePath, ".ipa");
+                ZipFile.CreateFromDirectory(tmpDir, ipaFilePath);
+                return ipaFilePath;
+            }
+            finally
+            {
+                Directory.Delete(tmpDir, true);
+            }
+        }
+
+		public static void Copy(string sourceDirectory, string targetDirectory)
+		{
+			DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
+			DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+
+			CopyAll(diSource, diTarget);
+		}
+
+		public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+		{
+			Directory.CreateDirectory(target.FullName);
+
+			foreach (FileInfo fi in source.GetFiles())
+			{
+				fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+			}
+
+			foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+			{
+				DirectoryInfo nextTargetSubDir =
+					target.CreateSubdirectory(diSourceSubDir.Name);
+				CopyAll(diSourceSubDir, nextTargetSubDir);
+			}
+		}
+
+        private static string CreateIpaWithDitto(string appBundlePath)
+        {
+            // /tmp/<uuid>
+            string tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			// /tmp/<uuid>/Payload/MyApp.app
+			string destination = CreateTempAppDestination(appBundlePath, tmpDir);
+
+            try
+            {
+                var processService = new ProcessService();
+                // ditto path/to/MyApp.app /tmp/<uuid>/Payload/MyApp.app
+                var dittoTask = processService.RunAsync("ditto", $"{appBundlePath} {destination}");
+                dittoTask.Wait();
+                var result = dittoTask.Result;
+                if (result.ExitCode != 0)
+                {
+                    throw new Exception(
+                        $@"Unable to copy application bundle into Payload dir with command:\n
+                    ditto {appBundlePath} {destination}");
+                }
+
+                // path/to/MyApp.ipa
+                var ipaFilePath = Path.ChangeExtension(appBundlePath, ".ipa");
+
+                // ditto -ck --sequesterRsrc /tmp/<uuid> path/to/MyApp.ipa
+                dittoTask = processService.RunAsync("ditto", $"-ck --sequesterRsrc {tmpDir} {ipaFilePath}");
+                dittoTask.Wait();
+                result = dittoTask.Result;
+                if (result.ExitCode != 0)
+                {
+                    throw new Exception($@"Unable archive file with command:\n
+                ck --sequesterRsrc {tmpDir} {ipaFilePath}");
+                }
+
+                return ipaFilePath;
+            }
+            finally
+            {
+                Directory.Delete(tmpDir, true);
+            }
+        }
+
+        private static string CreateTempAppDestination(string appBundlePath, string tmpDir)
+        {
             Directory.CreateDirectory(tmpDir);
 
             // /tmp/<uuid>/Payload
@@ -82,31 +172,7 @@ namespace Microsoft.Xtc.TestCloud.Utilities
 
             // /tmp/<uuid>/Payload/MyApp.app
             var destination = Path.Combine(payloadPath, Path.GetFileName(appBundlePath));
-            var processService = new ProcessService();
-        
-            // ditto path/to/MyApp.app /tmp/<uuid>/Payload/MyApp.app
-            var dittoTask = processService.RunAsync("ditto", $"{appBundlePath} {destination}");
-            dittoTask.Wait();
-            var result = dittoTask.Result;
-            if (result.ExitCode != 0) {
-                Directory.Delete(tmpDir, true);
-                throw new Exception(
-                    $@"Unable to copy application bundle into Payload dir with command:\n
-                    ditto {appBundlePath} {destination}");
-            }
-
-            // ditto -ck --sequesterRsrc /tmp/<uuid> path/to/MyApp.ipa
-            dittoTask = processService.RunAsync("ditto", $"-ck --sequesterRsrc {tmpDir} {ipaFilePath}");
-            dittoTask.Wait();
-            result = dittoTask.Result;
-            if (result.ExitCode != 0) {
-                Directory.Delete(tmpDir, true);
-                throw new Exception($@"Unable archive file with command:\n
-                ck --sequesterRsrc {tmpDir} {ipaFilePath}");
-            }
-
-            Directory.Delete(tmpDir, true);
-            return ipaFilePath;
+            return destination;
         }
 
         private static string[] GetPathSegments(string path)
