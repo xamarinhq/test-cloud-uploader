@@ -65,7 +65,7 @@ namespace Microsoft.Xtc.TestCloud.Utilities
 			}
 
 			var platformService = new PlatformService();
-            if (platformService.CurrentPlatform == OSPlatform.OSX && false) 
+            if (platformService.CurrentPlatform == OSPlatform.OSX) 
             {
 				return CreateIpaWithDitto(appBundlePath);
             } 
