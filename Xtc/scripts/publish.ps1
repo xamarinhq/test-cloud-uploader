@@ -26,7 +26,7 @@ function PublishProject([string] $path, [string] $platform)
             $script:exitCode = $LASTEXITCODE
         }
 
-        $source = "$pwd\bin\$configuration\netcoreapp1.0\$platform\publish"
+        $source = "$pwd\bin\$configuration\netcoreapp2.0\$platform\publish"
         $destination = "$outputDir\xtc.$platform.zip"
 
         if (Test-Path $destination)
@@ -43,9 +43,10 @@ function PublishProject([string] $path, [string] $platform)
     }
 }
 
-#PublishProject "src\Xtc.Cli" "win10-x64"
-#PublishProject "src\Xtc.Cli" "win7-x64"
-#PublishProject "src\Xtc.Cli" "osx.10.10-x64"
-#PublishProject "src\Xtc.Cli" "ubuntu.14.04-x64"
+PublishProject "src\Xtc.Cli" "win10-x64"
+PublishProject "src\Xtc.Cli" "win7-x64"
+PublishProject "src\Xtc.Cli" "osx.10.10-x64"
+PublishProject "src\Xtc.Cli" "ubuntu.14.04-x64"
+PublishProject "src\Xtc.Cli" "ubuntu.16.04-x64"
 
 exit $script:exitCode
