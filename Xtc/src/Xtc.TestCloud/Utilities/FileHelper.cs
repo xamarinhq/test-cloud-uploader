@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Xtc.Common.Services;
+using System.IO.Compression;
 
 namespace Microsoft.Xtc.TestCloud.Utilities
 {
@@ -57,26 +58,74 @@ namespace Microsoft.Xtc.TestCloud.Utilities
                     $@"Expected bundle to end with .app, got ${appBundlePath}");
             }
 
-            var platformService = new PlatformService();
-            if (platformService.CurrentPlatform == OSPlatform.Windows)
-            {
-                throw new InvalidOperationException("Can not archive an iOS application on Windows");
-            }
+			if (!Directory.Exists(appBundlePath))
+			{
+				throw new FileNotFoundException(
+				  $@"'${appBundlePath}' does not exist or is not a directory");
+			}
 
-            if (!Directory.Exists(appBundlePath))
+			var platformService = new PlatformService();
+            if (platformService.CurrentPlatform == OSPlatform.OSX && false) 
             {
-                throw new FileNotFoundException(
-                  $@"'${appBundlePath}' does not exist or is not a directory");
+				return CreateIpaWithDitto(appBundlePath);
+            } 
+            else
+            {
+                return CreateIpaWithZip(appBundlePath);   
             }
-
-            return CreateIpaWithDitto(appBundlePath);
         }
+
+        private static string CreateIpaWithZip(string appBundlePath)
+        {
+            // /tmp/<uuid>
+            string tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            // /tmp/<uuid>/Payload/MyApp.app
+            string destination = CreateTempAppDestination(appBundlePath, tmpDir);
+
+            try
+            {
+                Copy(appBundlePath, destination);
+				var ipaFilePath = Path.ChangeExtension(appBundlePath, ".ipa");
+                ZipFile.CreateFromDirectory(tmpDir, ipaFilePath);
+                return ipaFilePath;
+            }
+            finally
+            {
+                Directory.Delete(tmpDir, true);
+            }
+        }
+
+		public static void Copy(string sourceDirectory, string targetDirectory)
+		{
+			DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
+			DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+
+			CopyAll(diSource, diTarget);
+		}
+
+		public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+		{
+			Directory.CreateDirectory(target.FullName);
+
+			foreach (FileInfo fi in source.GetFiles())
+			{
+				fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+			}
+
+			foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+			{
+				DirectoryInfo nextTargetSubDir =
+					target.CreateSubdirectory(diSourceSubDir.Name);
+				CopyAll(diSourceSubDir, nextTargetSubDir);
+			}
+		}
 
         private static string CreateIpaWithDitto(string appBundlePath)
         {
             // /tmp/<uuid>
             string tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            string destination = CreateTempAppDestination(appBundlePath, tmpDir);
+			// /tmp/<uuid>/Payload/MyApp.app
+			string destination = CreateTempAppDestination(appBundlePath, tmpDir);
 
             try
             {
