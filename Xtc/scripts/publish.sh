@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DOTNET_RUNTIME_ID=osx.10.11-x64
+export DOTNET_RUNTIME_ID=osx.10.12-x64
 
 configuration=${1:-Release}
 root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
@@ -27,18 +27,10 @@ function PublishProject {
         exitCode=$result
     fi
 
-    cd "./bin/$configuration/netcoreapp1.0/$platform"
+    cd "./bin/$configuration/netcoreapp2.0/$platform"
     mkdir -p tmp/xtc
     cp -R ./publish/* ./tmp/xtc
     cd ./tmp
-    
-    if [[ $platform == osx* ]]
-    then
-        # Path for Homebrew OpenSSL installation path
-        install_name_tool -add_rpath /usr/local/opt/openssl/lib/ ./xtc/System.Security.Cryptography.Native.OpenSsl.dylib
-        # Path for MacPorts OpenSSL insallation path
-        install_name_tool -add_rpath /opt/local/lib/ ./xtc/System.Security.Cryptography.Native.OpenSsl.dylib
-    fi
 
     echo "Archive format: $archiveFormat"
     if [ $archiveFormat == "tar.gz" ]
@@ -60,6 +52,7 @@ pushd .
 cd "$root"
 
 PublishProject "./src/Xtc.Cli" "osx.10.10-x64" "tar.gz"
+PublishProject "./src/Xtc.Cli" "osx.10.12-x64" "tar.gz"
 PublishProject "./src/Xtc.Cli" "ubuntu.14.04-x64" "tar.gz"
 PublishProject "./src/Xtc.Cli" "ubuntu.16.04-x64" "tar.gz"
 PublishProject "./src/Xtc.Cli" "win7-x64" "zip"

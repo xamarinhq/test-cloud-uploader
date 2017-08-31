@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DOTNET_RUNTIME_ID=osx.10.11-x64
+export DOTNET_RUNTIME_ID=osx.10.12-x64
 
 configuration=${1:-Release}
 output="`pwd`/publish/$configuration"

@@ -26,7 +26,7 @@ function PublishProject([string] $path, [string] $platform)
             $script:exitCode = $LASTEXITCODE
         }
 
-        $source = "$pwd\bin\$configuration\netcoreapp1.0\$platform\publish"
+        $source = "$pwd\bin\$configuration\netcoreapp2.0\$platform\publish"
         $destination = "$outputDir\xtc.$platform.zip"
 
         if (Test-Path $destination)
