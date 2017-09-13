@@ -28,6 +28,17 @@ This project will not accept contributions outside of Microsoft due to the tempo
 
 3. Add the `xtc` directory created above to the PATH environment variable.
 
+### Linux
+1. Download [xtc.ubuntu.16.04-x64.tar.gz](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/lastSuccessfulBuild/artifact/publish/Release/xtc.ubuntu.16.04-x64.tar.gz) or [xtc.ubuntu.14.04-x64.tar.gz](http://calabash-ci.macminicolo.net:8080/view/Uploader/job/Uploader%20master/lastSuccessfulBuild/artifact/publish/Release/xtc.ubuntu.14.04-x64.tar.gz).
+
+2. Unpack the archive file to any directory:
+
+   ```tar -xvzf xtc.ubuntu.16.04-x64.tar.gz```
+
+   This will create a `xtc` directory.
+
+3. Add the `xtc` directory created above to the PATH environment variable, or run the `xtc` command from the unpacked directory by specifying the full path to it.
+
 ## Usage
 ```
 xtc help
