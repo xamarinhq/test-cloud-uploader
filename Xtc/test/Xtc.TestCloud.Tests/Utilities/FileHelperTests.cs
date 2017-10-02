@@ -112,19 +112,19 @@ namespace Microsoft.Xtc.TestCloud.Tests.Utilities
             File.Delete("Dragon.ipa");
         }
 
-		[Fact]
-		public void ArchiveAppBundleShouldSucceedApiFileExistsNotDitto()
-		{
-			var real = "Dragon.app";
-			Directory.CreateDirectory(real);
-			var file = System.IO.File.Create("Dragon.ipa");
-			var writer = new System.IO.StreamWriter(file);
-			writer.WriteLine("Here be dragons");
-			writer.Dispose();
-			FileHelper.ArchiveAppBundle(real, true);
-			Assert.True(File.Exists("Dragon.ipa"));
-			Directory.Delete(real);
-			File.Delete("Dragon.ipa");
-		}
+        [Fact]
+        public void ArchiveAppBundleShouldSucceedApiFileExistsNotDitto()
+        {
+            var real = "Dragon.app";
+            Directory.CreateDirectory(real);
+            var file = System.IO.File.Create("Dragon.ipa");
+            var writer = new System.IO.StreamWriter(file);
+            writer.WriteLine("Here be dragons");
+            writer.Dispose();
+            FileHelper.ArchiveAppBundle(real, true);
+            Assert.True(File.Exists("Dragon.ipa"));
+            Directory.Delete(real);
+            File.Delete("Dragon.ipa");
+        }
     } 
 }
