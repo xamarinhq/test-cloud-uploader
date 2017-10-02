@@ -50,7 +50,7 @@ namespace Microsoft.Xtc.TestCloud.Utilities
         /// </summary>
         /// <param name="appBundlePath">Path to application bundle</param>
         /// <returns>Path to the resulting ipa</returns>
-        public static string ArchiveAppBundle(string appBundlePath)
+        public static string ArchiveAppBundle(string appBundlePath, bool overrideDitto = false)
         {
             if (!Path.GetExtension(appBundlePath).Equals(".app"))
             {
@@ -58,16 +58,16 @@ namespace Microsoft.Xtc.TestCloud.Utilities
                     $@"Expected bundle to end with .app, got ${appBundlePath}");
             }
 
-			if (!Directory.Exists(appBundlePath))
-			{
-				throw new FileNotFoundException(
-				  $@"'${appBundlePath}' does not exist or is not a directory");
-			}
-
-			var platformService = new PlatformService();
-            if (platformService.CurrentPlatform == OSPlatform.OSX) 
+            if (!Directory.Exists(appBundlePath))
             {
-				return CreateIpaWithDitto(appBundlePath);
+                throw new FileNotFoundException(
+                  $@"'${appBundlePath}' does not exist or is not a directory");
+            }
+
+            var platformService = new PlatformService();
+            if (platformService.CurrentPlatform == OSPlatform.OSX && !overrideDitto) 
+            {
+                return CreateIpaWithDitto(appBundlePath);
             } 
             else
             {
@@ -85,7 +85,12 @@ namespace Microsoft.Xtc.TestCloud.Utilities
             try
             {
                 Copy(appBundlePath, destination);
-				var ipaFilePath = Path.ChangeExtension(appBundlePath, ".ipa");
+                var ipaFilePath = Path.ChangeExtension(appBundlePath, ".ipa");
+                if (File.Exists(ipaFilePath))
+                {
+                    File.Delete(ipaFilePath);
+                }
+
                 ZipFile.CreateFromDirectory(tmpDir, ipaFilePath);
                 return ipaFilePath;
             }
@@ -95,37 +100,37 @@ namespace Microsoft.Xtc.TestCloud.Utilities
             }
         }
 
-		public static void Copy(string sourceDirectory, string targetDirectory)
-		{
-			DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
-			DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+        public static void Copy(string sourceDirectory, string targetDirectory)
+        {
+            DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
+            DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
 
-			CopyAll(diSource, diTarget);
-		}
+            CopyAll(diSource, diTarget);
+        }
 
-		public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
-		{
-			Directory.CreateDirectory(target.FullName);
+        public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+        {
+            Directory.CreateDirectory(target.FullName);
 
-			foreach (FileInfo fi in source.GetFiles())
-			{
-				fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
-			}
+            foreach (FileInfo fi in source.GetFiles())
+            {
+                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+            }
 
-			foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
-			{
-				DirectoryInfo nextTargetSubDir =
-					target.CreateSubdirectory(diSourceSubDir.Name);
-				CopyAll(diSourceSubDir, nextTargetSubDir);
-			}
-		}
+            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+            {
+                DirectoryInfo nextTargetSubDir =
+                    target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyAll(diSourceSubDir, nextTargetSubDir);
+            }
+        }
 
         private static string CreateIpaWithDitto(string appBundlePath)
         {
             // /tmp/<uuid>
             string tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-			// /tmp/<uuid>/Payload/MyApp.app
-			string destination = CreateTempAppDestination(appBundlePath, tmpDir);
+            // /tmp/<uuid>/Payload/MyApp.app
+            string destination = CreateTempAppDestination(appBundlePath, tmpDir);
 
             try
             {

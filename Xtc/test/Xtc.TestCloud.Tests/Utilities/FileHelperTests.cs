@@ -85,5 +85,46 @@ namespace Microsoft.Xtc.TestCloud.Tests.Utilities
             var imaginary = "Unicorn.app";
             Assert.Throws<FileNotFoundException>(() => FileHelper.ArchiveAppBundle(imaginary));
         }
+
+        [Fact]
+        public void ArchiveAppBundleShouldSucceedAppFileExists()
+        {
+            var real = "Dragon.app";
+            Directory.CreateDirectory(real);
+            FileHelper.ArchiveAppBundle(real);
+            Assert.True(File.Exists("Dragon.ipa"));
+            Directory.Delete(real);
+            File.Delete("Dragon.ipa");
+        }
+
+        [Fact]
+        public void ArchiveAppBundleShouldSucceedIpaFileExists()
+        {
+            var real = "Dragon.app";
+            Directory.CreateDirectory(real);
+            var file = System.IO.File.Create("Dragon.ipa");
+            var writer = new System.IO.StreamWriter(file);
+            writer.WriteLine("Here be dragons");
+            writer.Dispose();
+            FileHelper.ArchiveAppBundle(real);
+            Assert.True(File.Exists("Dragon.ipa"));
+            Directory.Delete(real);
+            File.Delete("Dragon.ipa");
+        }
+
+        [Fact]
+        public void ArchiveAppBundleShouldSucceedIpaFileExistsNotDitto()
+        {
+            var real = "Dragon.app";
+            Directory.CreateDirectory(real);
+            var file = System.IO.File.Create("Dragon.ipa");
+            var writer = new System.IO.StreamWriter(file);
+            writer.WriteLine("Here be dragons");
+            writer.Dispose();
+            FileHelper.ArchiveAppBundle(real, true);
+            Assert.True(File.Exists("Dragon.ipa"));
+            Directory.Delete(real);
+            File.Delete("Dragon.ipa");
+        }
     } 
 }
