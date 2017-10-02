@@ -98,7 +98,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Utilities
         }
 
         [Fact]
-        public void ArchiveAppBundleShouldSucceedApiFileExists()
+        public void ArchiveAppBundleShouldSucceedIpaFileExists()
         {
             var real = "Dragon.app";
             Directory.CreateDirectory(real);
@@ -113,7 +113,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Utilities
         }
 
         [Fact]
-        public void ArchiveAppBundleShouldSucceedApiFileExistsNotDitto()
+        public void ArchiveAppBundleShouldSucceedIpaFileExistsNotDitto()
         {
             var real = "Dragon.app";
             Directory.CreateDirectory(real);
