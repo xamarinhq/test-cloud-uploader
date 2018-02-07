@@ -29,7 +29,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
                 "--locale", "pl_PL",
                 "--series", "testSeries",
                 "--dsym-directory", "c:\\TestDSymDirectory",
-                "--test-parameters", "testKey1:testValue1,testKey2:testValue2",
+                "--test-parameters", "testKey1:testValue1:complex,testKey2:testValue2",
                 "--debug"
             };
             
@@ -50,7 +50,7 @@ namespace Microsoft.Xtc.TestCloud.Tests.Commands
             Assert.Equal(
                 new[] 
                 { 
-                    new KeyValuePair<string, string>("testKey1", "testValue1"),
+                new KeyValuePair<string, string>("testKey1", "testValue1:complex"),
                     new KeyValuePair<string, string>("testKey2", "testValue2") 
                 }, 
                 uploadOptions.TestParameters.ToArray());

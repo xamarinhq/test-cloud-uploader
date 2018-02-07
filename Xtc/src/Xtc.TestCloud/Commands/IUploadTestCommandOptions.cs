@@ -117,20 +117,21 @@ namespace Microsoft.Xtc.TestCloud.Commands
 
             var regex = new Regex("((?<key>.+):(?<value>.+))");
             var pairs = Regex.Split(testParametersString, "\\s*,\\s*");
-            
             if (pairs.Any(p => !regex.IsMatch(p)))
             {
                 throw new CommandException(
-                    UploadTestsCommand.CommandName, 
-                    $"Argument {TestParametersOption} is not formatted correctly", 
+                    UploadTestsCommand.CommandName,
+                    $"Argument {TestParametersOption} is not formatted correctly",
                     (int)UploadCommandExitCodes.InvalidOptions);
             }
-                
-            return pairs
-                .Select(pair => {
-                    var match = regex.Match(pair);
-                    return new KeyValuePair<string, string>(match.Groups["key"].Value, match.Groups["value"].Value);
-                });
+            regex = new Regex("\\s*:\\s*");
+            return (
+                from pair in pairs
+                let keyValue = regex.Split(pair, 2)
+                select new KeyValuePair<string, string>(
+                    keyValue[0], // Key
+                    keyValue[1]) // Value
+                ).ToArray();
         }
 
         public IList<string> ToArgumentsArray()
